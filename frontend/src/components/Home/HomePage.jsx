@@ -8,6 +8,7 @@ import ParentsSection from './components/ParentsSection';
 
 import AlphabetPhonicsGame from '../Games/AlphabetPhonicsGame';
 import NumbersCountingGame from '../NumbersCountingGame';
+import ShapesColorsGame from '../ShapesColorsGame';
 
 export default function HomePage({ user, onLogout, onToggleDashboard }) {
   const [stars, setStars] = useState(125);
@@ -36,6 +37,8 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
       setActiveGame('alphabet-phonics');
     } else if (activity.id === 'count-match') {
       setActiveGame('count-match');
+    } else if (activity.id === 'shapes-colors') {
+      setActiveGame('shapes-colors');
     } else {
       setStars((prev) => prev + 5);
       alert(`🌟 Playing "${activity.title}"!\n\n${activity.description}.\nYou earned +5 stars! ⭐ Keep it up!`);
@@ -64,6 +67,15 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
   if (activeGame === 'count-match') {
     return (
       <NumbersCountingGame
+        onHome={() => setActiveGame(null)}
+        onEarnStars={(amount) => setStars((prev) => prev + amount)}
+      />
+    );
+  }
+
+  if (activeGame === 'shapes-colors') {
+    return (
+      <ShapesColorsGame
         onHome={() => setActiveGame(null)}
         onEarnStars={(amount) => setStars((prev) => prev + amount)}
       />

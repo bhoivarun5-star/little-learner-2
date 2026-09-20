@@ -2,6 +2,7 @@
 export const PRELOAD_ASSETS = [
   '/assets/activities/alphabet_phonics.jpg',
   '/assets/activities/count_match.jpg',
+  '/assets/activities/shapes_colors.jpg',
   '/assets/activities/trace_draw.jpg',
   '/assets/activities/healthy_habits.jpg',
   '/assets/homepage/meadow_background.jpg',

@@ -49,6 +49,16 @@ export const ACTIVITIES_DATA = [
     categories: ['all', 'games', 'math', 'logic']
   },
   {
+    id: 'shapes-colors',
+    title: 'Shapes & Colors',
+    description: 'Explore shapes, colors & mini-games',
+    age: '3–6 Yrs',
+    image: '/assets/activities/shapes_colors.jpg',
+    theme: 'theme-pink',
+    starDecor: '🎨',
+    categories: ['all', 'games', 'creativity', 'logic']
+  },
+  {
     id: 'trace-draw',
     title: 'Trace & Draw',
     description: 'Practice drawing and creativity',

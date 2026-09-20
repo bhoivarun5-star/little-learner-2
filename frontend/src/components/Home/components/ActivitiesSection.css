@@ -152,10 +152,10 @@
   transform: translateY(-2px) scale(1.02);
 }
 
-/* 3. 4 Activity Cards Per Row on Desktop, 2 on Tablet, 1 on Mobile */
+/* 3. Activity Cards Grid */
 .activities-cards-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
   width: 100%;
   position: relative;
@@ -198,6 +198,14 @@
 }
 .activity-card.theme-yellow:hover {
   border-color: #fbbf24;
+}
+
+.activity-card.theme-pink {
+  background: linear-gradient(180deg, #fdf2f8 0%, #fce7f3 100%);
+  border-color: #fbcfe8;
+}
+.activity-card.theme-pink:hover {
+  border-color: #f472b6;
 }
 
 .activity-card.theme-purple {
