@@ -7,6 +7,7 @@ import DailyChallenge from './components/DailyChallenge';
 import ParentsSection from './components/ParentsSection';
 
 import AlphabetPhonicsGame from '../Games/AlphabetPhonicsGame';
+import NumbersCountingGame from '../NumbersCountingGame';
 
 export default function HomePage({ user, onLogout, onToggleDashboard }) {
   const [stars, setStars] = useState(125);
@@ -33,6 +34,8 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
   const handlePlayActivity = (activity) => {
     if (activity.id === 'alphabet-phonics') {
       setActiveGame('alphabet-phonics');
+    } else if (activity.id === 'count-match') {
+      setActiveGame('count-match');
     } else {
       setStars((prev) => prev + 5);
       alert(`🌟 Playing "${activity.title}"!\n\n${activity.description}.\nYou earned +5 stars! ⭐ Keep it up!`);
@@ -52,6 +55,15 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
   if (activeGame === 'alphabet-phonics') {
     return (
       <AlphabetPhonicsGame
+        onHome={() => setActiveGame(null)}
+        onEarnStars={(amount) => setStars((prev) => prev + amount)}
+      />
+    );
+  }
+
+  if (activeGame === 'count-match') {
+    return (
+      <NumbersCountingGame
         onHome={() => setActiveGame(null)}
         onEarnStars={(amount) => setStars((prev) => prev + amount)}
       />

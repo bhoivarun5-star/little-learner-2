@@ -270,76 +270,78 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
 
   return (
     <div className="phonics-game-fullscreen-container">
-      {/* 1. Game Top Header HUD */}
+      {/* 1. Game Top Header HUD - Full Width & Fixed */}
       <header className="phonics-game-hud">
-        {/* Left: Home Button & Game Title */}
-        <div className="hud-left-group">
-          <button
-            type="button"
-            className="hud-btn-home"
-            onClick={onHome}
-            title="Return to Home"
-          >
-            <Home size={20} />
-            <span>Home</span>
-          </button>
+        <div className="hud-inner-container">
+          {/* Left: Home Button & Game Title */}
+          <div className="hud-left-group">
+            <button
+              type="button"
+              className="hud-btn-home"
+              onClick={onHome}
+              title="Return to Home"
+            >
+              <Home size={20} />
+              <span>Home</span>
+            </button>
 
-          <div className="hud-game-title-group">
-            <h1 className="hud-game-title">
-              <span>Alphabet & Phonics</span>
-              <Sparkles size={18} color="#f59e0b" />
-            </h1>
-            <span className="hud-game-subtitle">Learn letter sounds & play games!</span>
-          </div>
-        </div>
-
-        {/* Center: Visual Progress Bar */}
-        <div className="hud-progress-group">
-          <span className="hud-progress-label">
-            {activeMode === 'explorer'
-              ? `Letter ${currentLetterIndex + 1} of 26`
-              : `Score: ${score} pts`}
-          </span>
-          <div className="hud-progress-track">
-            <div className="hud-progress-fill" style={{ width: `${progressPercent}%` }} />
-          </div>
-        </div>
-
-        {/* Right: Stars, Sound, Replay, Next */}
-        <div className="hud-right-group">
-          <div className="hud-pill-badge stars" title="Stars collected!">
-            <Star size={20} fill="#f59e0b" color="#f59e0b" />
-            <span>{stars}</span>
+            <div className="hud-game-title-group">
+              <h1 className="hud-game-title">
+                <span>Alphabet & Phonics</span>
+                <Sparkles size={18} color="#f59e0b" />
+              </h1>
+              <span className="hud-game-subtitle">Learn letter sounds & play games!</span>
+            </div>
           </div>
 
-          <button
-            type="button"
-            className="hud-icon-btn"
-            onClick={handleToggleSound}
-            title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
-          >
-            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} color="#dc2626" />}
-          </button>
+          {/* Center: Visual Progress Bar */}
+          <div className="hud-progress-group">
+            <span className="hud-progress-label">
+              {activeMode === 'explorer'
+                ? `Letter ${currentLetterIndex + 1} of 26`
+                : `Score: ${score} pts`}
+            </span>
+            <div className="hud-progress-track">
+              <div className="hud-progress-fill" style={{ width: `${progressPercent}%` }} />
+            </div>
+          </div>
 
-          <button
-            type="button"
-            className="hud-btn-nav replay"
-            onClick={handleReplay}
-            title="Replay Sound"
-          >
-            <RotateCcw size={18} />
-            <span>Replay</span>
-          </button>
+          {/* Right: Stars, Sound, Replay, Next */}
+          <div className="hud-right-group">
+            <div className="hud-pill-badge stars" title="Stars collected!">
+              <Star size={20} fill="#f59e0b" color="#f59e0b" />
+              <span>{stars}</span>
+            </div>
 
-          <button
-            type="button"
-            className="hud-btn-nav next"
-            onClick={handleNext}
-            title="Next"
-          >
-            <span>Next</span>
-            <ArrowRight size={18} />
-          </button>
+            <button
+              type="button"
+              className="hud-icon-btn"
+              onClick={handleToggleSound}
+              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+            >
+              {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} color="#dc2626" />}
+            </button>
+
+            <button
+              type="button"
+              className="hud-btn-nav replay"
+              onClick={handleReplay}
+              title="Replay Sound"
+            >
+              <RotateCcw size={18} />
+              <span>Replay</span>
+            </button>
+
+            <button
+              type="button"
+              className="hud-btn-nav next"
+              onClick={handleNext}
+              title="Next"
+            >
+              <span>Next</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
         </div>
       </header>
 
