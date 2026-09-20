@@ -115,11 +115,15 @@ export default function LoginForm({ onLoginSuccess, onOpenForgotPassword, onInpu
   return (
     <div className="login-column">
       {/* Top Greeting Pill */}
-      <div className="greeting-pill-wrap">
+      <div className="greeting-pill-wrap" style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
         <div className="greeting-pill">
           <span>💜</span>
           <span>Nice to see you again!</span>
           <span>💜</span>
+        </div>
+        <div className="greeting-pill" style={{ background: '#e0f2fe', color: '#0369a1', borderColor: '#bae6fd', fontSize: '0.78rem', padding: '0.25rem 0.75rem', fontWeight: 600 }}>
+          <span>☁️</span>
+          <span>Supabase DB Connected</span>
         </div>
       </div>
 

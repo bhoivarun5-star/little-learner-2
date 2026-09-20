@@ -8,20 +8,25 @@ import {
   MoreHorizontal,
   ChevronDown,
   LogOut,
+  Lightbulb,
   Star,
-  LayoutDashboard
+  LayoutDashboard,
+  Languages
 } from 'lucide-react';
+import { useLanguage } from '../../../context/LanguageContext';
 
 export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLogout, onToggleDashboard }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { language, toggleLanguage, t } = useLanguage();
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'learn', label: 'Learn', icon: BookOpen },
-    { id: 'games', label: 'Games', icon: Gamepad2 },
-    { id: 'stories', label: 'Stories', icon: Book },
-    { id: 'activities', label: 'Activities', icon: Palette, defaultActive: true },
-    { id: 'more', label: 'More', icon: MoreHorizontal },
+    { id: 'home', label: t('navHome', 'Home'), icon: Home },
+    { id: 'logic', label: t('navLogic', 'Logic & Thinking'), icon: Lightbulb },
+    { id: 'activities', label: t('navActivities', 'Activities'), icon: Palette, defaultActive: true },
+    { id: 'games', label: t('navGames', 'Games'), icon: Gamepad2 },
+    { id: 'learn', label: t('navLearn', 'Learn'), icon: BookOpen },
+    { id: 'stories', label: t('navStories', 'Stories'), icon: Book },
+    { id: 'more', label: t('navMore', 'More'), icon: MoreHorizontal },
   ];
 
   return (
@@ -45,7 +50,7 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
                 <span style={{ color: '#ef4444' }}>r</span>
               </span>
             </div>
-            <span className="home-brand-tagline">Learn • Play • Grow</span>
+            <span className="home-brand-tagline">{t('brandTagline', 'Learn • Play • Grow')}</span>
           </div>
         </div>
 
@@ -69,8 +74,21 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
           })}
         </ul>
 
-        {/* Right: Star Counter & User Profile */}
+        {/* Right: Language Toggle, Star Counter & User Profile */}
         <div className="home-nav-right">
+          {/* Language Switcher Pill */}
+          <button
+            type="button"
+            className="home-lang-toggle-btn"
+            onClick={toggleLanguage}
+            title={language === 'mr' ? 'Switch to English' : 'मराठी भाषेत बदला'}
+            aria-label="Toggle Language"
+          >
+            <Languages size={18} />
+            <span className="lang-flag">{language === 'mr' ? '🇮🇳' : '🇬🇧'}</span>
+            <span className="lang-name">{language === 'mr' ? 'मराठी' : 'English'}</span>
+          </button>
+
           {/* Star Currency Counter */}
           <div className="star-counter-badge" title="Stars collected on Little Learner!">
             <Star size={20} fill="#f59e0b" color="#f59e0b" />
@@ -84,7 +102,7 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
             </div>
             <div className="user-info-text">
               <span className="user-name-title">{user?.display_name || 'Aarav'}</span>
-              <span className="user-level-badge">Level 3</span>
+              <span className="user-level-badge">{t('level', 'Level')} 3</span>
             </div>
             <ChevronDown size={16} color="#64748b" />
 
@@ -112,7 +130,7 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
                   }}
                 >
                   <LogOut size={16} />
-                  <span>Sign Out</span>
+                  <span>{t('logout', 'Sign Out')}</span>
                 </button>
               </div>
             )}

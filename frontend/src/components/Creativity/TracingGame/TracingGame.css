@@ -1,0 +1,705 @@
+/* TracingGame.css - Bright, Colorful, Playful Preschool Tracing Game (Ages 3-6) */
+
+.tracing-game-container {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 35%, #eff6ff 70%, #fdf4ff 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Fredoka', 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
+  user-select: none;
+  position: relative;
+  overflow-x: hidden;
+  padding: 5.5rem 1.25rem 2.5rem;
+  box-sizing: border-box;
+}
+
+/* 1. Header Bar - Full-Width & Fixed */
+.tracing-header {
+  width: 100%;
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 0 !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.12);
+  padding: 0.65rem 2rem;
+  box-sizing: border-box;
+}
+
+.tracing-header-inner {
+  width: 100%;
+  max-width: 1360px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tracing-btn-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.2rem;
+  background: #ffffff;
+  color: #1e293b;
+  border: 2px solid #e2e8f0;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tracing-btn-home:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.09);
+  border-color: #cbd5e1;
+}
+
+/* Mode Switcher Tabs */
+.tracing-mode-switcher {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 0.35rem;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  gap: 0.35rem;
+}
+
+.tracing-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.tracing-mode-btn.active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transform: scale(1.02);
+}
+
+.tracing-mode-btn:hover:not(.active) {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Header Right: Stars & Audio */
+.tracing-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tracing-stars-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.1rem;
+  background: #ffffff;
+  border: 2px solid #fef08a;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #b45309;
+  box-shadow: 0 4px 12px rgba(234, 179, 8, 0.15);
+}
+
+.star-icon-glow {
+  color: #eab308;
+  fill: #eab308;
+  animation: pulse-star 2s ease-in-out infinite;
+}
+
+@keyframes pulse-star {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.tracing-sound-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  color: #64748b;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+}
+
+.tracing-sound-btn:hover {
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: scale(1.08);
+}
+
+/* 2. Main Game Arena */
+.tracing-arena {
+  width: 100%;
+  max-width: 1060px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  z-index: 2;
+}
+
+/* 3. Character Info Banner & Sound Trigger */
+.tracing-char-header-bar {
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tracing-char-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tracing-char-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  letter-spacing: -0.5px;
+}
+
+.tracing-word-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.tracing-word-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tracing-word-subtitle {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #64748b;
+  margin: 0;
+}
+
+.tracing-char-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Listen / Pronounce Button */
+.btn-listen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.4rem;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-listen:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 10px 24px rgba(2, 132, 199, 0.45);
+}
+
+.btn-listen:active {
+  transform: scale(0.97);
+}
+
+/* Progress Pill */
+.tracing-progress-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #f8fafc;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+}
+
+.tracing-progress-bar-bg {
+  width: 90px;
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.tracing-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.tracing-progress-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* 4. Canvas Tracing Card Stage */
+.tracing-stage-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.tracing-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 1 / 1;
+  background: #ffffff;
+  border-radius: 36px;
+  border: 4px solid #e2e8f0;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Tracing SVG Guide Layer */
+.tracing-svg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Faint character watermark in center */
+.tracing-watermark {
+  font-size: 260px;
+  font-weight: 800;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  text-anchor: middle;
+  dominant-baseline: central;
+  fill: #f1f5f9;
+}
+
+/* Dotted guide stroke */
+.tracing-guide-stroke {
+  fill: none;
+  stroke: #cbd5e1;
+  stroke-width: 24;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 10 12;
+}
+
+/* Stroke Number Node Badge (①, ②, ③) */
+.stroke-node-group {
+  cursor: pointer;
+}
+
+.stroke-node-circle {
+  fill: #f59e0b;
+  stroke: #ffffff;
+  stroke-width: 3;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.2));
+  animation: pulse-node 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-node {
+  0%, 100% { transform: scale(1); transform-origin: center; }
+  50% { transform: scale(1.15); transform-origin: center; }
+}
+
+.stroke-node-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  fill: #ffffff;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Interactive Drawing Canvas */
+.tracing-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  z-index: 2;
+  touch-action: none;
+}
+
+/* Feedback Banner on Canvas (Correct! / Keep Going!) */
+.tracing-feedback-toast {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.35rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  z-index: 5;
+  animation: pop-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.tracing-feedback-toast.correct {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+}
+
+.tracing-feedback-toast.try-again {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+}
+
+@keyframes pop-bounce {
+  0% { transform: translate(-50%, 20px) scale(0.85); opacity: 0; }
+  100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+}
+
+/* 5. Toolbars & Controls */
+.tracing-controls-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+/* Color Palette Bar */
+.tracing-color-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tracing-palette-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 0.2rem;
+}
+
+.tracing-color-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tracing-color-swatch:hover {
+  transform: scale(1.18);
+}
+
+.tracing-color-swatch.active {
+  transform: scale(1.25);
+  border-color: #0f172a;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Navigation & Action Buttons Row */
+.tracing-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.tracing-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.35rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tracing-action-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.tracing-action-btn:active {
+  transform: scale(0.97);
+}
+
+.tracing-action-btn.secondary {
+  background: #ffffff;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.tracing-action-btn.secondary:hover {
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.tracing-action-btn.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.tracing-action-btn.primary:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+}
+
+.tracing-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* 6. Quick Character Selector Carousel / Strip */
+.tracing-char-tray {
+  width: 100%;
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 2px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.tracing-char-tray-item {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-family: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tracing-char-tray-item:hover {
+  transform: translateY(-2px) scale(1.08);
+  border-color: #94a3b8;
+}
+
+.tracing-char-tray-item.active {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  transform: scale(1.12);
+}
+
+.tracing-char-tray-star {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  font-size: 11px;
+}
+
+/* 7. Celebration Overlay */
+.tracing-celebration-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.tracing-celebration-card {
+  background: #ffffff;
+  border-radius: 36px;
+  border: 4px solid #fef08a;
+  padding: 2.2rem 2.5rem;
+  max-width: 440px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  animation: popCard 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popCard {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.celebration-trophy-badge {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  box-shadow: 0 8px 24px rgba(250, 204, 21, 0.45);
+  margin-bottom: 1rem;
+  animation: wiggle-trophy 1.5s ease-in-out infinite;
+}
+
+@keyframes wiggle-trophy {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.celebration-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+}
+
+.celebration-stars-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.celebration-subtitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 1.5rem;
+}
+
+.celebration-actions {
+  display: flex;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.celebration-actions button {
+  flex: 1;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 640px) {
+  .tracing-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tracing-mode-switcher {
+    overflow-x: auto;
+    justify-content: center;
+  }
+  .tracing-char-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .tracing-char-identity {
+    justify-content: center;
+  }
+  .tracing-char-actions {
+    justify-content: center;
+  }
+  .tracing-card {
+    max-width: 340px;
+  }
+}

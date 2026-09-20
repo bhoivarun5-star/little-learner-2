@@ -1,0 +1,739 @@
+/* ==========================================================================
+   Kids Drawing Game Styles (Ages 3-6)
+   Creativity Module for Little Learner
+   ========================================================================== */
+
+.drawing-game-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(135deg, #fef3c7 0%, #ede9fe 50%, #fce7f3 100%);
+  color: #1e1b4b;
+  font-family: var(--font-body, 'Fredoka', 'Quicksand', sans-serif);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+  user-select: none;
+  padding-top: 5.5rem;
+  box-sizing: border-box;
+}
+
+/* Floating Clouds Backdrop */
+.drawing-clouds-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.drawing-cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: 999px;
+  filter: blur(1px);
+}
+
+.drawing-cloud.c1 {
+  width: 320px;
+  height: 100px;
+  top: 10%;
+  left: -80px;
+  animation: floatCloudSlow 42s linear infinite;
+}
+
+.drawing-cloud.c2 {
+  width: 420px;
+  height: 130px;
+  top: 60%;
+  right: -120px;
+  animation: floatCloudReverse 50s linear infinite;
+}
+
+@keyframes floatCloudSlow {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(100vw + 350px)); }
+}
+
+@keyframes floatCloudReverse {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100vw - 450px)); }
+}
+
+/* --------------------------------------------------------------------------
+   HUD Top Navigation Bar - Full Width & Fixed
+   -------------------------------------------------------------------------- */
+.drawing-hud-header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 0 !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 20px -2px rgba(124, 58, 237, 0.12);
+  padding: 0.65rem 2rem;
+  box-sizing: border-box;
+}
+
+.drawing-hud-inner {
+  max-width: 1360px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.drawing-hud-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.drawing-btn-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 999px;
+  border: none;
+  background: #7c3aed;
+  color: #ffffff;
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawing-btn-home:hover {
+  background: #6d28d9;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 16px rgba(109, 40, 217, 0.45);
+}
+
+.drawing-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.drawing-main-title {
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #1e1b4b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.drawing-sub-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.drawing-hud-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.drawing-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #b45309;
+  border: 2px solid #fde68a;
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 900;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.drawing-btn-hud-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  border: none;
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.drawing-btn-hud-action.download {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.drawing-btn-hud-action.download:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+}
+
+.drawing-btn-hud-action.new-sheet {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(236, 72, 153, 0.35);
+}
+
+.drawing-btn-hud-action.new-sheet:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.drawing-icon-circle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawing-icon-circle-btn:hover {
+  transform: scale(1.08);
+  border-color: #8b5cf6;
+  color: #7c3aed;
+}
+
+/* --------------------------------------------------------------------------
+   Drawing Studio Main Arena Layout
+   -------------------------------------------------------------------------- */
+.drawing-studio-container {
+  flex: 1;
+  max-width: 1520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Studio Center Stage: Tools (Left) + Canvas (Center) + Colors (Right) */
+.drawing-stage-grid {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .drawing-stage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tool Panel Card */
+.drawing-tool-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15), 0 0 0 2px rgba(147, 197, 253, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 120px;
+}
+
+@media (max-width: 1024px) {
+  .drawing-tool-card {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.tool-section-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+  .tool-section-group {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.tool-section-label {
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+/* Big Tactile Mode Tool Buttons: Brush, Bucket, Eraser */
+.drawing-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.drawing-mode-btn:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+}
+
+.drawing-mode-btn.is-active {
+  background: var(--tool-theme-bg, #ede9fe);
+  border-color: var(--tool-theme-color, #7c3aed);
+  color: var(--tool-theme-color, #7c3aed);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.2);
+  transform: scale(1.04);
+}
+
+/* Brush Size Selector */
+.brush-sizes-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+@media (max-width: 1024px) {
+  .brush-sizes-grid {
+    flex-direction: row;
+  }
+}
+
+.brush-size-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  border-radius: 14px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.brush-size-btn:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
+}
+
+.brush-size-btn.is-active {
+  background: #ffffff;
+  border-color: #7c3aed;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+}
+
+.brush-dot-indicator {
+  border-radius: 50%;
+  background: #1e1b4b;
+  transition: transform 0.2s ease;
+}
+
+/* Undo / Redo / Clear Actions */
+.undo-redo-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.tool-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  border-radius: 16px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.tool-action-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #ffffff;
+  color: #7c3aed;
+  border-color: #c4b5fd;
+}
+
+.tool-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tool-action-btn.clear {
+  color: #ef4444;
+}
+
+.tool-action-btn.clear:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* --------------------------------------------------------------------------
+   Canvas Drawing Easel Card
+   -------------------------------------------------------------------------- */
+.drawing-easel-card {
+  background: #ffffff;
+  border-radius: 32px;
+  padding: 1.25rem;
+  box-shadow: 0 20px 45px -12px rgba(99, 102, 241, 0.18), 0 0 0 3px rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.drawing-canvas-wrapper {
+  width: 100%;
+  max-width: 980px;
+  aspect-ratio: 4 / 3;
+  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 4px solid #cbd5e1;
+  background: #ffffff;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.drawing-canvas-element {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+
+/* --------------------------------------------------------------------------
+   Color Palette Panel Card (Right Side)
+   -------------------------------------------------------------------------- */
+.drawing-palette-card {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15), 0 0 0 2px rgba(147, 197, 253, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 140px;
+}
+
+@media (max-width: 1024px) {
+  .drawing-palette-card {
+    width: 100%;
+    flex-direction: column;
+  }
+}
+
+.palette-header-label {
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.drawing-colors-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+@media (max-width: 1024px) {
+  .drawing-colors-grid {
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  }
+}
+
+.drawing-color-swatch-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drawing-color-swatch-btn:hover {
+  transform: scale(1.18);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+}
+
+.drawing-color-swatch-btn.is-active {
+  transform: scale(1.22);
+  box-shadow: 0 0 0 4px #7c3aed, 0 6px 18px rgba(124, 58, 237, 0.35);
+  z-index: 3;
+}
+
+.drawing-color-swatch-btn.is-active::after {
+  content: '✓';
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* --------------------------------------------------------------------------
+   Template Carousel Bar
+   -------------------------------------------------------------------------- */
+.drawing-templates-bar {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 1.25rem;
+  box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.12), 0 0 0 2px rgba(147, 197, 253, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.templates-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.templates-bar-title {
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #1e1b4b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.templates-scroll-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.template-card-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.85rem 1.25rem;
+  border-radius: 20px;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 800;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 120px;
+}
+
+.template-card-btn:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+.template-card-btn.is-active {
+  background: #ede9fe;
+  border-color: #7c3aed;
+  color: #7c3aed;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.2);
+  transform: translateY(-2px) scale(1.04);
+}
+
+.template-card-icon {
+  font-size: 1.85rem;
+}
+
+/* --------------------------------------------------------------------------
+   Celebration & Download Toast Overlay
+   -------------------------------------------------------------------------- */
+.drawing-celebration-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.drawing-celebration-card {
+  background: #ffffff;
+  border-radius: 36px;
+  padding: 2.5rem 2rem;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  animation: popInModal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes popInModal {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.drawing-celebration-stars {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 3rem;
+}
+
+.drawing-jumping-star {
+  animation: starJump 0.8s ease-in-out infinite alternate;
+}
+
+.drawing-jumping-star:nth-child(2) {
+  animation-delay: 0.15s;
+  font-size: 3.6rem;
+}
+
+.drawing-jumping-star:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes starJump {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-16px) scale(1.15) rotate(10deg); }
+}
+
+.drawing-celebration-title {
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #1e1b4b;
+  margin: 0;
+}
+
+.drawing-celebration-msg {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.drawing-celebration-preview-thumb {
+  width: 180px;
+  height: 135px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  border: 4px solid #fde047;
+  background: #ffffff;
+}
+
+.drawing-celebration-preview-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.drawing-celebration-buttons {
+  display: flex;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.drawing-btn-celebrate {
+  flex: 1;
+  padding: 0.85rem 1.25rem;
+  border-radius: 999px;
+  border: none;
+  font-family: var(--font-display, 'Outfit', 'Fredoka', sans-serif);
+  font-size: 1rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.drawing-btn-celebrate.primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+}
+
+.drawing-btn-celebrate.primary:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.drawing-btn-celebrate.secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 2px solid #e2e8f0;
+}
+
+.drawing-btn-celebrate.secondary:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}

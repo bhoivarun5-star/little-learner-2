@@ -3,15 +3,48 @@ import { ChevronRight } from 'lucide-react';
 
 export const ACTIVITIES = [
   {
-    id: 'trace-draw',
-    title: 'Trace & Draw',
+    id: 'drawing-game',
+    title: 'Drawing Game',
     age: '3-6 Yrs',
-    categories: ['creativity', 'writing'],
-    img: '/assets/homepage/card_trace_draw.jpg',
-    desc: 'Trace the lines and complete the picture.',
-    buttonClass: 'btn-play-purple',
+    categories: ['creativity', 'games'],
+    img: '/assets/activities/drawing_game.jpg',
+    desc: 'Draw freely and color cute templates.',
+    buttonClass: 'btn-play-orange',
     badgeClass: '',
     minigame: 'drawing'
+  },
+  {
+    id: 'tracing-game',
+    title: 'Tracing Game',
+    age: '3-6 Yrs',
+    categories: ['creativity', 'writing', 'games', 'math'],
+    img: '/assets/activities/tracing_game.jpg',
+    desc: 'Trace letters A–Z and numbers 1–20.',
+    buttonClass: 'btn-play-green',
+    badgeClass: '',
+    minigame: 'tracing'
+  },
+  {
+    id: 'odd-one-out',
+    title: 'Odd One Out',
+    age: '3-6 Yrs',
+    categories: ['logic', 'creativity', 'games'],
+    img: '/assets/activities/odd_one_out.jpg',
+    desc: 'Find and select the one that does not belong!',
+    buttonClass: 'btn-play-orange',
+    badgeClass: 'badge-orange',
+    minigame: 'odd-one-out'
+  },
+  {
+    id: 'memory-development',
+    title: 'Memory Development',
+    age: '3-6 Yrs',
+    categories: ['logic', 'creativity', 'games'],
+    img: '/assets/activities/memory_development.jpg',
+    desc: 'Flip, match pairs & train your memory with cute cards.',
+    buttonClass: 'btn-play-blue',
+    badgeClass: '',
+    minigame: 'memory'
   },
   {
     id: 'build-learn',
@@ -45,17 +78,6 @@ export const ACTIVITIES = [
     buttonClass: 'btn-play-orange',
     badgeClass: 'badge-orange',
     minigame: 'counting'
-  },
-  {
-    id: 'healthy-habits',
-    title: 'Healthy Habits',
-    age: '3-6 Yrs',
-    categories: ['life', 'science'],
-    img: '/assets/homepage/card_healthy_habits.jpg',
-    desc: 'Learn healthy habits through fun activities.',
-    buttonClass: 'btn-play-pink',
-    badgeClass: '',
-    minigame: 'habits'
   },
   {
     id: 'nature-explorer',

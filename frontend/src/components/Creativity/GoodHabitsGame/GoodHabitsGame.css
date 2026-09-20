@@ -1,0 +1,849 @@
+/* ==========================================================================
+   Good Habits Activity - Bright, Playful, Child-Friendly Preschool CSS
+   ========================================================================== */
+
+.good-habits-game-wrapper {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 40%, #e0f2fe 100%);
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  color: #1e1b4b;
+  position: relative;
+  overflow-x: hidden;
+  padding-top: 5.5rem; /* Space for fixed full-width navbar */
+  padding-bottom: 3.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 1. Header Navigation Bar - Full Width & Fixed */
+.gh-header-nav {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 4.8rem;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 2.5px solid #d1fae5;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+.gh-nav-left,
+.gh-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.gh-btn-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #334155;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.gh-btn-home:hover {
+  background: #f8fafc;
+  border-color: #10b981;
+  color: #059669;
+  transform: translateY(-2px) scale(1.03);
+}
+
+.gh-game-branding {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gh-title-icon {
+  font-size: 1.85rem;
+  animation: gentle-wobble 3.5s infinite ease-in-out;
+}
+
+.gh-brand-text {
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-weight: 700;
+  color: #065f46;
+  letter-spacing: -0.01em;
+}
+
+/* Middle Progress & Stars */
+.gh-nav-center {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.gh-stars-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1.15rem;
+  border-radius: 999px;
+  background: #fefce8;
+  border: 2px solid #fde047;
+  color: #854d0e;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 10px rgba(234, 179, 8, 0.2);
+}
+
+.gh-star-icon {
+  color: #eab308;
+  fill: #facc15;
+  animation: pulse-slow 2s infinite ease-in-out;
+}
+
+.gh-round-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: #f0fdf4;
+  border: 2px solid #a7f3d0;
+  color: #047857;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* Action Buttons */
+.gh-btn-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-btn-icon:hover {
+  transform: translateY(-2px) scale(1.08);
+  border-color: #10b981;
+  color: #059669;
+}
+
+.gh-btn-icon.is-hint {
+  background: #fef9c3;
+  border-color: #facc15;
+  color: #a16207;
+}
+.gh-btn-icon.is-hint:hover {
+  background: #fef08a;
+  color: #854d0e;
+}
+
+/* Main Container */
+.gh-main-container {
+  width: 100%;
+  max-width: 960px;
+  padding: 1.5rem clamp(1rem, 3vw, 2rem);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Mode Switcher Tabs */
+.gh-mode-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.4rem;
+  border-radius: 999px;
+  border: 2px solid #d1fae5;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.gh-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.35rem;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-mode-btn:hover {
+  color: #065f46;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.gh-mode-btn.is-active {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* Progress Bar Under Tabs */
+.gh-progress-strip {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.gh-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==========================================================================
+   MODE 1: "Good or Not Good?" Cards & Gameplay
+   ========================================================================== */
+.gh-card-challenge {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 32px;
+  border: 3px solid #d1fae5;
+  box-shadow: 0 12px 35px rgba(16, 185, 129, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.gh-question-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  color: #047857;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.gh-illustration-stage {
+  width: clamp(180px, 35vw, 230px);
+  height: clamp(180px, 35vw, 230px);
+  border-radius: 28px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  box-sizing: border-box;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04), 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-card-challenge:hover .gh-illustration-stage {
+  transform: scale(1.03);
+}
+
+.gh-scenario-heading {
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.3;
+  margin: 0;
+  max-width: 650px;
+}
+
+.gh-scenario-subtitle {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  color: #64748b;
+  margin: -0.5rem 0 0 0;
+  font-weight: 600;
+}
+
+/* The Choice Buttons: Good vs Not Good */
+.gh-choice-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 580px;
+}
+
+.gh-btn-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 24px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-choice-icon {
+  font-size: 2.5rem;
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.gh-btn-choice:hover:not(:disabled) .gh-choice-icon {
+  transform: scale(1.25) rotate(5deg);
+}
+
+.gh-btn-choice.is-good {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #34d399;
+}
+.gh-btn-choice.is-good:hover:not(:disabled) {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+}
+
+.gh-btn-choice.is-not-good {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border-color: #fb923c;
+}
+.gh-btn-choice.is-not-good:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.4);
+}
+
+.gh-btn-choice:disabled {
+  opacity: 0.75;
+  cursor: default;
+  transform: none;
+}
+
+/* Instant Feedback Banner */
+.gh-feedback-banner {
+  width: 100%;
+  max-width: 600px;
+  padding: 1.15rem 1.5rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-sizing: border-box;
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-feedback-banner.is-correct {
+  background: #f0fdf4;
+  border: 2.5px solid #86efac;
+  color: #166534;
+}
+
+.gh-feedback-banner.is-wrong {
+  background: #fef2f2;
+  border: 2.5px solid #fca5a5;
+  color: #991b1b;
+}
+
+.gh-feedback-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.gh-btn-next-round {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.gh-btn-next-round:hover {
+  background: #059669;
+  transform: scale(1.05);
+}
+
+/* ==========================================================================
+   MODE 2: "Put in the Right Order" Sequencing Game
+   ========================================================================== */
+.gh-sequence-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.gh-sequence-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.gh-sequence-title {
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gh-sequence-instruction {
+  font-size: 1.05rem;
+  color: #475569;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Routine Nav Pills */
+.gh-routine-selector {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  max-width: 100%;
+  padding-bottom: 0.5rem;
+}
+
+.gh-routine-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.gh-routine-tab.is-active {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+/* Target Sequence Slots (1, 2, 3, 4) */
+.gh-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  width: 100%;
+}
+
+.gh-slot-box {
+  min-height: 180px;
+  border-radius: 20px;
+  border: 2.5px dashed #cbd5e1;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem;
+  box-sizing: border-box;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.gh-slot-box.has-card {
+  border-style: solid;
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.gh-slot-number-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gh-slot-box.has-card .gh-slot-number-badge {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.gh-slot-empty-label {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+/* Sequence Step Card */
+.gh-step-card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gh-step-emoji {
+  font-size: 2.2rem;
+  margin-top: 0.5rem;
+}
+
+.gh-step-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0;
+}
+
+.gh-step-desc {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Pool of Available Cards to Tap */
+.gh-pool-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.gh-pool-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.gh-pool-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.gh-pool-card-item {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2.5px solid #e2e8f0;
+  padding: 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-pool-card-item:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 22px rgba(2, 132, 199, 0.18);
+}
+
+/* Reset / Verify buttons */
+.gh-sequence-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.gh-btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.gh-btn-action.reset {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #475569;
+}
+.gh-btn-action.reset:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.gh-btn-action.check {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+.gh-btn-action.check:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* ==========================================================================
+   MODE 3: "Explore Habits" Visual Flip Cards
+   ========================================================================== */
+.gh-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.gh-guide-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.35rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 2.5px solid #e2e8f0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-guide-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1);
+}
+
+.gh-guide-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gh-guide-badge {
+  font-size: 2.4rem;
+}
+
+.gh-guide-tagline {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.gh-guide-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1e1b4b;
+}
+
+.gh-guide-desc {
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* ==========================================================================
+   Hint & Congratulations Modals
+   ========================================================================== */
+.gh-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1.5rem;
+  animation: fade-in 0.2s ease;
+}
+
+.gh-modal-box {
+  background: #ffffff;
+  border-radius: 30px;
+  padding: 2.25rem 2rem;
+  max-width: 480px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.15rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.gh-modal-icon {
+  font-size: 3.5rem;
+}
+
+.gh-modal-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+}
+
+.gh-modal-desc {
+  font-size: 1.1rem;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.gh-btn-modal-close {
+  padding: 0.75rem 2rem;
+  border-radius: 999px;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+}
+
+.gh-btn-modal-close:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes pop-in {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes gentle-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ==========================================================================
+   Responsive Breakpoints: Mobile & Tablet
+   ========================================================================== */
+@media (max-width: 768px) {
+  .gh-header-nav {
+    height: 4.2rem;
+    padding: 0 1rem;
+  }
+
+  .gh-brand-text {
+    display: none; /* Keep header compact on mobile */
+  }
+
+  .gh-good-habits-game-wrapper {
+    padding-top: 4.8rem;
+  }
+
+  .gh-slots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .gh-choice-actions {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .gh-btn-choice {
+    padding: 0.9rem 1.25rem;
+    font-size: 1.15rem;
+  }
+
+  .gh-choice-icon {
+    font-size: 2rem;
+  }
+}

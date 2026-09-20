@@ -161,6 +161,34 @@
   gap: 1rem;
 }
 
+.home-lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #EFF6FF;
+  border: 1.5px solid #BFDBFE;
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+  font-family: var(--font-display, 'Outfit', sans-serif);
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1D4ED8;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.home-lang-toggle-btn:hover {
+  background: #DBEAFE;
+  border-color: #93C5FD;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.home-lang-toggle-btn .lang-flag {
+  font-size: 1.1rem;
+}
+
 .star-counter-badge {
   display: flex;
   align-items: center;

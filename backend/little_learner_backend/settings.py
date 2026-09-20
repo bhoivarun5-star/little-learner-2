@@ -86,15 +86,45 @@ TEMPLATES = [
 WSGI_APPLICATION = 'little_learner_backend.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Supabase Configuration
+SUPABASE_URL = 'https://uciwpoxpcurenwjzpbjc.supabase.co'
+SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Hf78gLDO9kXgVpr6RX02xg_oQsFnrmb'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database
+# Connect to Supabase PostgreSQL cloud database
+try:
+    import psycopg2
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': 'VarunBhoi@2711',
+            'HOST': 'db.uciwpoxpcurenwjzpbjc.supabase.co',
+            'PORT': '5432',
+        }
     }
-}
+except ImportError:
+    try:
+        import psycopg
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'postgres',
+                'USER': 'postgres',
+                'PASSWORD': 'VarunBhoi@2711',
+                'HOST': 'db.uciwpoxpcurenwjzpbjc.supabase.co',
+                'PORT': '5432',
+            }
+        }
+    except ImportError:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+
 
 
 # Password validation

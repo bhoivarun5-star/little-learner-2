@@ -7,6 +7,40 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 
+from django.conf import settings
+import requests
+
+
+def record_supabase_login(identifier, user=None, status_str="success"):
+    """Record login action to Supabase database."""
+    try:
+        url = f"{settings.SUPABASE_URL}/rest/v1/login_records"
+        headers = {
+            "apikey": settings.SUPABASE_PUBLISHABLE_KEY,
+            "Authorization": f"Bearer {settings.SUPABASE_PUBLISHABLE_KEY}",
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        }
+        username = getattr(user, 'username', identifier)
+        email = getattr(user, 'email', '')
+        display_name = getattr(user, 'first_name', username)
+        role = "Faculty Instructor" if getattr(user, 'is_staff', False) else "Learner"
+
+        payload = {
+            "identifier": identifier,
+            "username": username,
+            "email": email or (identifier if '@' in identifier else f"{identifier}@littlelearner.com"),
+            "display_name": display_name or username,
+            "role": role,
+            "auth_mode": "django_backend",
+            "status": status_str,
+            "user_agent": "Django Backend API"
+        }
+        requests.post(url, json=payload, headers=headers, timeout=2.5)
+    except Exception:
+        pass
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
@@ -44,6 +78,7 @@ def login_view(request):
 
     if user is not None:
         login(request, user)
+        record_supabase_login(identifier, user=user, status_str="success")
         
         # Determine friendly display name
         display_name = user.first_name if user.first_name else user.username
@@ -70,6 +105,7 @@ def login_view(request):
             'token': f'll-session-token-{user.id}-authenticated'
         }, status=status.HTTP_200_OK)
     else:
+        record_supabase_login(identifier, user=None, status_str="failed_credentials")
         # Check if user exists to provide helpful message
         exists = User.objects.filter(Q(username__iexact=identifier) | Q(email__iexact=identifier)).exists()
         if exists:
@@ -118,6 +154,7 @@ def register_view(request):
         is_staff=True
     )
     login(request, user)
+    record_supabase_login(username, user=user, status_str="registered")
 
     return Response({
         'success': True,

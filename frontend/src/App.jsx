@@ -6,6 +6,7 @@ import HomePage from './components/Home';
 import LearnerDashboard from './components/Dashboard';
 import CustomCursor from './components/Cursor';
 import { preloadAllAssets } from './utils/preloadAssets';
+import { LanguageProvider } from './context/LanguageContext';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -62,7 +63,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <LanguageProvider>
       {/* Offline Status Badge */}
       {isOffline && (
         <div
@@ -139,6 +140,6 @@ export default function App() {
 
       {/* ZERO-LAG MASCOT CURSOR & DOTTED COLOR TRAIL */}
       <CustomCursor />
-    </>
+    </LanguageProvider>
   );
 }

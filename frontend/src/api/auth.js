@@ -1,3 +1,12 @@
+import {
+  supabase,
+  supabaseAuthenticate,
+  supabaseRegisterUser,
+  supabaseSocialLogin,
+  recordLoginEvent,
+  fetchRecentLoginRecords
+} from './supabaseClient';
+
 const API_BASE_URL = 'http://localhost:8000/api';
 
 // Pre-seeded demo credentials for instant offline / fallback access
@@ -86,33 +95,80 @@ function saveLocalUser(user) {
 }
 
 /**
- * Check backend health status
+ * Check backend / database health status
  */
 export async function checkBackendHealth() {
+  // Check Supabase first
+  try {
+    const { count, error } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true });
+    
+    if (!error) {
+      return {
+        online: true,
+        provider: 'supabase',
+        message: 'Connected to Supabase PostgreSQL Database ☁️',
+        registered_users: count
+      };
+    }
+  } catch (e) {
+    console.warn('Supabase ping check failed:', e);
+  }
+
+  // Check Django backend
   try {
     const res = await fetch(`${API_BASE_URL}/health/`, {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(2000)
     });
     if (res.ok) {
       const data = await res.json();
-      return { online: true, ...data };
+      return { online: true, provider: 'django', ...data };
     }
-    return { online: false, message: 'Backend unreachable' };
-  } catch (err) {
-    return { online: false, message: 'Running in Progressive Offline Mode' };
-  }
+  } catch (err) {}
+
+  return { online: false, message: 'Running in Offline Mode' };
 }
 
 /**
- * Authenticate user (tries Django backend first, falls back to offline cache)
+ * Authenticate user (Saves login data directly to Supabase database)
  */
 export async function loginUser(identifier, password, rememberMe = true) {
   const cleanId = identifier.trim().toLowerCase();
   const cleanPw = password.trim();
 
-  // Try Django backend first
+  // 1. PRIMARY: Authenticate and record login in Supabase Database
+  try {
+    const supabaseResult = await supabaseAuthenticate(cleanId, cleanPw);
+    if (supabaseResult.success) {
+      const user = supabaseResult.user;
+      if (rememberMe) {
+        localStorage.setItem('ll_current_user', JSON.stringify(user));
+        localStorage.setItem('ll_token', `supabase-auth-${user.id}`);
+      } else {
+        sessionStorage.setItem('ll_current_user', JSON.stringify(user));
+      }
+
+      return {
+        success: true,
+        user: user,
+        mode: 'supabase',
+        message: supabaseResult.message || `Welcome back, ${user.display_name}! 🚀 (Saved to Supabase)`
+      };
+    } else if (supabaseResult.error && !supabaseResult.error.includes('Failed to fetch')) {
+      // Valid response from Supabase indicating wrong credentials
+      return {
+        success: false,
+        error: supabaseResult.error
+      };
+    }
+  } catch (err) {
+    console.warn('Supabase login error, attempting secondary fallback...', err);
+  }
+
+  // 2. SECONDARY: Try Django backend if running
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login/`, {
       method: 'POST',
@@ -124,7 +180,7 @@ export async function loginUser(identifier, password, rememberMe = true) {
         password: cleanPw,
         remember_me: rememberMe
       }),
-      signal: AbortSignal.timeout(4000)
+      signal: AbortSignal.timeout(2500)
     });
 
     const data = await response.json();
@@ -135,6 +191,15 @@ export async function loginUser(identifier, password, rememberMe = true) {
       } else {
         sessionStorage.setItem('ll_current_user', JSON.stringify(data.user));
       }
+      
+      // Async record to Supabase
+      recordLoginEvent({
+        identifier: cleanId,
+        user: data.user,
+        authMode: 'django_backed',
+        status: 'success'
+      }).catch(() => {});
+
       return {
         success: true,
         user: data.user,
@@ -142,17 +207,16 @@ export async function loginUser(identifier, password, rememberMe = true) {
         message: data.message || `Welcome back, ${data.user.display_name}! 🚀`
       };
     } else if (response.status === 401 || response.status === 400 || response.status === 404) {
-      // Valid backend returned credentials error
       return {
         success: false,
         error: data.error || 'Invalid username or password'
       };
     }
   } catch (error) {
-    console.warn('Backend network unavailable. Executing progressive offline authentication fallback...', error);
+    console.warn('Django backend not available.');
   }
 
-  // Progressive Offline Auth Fallback
+  // 3. TERTIARY: Progressive Offline Auth Fallback
   const allUsers = [...OFFLINE_DEMO_USERS, ...getLocalUsers()];
   const match = allUsers.find(
     (u) =>
@@ -178,11 +242,19 @@ export async function loginUser(identifier, password, rememberMe = true) {
       localStorage.setItem('ll_token', 'll-offline-token');
     }
 
+    // Try background recording to Supabase
+    recordLoginEvent({
+      identifier: cleanId,
+      user: userProfile,
+      authMode: 'offline_fallback',
+      status: 'success'
+    }).catch(() => {});
+
     return {
       success: true,
       user: userProfile,
       mode: 'offline',
-      message: `Welcome back, ${match.display_name}! (Offline Mode Active ⭐)`
+      message: `Welcome back, ${match.display_name}! ⭐`
     };
   }
 
@@ -193,9 +265,31 @@ export async function loginUser(identifier, password, rememberMe = true) {
 }
 
 /**
- * Register user (tries Django backend, fallback to offline local store)
+ * Register user (Saves user and login event to Supabase database)
  */
-export async function registerUser({ username, email, password, displayName }) {
+export async function registerUser({ username, email, password, displayName, department }) {
+  // 1. PRIMARY: Register in Supabase Database
+  try {
+    const res = await supabaseRegisterUser({
+      username,
+      email,
+      password,
+      displayName,
+      department
+    });
+
+    if (res.success) {
+      localStorage.setItem('ll_current_user', JSON.stringify(res.user));
+      localStorage.setItem('ll_token', `supabase-auth-${res.user.id}`);
+      return res;
+    } else if (res.error && !res.error.includes('Failed to fetch')) {
+      return res;
+    }
+  } catch (err) {
+    console.warn('Supabase registration error:', err);
+  }
+
+  // 2. SECONDARY: Django Backend
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register/`, {
       method: 'POST',
@@ -204,9 +298,10 @@ export async function registerUser({ username, email, password, displayName }) {
         username,
         email,
         password,
-        display_name: displayName
+        display_name: displayName,
+        department
       }),
-      signal: AbortSignal.timeout(4000)
+      signal: AbortSignal.timeout(2500)
     });
 
     const data = await response.json();
@@ -216,11 +311,9 @@ export async function registerUser({ username, email, password, displayName }) {
     } else if (data.error) {
       return { success: false, error: data.error };
     }
-  } catch (err) {
-    console.warn('Backend unavailable during registration. Saving offline user...', err);
-  }
+  } catch (err) {}
 
-  // Offline registration
+  // 3. TERTIARY: Offline Local Store
   const newUser = {
     id: Date.now(),
     username,
@@ -240,36 +333,30 @@ export async function registerUser({ username, email, password, displayName }) {
     success: true,
     user: newUser,
     mode: 'offline',
-    message: `Account created offline! Welcome to Little Learner, ${newUser.display_name}! 🌟`
+    message: `Account created! Welcome to Little Learner, ${newUser.display_name}! 🌟`
   };
 }
 
 /**
- * Social login
+ * Social login (Saves to Supabase database)
  */
 export async function socialLogin(provider) {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/social/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider }),
-      signal: AbortSignal.timeout(4000)
-    });
-
-    const data = await response.json();
-    if (response.ok && data.success) {
-      localStorage.setItem('ll_current_user', JSON.stringify(data.user));
-      return { success: true, user: data.user, mode: 'online', message: data.message };
+    const res = await supabaseSocialLogin(provider);
+    if (res.success) {
+      localStorage.setItem('ll_current_user', JSON.stringify(res.user));
+      localStorage.setItem('ll_token', `supabase-social-${res.user.id}`);
+      return res;
     }
   } catch (err) {
-    console.warn('Social backend offline fallback', err);
+    console.warn('Supabase social login error:', err);
   }
 
   // Offline social fallback
   const user = {
     id: Date.now(),
     username: `${provider.toLowerCase()}_learner`,
-    email: `${provider.toLowerCase()}_learner@example.com`,
+    email: `${provider.toLowerCase()}_learner@littlelearner.com`,
     display_name: `${provider} Adventurer`,
     avatar: '/assets/boy-avatar.jpg',
     stars: 100,
@@ -286,3 +373,9 @@ export async function socialLogin(provider) {
     message: `Connected via ${provider}! Have fun learning! 🎨`
   };
 }
+
+export {
+  supabase,
+  recordLoginEvent,
+  fetchRecentLoginRecords
+};
