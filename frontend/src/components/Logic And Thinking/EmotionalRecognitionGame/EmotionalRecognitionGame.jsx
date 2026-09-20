@@ -24,9 +24,11 @@ import {
   MATCH_EMOTION_ROUNDS
 } from './emotionalRecognitionData';
 import { emotionalRecognitionSounds } from './emotionalRecognitionSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './EmotionalRecognitionGame.css';
 
 export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }) {
+  const { t } = useLanguage();
   const handleExit = onHome || onBack;
 
   // Active Modes: 'guess' | 'situations' | 'match' | 'guide'
@@ -260,12 +262,12 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <ArrowLeft size={18} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           <div className="er-game-branding">
             <span className="er-title-icon">😊</span>
-            <span className="er-brand-text">Emotional Recognition</span>
+            <span className="er-brand-text">{t('erTitle')}</span>
           </div>
         </div>
 
@@ -339,7 +341,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <Smile size={18} />
-            <span>Guess Emotion</span>
+            <span>{t('erTabGuess')}</span>
           </button>
 
           <button
@@ -351,7 +353,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <HeartHandshake size={18} />
-            <span>How Do They Feel?</span>
+            <span>{t('erTabSituations')}</span>
           </button>
 
           <button
@@ -363,7 +365,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <LayoutGrid size={18} />
-            <span>Match Emotion</span>
+            <span>{t('erTabMatch')}</span>
           </button>
 
           <button
@@ -375,7 +377,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <BookOpen size={18} />
-            <span>Emotion Guide</span>
+            <span>{t('erTabGuide')}</span>
           </button>
         </nav>
 

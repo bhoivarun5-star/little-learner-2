@@ -14,10 +14,12 @@ import {
 } from 'lucide-react';
 import { NUMBERS_DATA } from './numbersData';
 import { numberSounds } from './soundEffects';
+import { useLanguage } from '../../../context/LanguageContext';
 import './NumbersCountingGame.css';
 
 export default function NumbersCountingGame({ onHome, onEarnStars }) {
   // Navigation & Mode
+  const { t, speak } = useLanguage();
   const [activeMode, setActiveMode] = useState('explorer'); // 'explorer' | 'count' | 'find' | 'match' | 'order'
   const [soundEnabled, setSoundEnabled] = useState(true);
 
@@ -51,7 +53,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      numberSounds.speak(`How many ${target.itemPlural} do you see? Count them and choose the right number!`);
+      speak({ en: `How many ${target.itemPlural} do you see? Count them and choose the right number!`, mr: `${target.itemPlural} किती आहेत? मोजा आणि योग्य अंक निवडा!` });
     }, 250);
   };
 
@@ -61,7 +63,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
 
     if (choice.number === countTarget.number) {
       numberSounds.playVictoryChime();
-      numberSounds.speak(`Great counting! That is ${choice.number} ${countTarget.itemPlural}!`);
+      speak({ en: `Great counting! That is ${choice.number} ${countTarget.itemPlural}!`, mr: `खूप छान! ते ${choice.number} आहे!` });
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
 
       setScore((prev) => prev + 10);
@@ -74,7 +76,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
       }, 2300);
     } else {
       numberSounds.playWrongBoing();
-      numberSounds.speak(`Oops, not ${choice.number}. Try counting them again!`);
+      speak({ en: `Oops, not ${choice.number}. Try counting them again!`, mr: `अरे! पुन्हा मोजा!` });
       setFeedback({ type: 'wrong', message: `Count carefully! Tap each item to count.` });
       setTimeout(() => {
         setCountPicked(null);
@@ -101,7 +103,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      numberSounds.speak(`Can you find the number ${target.number}? ${target.word}!`);
+      speak({ en: `Can you find the number ${target.number}? ${target.word}!`, mr: `${target.number} हा अंक शोधा!` });
     }, 200);
   };
 
@@ -111,7 +113,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
 
     if (choice.number === findTarget.number) {
       numberSounds.playVictoryChime();
-      numberSounds.speak(`Awesome! That is number ${choice.number}!`);
+      speak({ en: `Awesome! That is number ${choice.number}!`, mr: `वाह! हा ${choice.number} आहे!` });
       confetti({ particleCount: 75, spread: 65, origin: { y: 0.5 } });
 
       setScore((prev) => prev + 10);
@@ -124,7 +126,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
       }, 2200);
     } else {
       numberSounds.playWrongBoing();
-      numberSounds.speak(`That's number ${choice.number}. Try again to find ${findTarget.number}!`);
+      speak({ en: `That's number ${choice.number}. Try again to find ${findTarget.number}!`, mr: `तो ${choice.number} आहे. ${findTarget.number} शोधा!` });
       setFeedback({ type: 'wrong', message: `Try again! Where is number ${findTarget.number}?` });
       setTimeout(() => {
         setFindPicked(null);
@@ -150,14 +152,14 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      numberSounds.speak('Match each number with its correct quantity of objects!');
+      speak({ en: 'Match each number with its correct quantity of objects!', mr: 'प्रत्येक अंकाची योग्य वस्तूंसोबत जोडी लावा!' });
     }, 200);
   };
 
   const handleMatchNumberClick = (item) => {
     numberSounds.playPop();
     setSelectedMatchNumber(item);
-    numberSounds.speak(`Number ${item.number}`);
+    speak({ en: `Number ${item.number}`, mr: `${item.number}` });
 
     if (selectedMatchObject) {
       checkNumberMatch(item, selectedMatchObject);
@@ -167,7 +169,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
   const handleMatchObjectClick = (item) => {
     numberSounds.playPop();
     setSelectedMatchObject(item);
-    numberSounds.speak(`${item.number} ${item.itemPlural}`);
+    speak({ en: `${item.number} ${item.itemPlural}`, mr: `${item.number}` });
 
     if (selectedMatchNumber) {
       checkNumberMatch(selectedMatchNumber, item);
@@ -177,7 +179,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
   const checkNumberMatch = (numberItem, objectItem) => {
     if (numberItem.number === objectItem.number) {
       numberSounds.playVictoryChime();
-      numberSounds.speak(`Matched! Number ${numberItem.number} has ${objectItem.number} ${objectItem.itemPlural}!`);
+      speak({ en: `Matched! Number ${numberItem.number} has ${objectItem.number} ${objectItem.itemPlural}!`, mr: `जोडी लागली! ${numberItem.number}!` });
       const nextMatched = [...matchedIds, numberItem.number];
       setMatchedIds(nextMatched);
       setSelectedMatchNumber(null);
@@ -196,7 +198,7 @@ export default function NumbersCountingGame({ onHome, onEarnStars }) {
       }
     } else {
       numberSounds.playWrongBoing();
-      numberSounds.speak('Not a match, try again!');
+      speak({ en: 'Not a match, try again!', mr: 'जोडी नाही, पुन्हा प्रयत्न करा!' });
       setTimeout(() => {
         setSelectedMatchNumber(null);
         setSelectedMatchObject(null);

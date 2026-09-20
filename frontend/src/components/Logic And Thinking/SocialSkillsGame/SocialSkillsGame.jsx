@@ -26,9 +26,11 @@ import {
   KINDNESS_SUPERPOWERS
 } from './socialSkillsData';
 import { socialSounds } from './socialSkillsSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './SocialSkillsGame.css';
 
 export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
+  const { t } = useLanguage();
   const handleExit = onHome || onBack;
 
   // Active Modes: 'wsid' | 'goodchoice' | 'roleplay' | 'superpowers'
@@ -295,12 +297,12 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
             aria-label="Home"
           >
             <Home className="ss-icon" />
-            <span className="ss-btn-text">Home</span>
+            <span className="ss-btn-text">{t('btnHome')}</span>
           </button>
 
           <div className="ss-title-container">
             <h1 className="ss-main-title">
-              <span className="ss-title-emoji">🤝</span> Social Skills
+              <span className="ss-title-emoji">🤝</span> {t('ssTitle')}
             </h1>
             <span className="ss-age-tag">Ages 3–6</span>
           </div>
@@ -315,7 +317,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
             aria-selected={activeMode === 'wsid'}
           >
             <HelpCircle size={18} />
-            <span>What Should I Do?</span>
+            <span>{t('ssTabWsid')}</span>
           </button>
 
           <button
@@ -325,7 +327,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
             aria-selected={activeMode === 'goodchoice'}
           >
             <CheckCircle2 size={18} />
-            <span>Good Choice?</span>
+            <span>{t('ssTabGoodChoice')}</span>
           </button>
 
           <button
@@ -335,7 +337,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
             aria-selected={activeMode === 'roleplay'}
           >
             <Sparkles size={18} />
-            <span>Role-Play</span>
+            <span>{t('ssTabRolePlay')}</span>
           </button>
 
           <button
@@ -345,7 +347,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
             aria-selected={activeMode === 'superpowers'}
           >
             <Heart size={18} />
-            <span>Kindness Guide</span>
+            <span>{t('ssTabSuperpowers')}</span>
           </button>
         </div>
 

@@ -19,9 +19,11 @@ import {
   DIFFICULTY_LEVELS
 } from './oddOneOutData';
 import { oddSounds } from './oddOneOutSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './OddOneOutGame.css';
 
 export default function OddOneOutGame({ onBack }) {
+  const { t, speak } = useLanguage();
   const [difficulty, setDifficulty] = useState('easy');
   const [roundIndex, setRoundIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -120,7 +122,7 @@ export default function OddOneOutGame({ onBack }) {
     setIsHinted(true);
     setFeedback({
       type: 'hint',
-      text: currentRound.hintText || "Look carefully at colors, shapes, and types!"
+      text: currentRound.hintText || t('oddHintMsg')
     });
   };
 
@@ -160,12 +162,12 @@ export default function OddOneOutGame({ onBack }) {
               title="Return to Home"
             >
               <Home size={18} />
-              <span>Home</span>
+              <span>{t('btnHome')}</span>
             </button>
 
             <div className="odd-game-title-badge">
               <span>🔍</span>
-              <span>Odd One Out</span>
+              <span>{t('oddTitle')}</span>
             </div>
           </div>
 
@@ -292,7 +294,7 @@ export default function OddOneOutGame({ onBack }) {
               className="odd-next-btn"
               onClick={handleNextRound}
             >
-              <span>{roundIndex === activeRounds.length - 1 ? 'Finish Level' : 'Next'}</span>
+              <span>{roundIndex === activeRounds.length - 1 ? t('btnFinishLevel') : t('btnNext')}</span>
               <ArrowRight size={20} strokeWidth={2.8} />
             </button>
           )}
@@ -343,7 +345,7 @@ export default function OddOneOutGame({ onBack }) {
                 onClick={handleRestart}
               >
                 <RotateCcw size={18} />
-                <span>Play Again</span>
+                <span>{t('btnPlayAgain')}</span>
               </button>
 
               <button
@@ -353,7 +355,7 @@ export default function OddOneOutGame({ onBack }) {
                 onClick={onBack}
               >
                 <Home size={18} />
-                <span>Home</span>
+                <span>{t('btnHome')}</span>
               </button>
             </div>
           </div>

@@ -11,27 +11,29 @@ import {
   FlaskConical,
   Activity
 } from 'lucide-react';
+import { useLanguage } from '../../../context/LanguageContext';
 import './ActivitiesSection.css';
 
 // 8 Rounded Category Navigation Pills
-const CATEGORY_PILLS = [
-  { id: 'all', label: 'All Activities', icon: LayoutGrid },
-  { id: 'logic', label: 'Logic & Thinking', icon: Lightbulb },
-  { id: 'creativity', label: 'Creativity', icon: Palette },
-  { id: 'games', label: 'Games', icon: Gamepad2 },
-  { id: 'writing', label: 'Writing', icon: Pencil },
-  { id: 'math', label: 'Math Fun', icon: Hash },
-  { id: 'science', label: 'Science', icon: FlaskConical },
-  { id: 'movement', label: 'Movement', icon: Activity }
+const CATEGORY_PILL_DEFS = [
+  { id: 'all', labelKey: 'catAll', icon: LayoutGrid },
+  { id: 'logic', labelKey: 'catLogic', icon: Lightbulb },
+  { id: 'creativity', labelKey: 'catCreativity', icon: Palette },
+  { id: 'games', labelKey: 'catGames', icon: Gamepad2 },
+  { id: 'writing', labelKey: 'catWriting', icon: Pencil },
+  { id: 'math', labelKey: 'catMath', icon: Hash },
+  { id: 'science', labelKey: 'catScience', icon: FlaskConical },
+  { id: 'movement', labelKey: 'catMovement', icon: Activity }
 ];
 
-// The Core Activities (Odd One Out is #1 featured!)
+// The Core Activities — title/description driven by translation keys
 const ACTIVITIES_DATA = [
   {
     id: 'odd-one-out',
-    title: 'Odd One Out',
-    description: 'Find and select the one that does not belong!',
-    age: '3–6 Yrs',
+    titleKey: 'actOddOneOutTitle',
+    descKey: 'actOddOneOutDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/odd_one_out.jpg',
     theme: 'theme-yellow',
     starDecor: '🔍',
@@ -39,9 +41,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'good-habits',
-    title: 'Good Habits',
-    description: 'Learn healthy routines, manners & daily good habits!',
-    age: '3–6 Yrs',
+    titleKey: 'actGoodHabitsTitle',
+    descKey: 'actGoodHabitsDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/good_habits.jpg',
     theme: 'theme-green',
     starDecor: '🌱',
@@ -49,9 +52,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'emotional-recognition',
-    title: 'Emotional Recognition',
-    description: 'Explore feelings, recognize emotions & practice empathy!',
-    age: '3–6 Yrs',
+    titleKey: 'actEmotionalRecogTitle',
+    descKey: 'actEmotionalRecogDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/emotional_recognition.jpg',
     theme: 'theme-yellow',
     starDecor: '😊',
@@ -59,9 +63,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'social-skills',
-    title: 'Social Skills',
-    description: 'Learn sharing, taking turns, manners & making friends!',
-    age: '3–6 Yrs',
+    titleKey: 'actSocialSkillsTitle',
+    descKey: 'actSocialSkillsDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/social_skills.jpg',
     theme: 'theme-teal',
     starDecor: '🤝',
@@ -69,9 +74,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'memory-development',
-    title: 'Memory Development',
-    description: 'Flip, match pairs & train your memory with cute cards',
-    age: '3–6 Yrs',
+    titleKey: 'actMemoryDevTitle',
+    descKey: 'actMemoryDevDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/memory_development.jpg',
     theme: 'theme-blue',
     starDecor: '🧠',
@@ -79,9 +85,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'picture-completion',
-    title: 'Picture Completion',
-    description: 'Find and place the missing piece to finish the picture',
-    age: '3–6 Yrs',
+    titleKey: 'actPictureCompTitle',
+    descKey: 'actPictureCompDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/picture_completion.jpg',
     theme: 'theme-purple',
     starDecor: '🧩',
@@ -89,9 +96,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'drawing-game',
-    title: 'Drawing Game',
-    description: 'Draw freely, color cute templates & create art',
-    age: '3–6 Yrs',
+    titleKey: 'actDrawingTitle',
+    descKey: 'actDrawingDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/drawing_game.jpg',
     theme: 'theme-yellow',
     starDecor: '🖌️',
@@ -99,9 +107,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'tracing-game',
-    title: 'Tracing Game',
-    description: 'Trace letters A–Z and numbers 1–20 with fun guides',
-    age: '3–6 Yrs',
+    titleKey: 'actTracingTitle',
+    descKey: 'actTracingDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/tracing_game.jpg',
     theme: 'theme-green',
     starDecor: '✏️',
@@ -109,9 +118,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'count-match',
-    title: 'Count & Match',
-    description: 'Learn numbers and counting',
-    age: '3–6 Yrs',
+    titleKey: 'actCountingTitle',
+    descKey: 'actCountingDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/count_match.jpg',
     theme: 'theme-yellow',
     starDecor: '✨',
@@ -119,9 +129,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'alphabet-phonics',
-    title: 'Alphabet & Phonics',
-    description: 'Learn letters and sounds',
-    age: '3–6 Yrs',
+    titleKey: 'actAlphabetTitle',
+    descKey: 'actAlphabetDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/alphabet_phonics.jpg',
     theme: 'theme-blue',
     starDecor: '⭐',
@@ -129,9 +140,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'picture-puzzles',
-    title: 'Picture Puzzles',
-    description: 'Piece together animals, fruits & shapes',
-    age: '3–6 Yrs',
+    titleKey: 'actPuzzlesTitle',
+    descKey: 'actPuzzlesDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/puzzle_game.jpg',
     theme: 'theme-purple',
     starDecor: '🧩',
@@ -139,9 +151,10 @@ const ACTIVITIES_DATA = [
   },
   {
     id: 'shapes-colors',
-    title: 'Shapes & Colors',
-    description: 'Explore shapes, colors & mini-games',
-    age: '3–6 Yrs',
+    titleKey: 'actShapesColorsTitle',
+    descKey: 'actShapesColorsDesc',
+    age: '3–6',
+    ageKey: 'ageRange',
     image: '/assets/activities/shapes_colors.jpg',
     theme: 'theme-pink',
     starDecor: '🎨',
@@ -150,6 +163,7 @@ const ACTIVITIES_DATA = [
 ];
 
 export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp = 'all', onCategoryChange }) {
+  const { t } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState(selectedCategoryProp || 'all');
   const trackRef = useRef(null);
 
@@ -272,17 +286,17 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
       {/* 1. Large Playful Heading & Short Subtitle */}
       <div className="activities-header-box">
         <h2 className="activities-main-heading">
-          <span>Explore & Learn</span>
+          <span>{t('activitiesHeading')}</span>
           <span className="heading-sparkle">🌟</span>
         </h2>
         <p className="activities-sub-heading">
-          Discover fun games, creative activities, and playful challenges made just for you!
+          {t('activitiesSubheading')}
         </p>
       </div>
 
       {/* 2. Rounded Category Pills (Horizontally scrollable) */}
       <div className="category-pills-bar">
-        {CATEGORY_PILLS.map((cat) => {
+        {CATEGORY_PILL_DEFS.map((cat) => {
           const Icon = cat.icon;
           const isActive = selectedCategory === cat.id;
           return (
@@ -293,7 +307,7 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
               onClick={() => handleSelectCategory(cat.id)}
             >
               <Icon size={18} />
-              <span>{cat.label}</span>
+              <span>{t(cat.labelKey)}</span>
             </button>
           );
         })}
@@ -303,8 +317,8 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
       <div className="activities-carousel-header">
         <div className="category-status-badge">
           <span className="badge-category-icon">{activeCategoryObj.icon && <activeCategoryObj.icon size={18} />}</span>
-          <span className="badge-category-name">{activeCategoryObj.label}</span>
-          <span className="badge-activity-count">({filteredActivities.length} activities)</span>
+          <span className="badge-category-name">{t(activeCategoryObj.labelKey)}</span>
+          <span className="badge-activity-count">({filteredActivities.length})</span>
         </div>
       </div>
 
@@ -327,7 +341,7 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
               >
                 {/* Card Top: Age badge & Star decor */}
                 <div className="card-top-row">
-                  <span className="card-age-badge">{activity.age}</span>
+                  <span className="card-age-badge">{activity.age} {t('ageRange')}</span>
                   <span className="card-star-decor">{activity.starDecor}</span>
                 </div>
 
@@ -344,8 +358,8 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
 
                 {/* Title & Description */}
                 <div className="card-content-body">
-                  <h3 className="activity-card-title">{activity.title}</h3>
-                  <p className="activity-card-desc">{activity.description}</p>
+                  <h3 className="activity-card-title">{t(activity.titleKey)}</h3>
+                  <p className="activity-card-desc">{t(activity.descKey)}</p>
                 </div>
 
                 {/* Large, Bold, Rounded "Play Now →" Button */}
@@ -358,7 +372,7 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
                     handleLaunch(activity);
                   }}
                 >
-                  <span>Play Now</span>
+                  <span>{t('playNow')}</span>
                   <ArrowRight size={18} />
                 </button>
               </div>

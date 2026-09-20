@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft,
@@ -26,6 +26,7 @@ import {
   KINDNESS_SUPERPOWERS
 } from './socialSkillsData';
 import { socialSounds } from './socialSkillsSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './SocialSkillsGame.css';
 
 export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {

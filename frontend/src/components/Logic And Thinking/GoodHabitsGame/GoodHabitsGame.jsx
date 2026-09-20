@@ -24,9 +24,11 @@ import {
   SEQUENCE_ROUTINES
 } from './goodHabitsData';
 import { goodHabitsSounds } from './goodHabitsSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './GoodHabitsGame.css';
 
 export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
+  const { t } = useLanguage();
   const handleExit = onHome || onBack;
 
   // Game Modes: 'good-or-not' | 'put-in-order' | 'explore'
@@ -212,12 +214,12 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <ArrowLeft size={18} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           <div className="gh-game-branding">
             <span className="gh-title-icon">🌱</span>
-            <span className="gh-brand-text">Good Habits</span>
+            <span className="gh-brand-text">{t('ghTitle')}</span>
           </div>
         </div>
 
@@ -288,7 +290,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <ThumbsUp size={18} />
-            <span>Good or Not Good?</span>
+            <span>{t('ghTabChoice')}</span>
           </button>
 
           <button
@@ -300,7 +302,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <ListOrdered size={18} />
-            <span>Put in Right Order</span>
+            <span>{t('ghTabOrder')}</span>
           </button>
 
           <button
@@ -312,7 +314,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <BookOpen size={18} />
-            <span>Explore Habits</span>
+            <span>{t('ghTabGuide')}</span>
           </button>
         </nav>
 
@@ -348,7 +350,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
 
             {/* Scenario Title & Subtitle */}
             <h2 className="gh-scenario-heading">{currentGnRound.scenario}</h2>
-            <p className="gh-scenario-subtitle">Is this a good habit or not good?</p>
+            <p className="gh-scenario-subtitle">{t('ghIsGoodHabit')}</p>
 
             {/* Choice Buttons */}
             <div className="gh-choice-actions">
@@ -359,7 +361,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 disabled={gnFeedback === 'correct'}
               >
                 <span className="gh-choice-icon">👍</span>
-                <span>Good Habit!</span>
+                <span>{t('ghGoodHabitBtn')}</span>
               </button>
 
               <button
@@ -369,7 +371,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 disabled={gnFeedback === 'correct'}
               >
                 <span className="gh-choice-icon">👎</span>
-                <span>Not Good!</span>
+                <span>{t('ghNotGoodBtn')}</span>
               </button>
             </div>
 
@@ -394,7 +396,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                     className="gh-btn-next-round"
                     onClick={handleNextGnRound}
                   >
-                    <span>Next</span>
+                    <span>{t('btnNext')}</span>
                     <ArrowRight size={18} />
                   </button>
                 )}
@@ -415,7 +417,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 <span>{currentRoutine.title}</span>
               </h2>
               <p className="gh-sequence-instruction">
-                Tap the steps below to arrange them in order from 1 to 4!
+                {t('ghDragToOrder')}
               </p>
             </div>
 

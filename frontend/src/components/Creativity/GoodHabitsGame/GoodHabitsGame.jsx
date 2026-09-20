@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft,
@@ -24,6 +24,7 @@ import {
   SEQUENCE_ROUTINES
 } from './goodHabitsData';
 import { goodHabitsSounds } from './goodHabitsSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './GoodHabitsGame.css';
 
 export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
@@ -212,7 +213,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <ArrowLeft size={18} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           <div className="gh-game-branding">

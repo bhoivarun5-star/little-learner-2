@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft,
@@ -24,6 +24,7 @@ import {
   MATCH_EMOTION_ROUNDS
 } from './emotionalRecognitionData';
 import { emotionalRecognitionSounds } from './emotionalRecognitionSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './EmotionalRecognitionGame.css';
 
 export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }) {
@@ -260,7 +261,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <ArrowLeft size={18} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           <div className="er-game-branding">

@@ -24,9 +24,11 @@ import {
   generateRememberRound
 } from './memoryData';
 import { memorySounds } from './memorySounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './MemoryDevelopmentGame.css';
 
 export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
+  const { t } = useLanguage();
   // Navigation & Settings
   const [activeMode, setActiveMode] = useState('match'); // 'match' | 'remember'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
@@ -257,7 +259,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
             id="btn-memory-home"
           >
             <Home size={20} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           {/* Center: Mode Switcher */}
@@ -281,7 +283,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
           {/* Right: Stats (Moves, Timer, Stars, Sound) */}
           <div className="memory-stats-group">
             <div className="memory-stat-pill" title="Moves Counter">
-              <span>Moves:</span>
+              <span>{t('memMoves')}:</span>
               <strong>{moves}</strong>
             </div>
 

@@ -20,9 +20,11 @@ import {
   renderShapeSVG
 } from './shapesColorsData';
 import { shapesSounds } from './soundEffects';
+import { useLanguage } from '../../../context/LanguageContext';
 import './ShapesColorsGame.css';
 
 export default function ShapesColorsGame({ onHome, onEarnStars }) {
+  const { t, speak } = useLanguage();
   // Navigation & Mode
   // Modes: 'explorer' | 'find-shape' | 'find-color' | 'match-name' | 'color-match' | 'sort-color'
   const [activeMode, setActiveMode] = useState('explorer');
@@ -63,7 +65,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      shapesSounds.speak(`Can you find the ${target.name}?`);
+      speak({ en: `Can you find the ${target.name}?`, mr: `${target.name} शोधा!` });
     }, 200);
   };
 
@@ -84,14 +86,14 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
         origin: { y: 0.6 }
       });
 
-      shapesSounds.speak(`Awesome! That is a ${findShapeTarget.name}!`);
+      speak({ en: `Awesome! That is a ${findShapeTarget.name}!`, mr: `वा! तो ${findShapeTarget.name} आहे!` });
 
       setTimeout(() => {
         initFindShapeGame();
       }, 2000);
     } else {
       shapesSounds.playWrongBoing();
-      shapesSounds.speak(`Oops! Look closely for the ${findShapeTarget.name}!`);
+      speak({ en: `Oops! Look closely for the ${findShapeTarget.name}!`, mr: `अरे! ${findShapeTarget.name} नीट पाहा!` });
       setFeedback({ type: 'wrong', message: `Try again! Can you find the ${findShapeTarget.name}?` });
       setTimeout(() => {
         setFindShapePicked(null);
