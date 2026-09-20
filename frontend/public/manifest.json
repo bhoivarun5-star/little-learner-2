@@ -1,0 +1,21 @@
+{
+  "short_name": "LittleLearner",
+  "name": "Little Learner - Fun Learning Adventure",
+  "icons": [
+    {
+      "src": "/assets/star-mascot.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/assets/star-mascot.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#e0f2fe",
+  "theme_color": "#7c3aed",
+  "display": "standalone",
+  "orientation": "any"
+}

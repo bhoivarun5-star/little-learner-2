@@ -1,0 +1,481 @@
+/* ==========================================================================
+   Little Learner - Redesigned Activities Section
+   Bright, playful, child-friendly, modern preschool aesthetic
+   ========================================================================== */
+
+/* Main Activities Canvas Container - Reduced Opacity Glassmorphic White Rectangle occupying Whole Width */
+.activities-section-wrapper {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 44px 44px 0 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 -12px 40px rgba(22, 101, 52, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  padding: 3.5rem clamp(1.5rem, 5vw, 4rem) 4.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  font-family: 'Fredoka', 'Quicksand', var(--font-display);
+}
+
+/* Subtle decorative playful stars/sparkles background elements */
+.activities-section-wrapper::before {
+  content: '✨';
+  position: absolute;
+  top: 0.5rem;
+  right: 1.5rem;
+  font-size: 2.2rem;
+  opacity: 0.85;
+  animation: gentle-wobble 4s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.activities-section-wrapper::after {
+  content: '🎈';
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 2.4rem;
+  opacity: 0.75;
+  animation: float-slow 3.5s infinite alternate ease-in-out;
+  pointer-events: none;
+}
+
+/* Inner Content Centering */
+.activities-header-box,
+.category-pills-bar,
+.activities-cards-grid {
+  width: 100%;
+  max-width: 1320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 1. Header: Large Playful Heading & Short Subtitle */
+.activities-header-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.activities-main-heading {
+  font-family: 'Fredoka', 'Quicksand', cursive, sans-serif;
+  font-size: clamp(2.15rem, 4vw, 2.9rem);
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0;
+  line-height: 1.15;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-shadow: 0 3px 18px rgba(255, 255, 255, 0.95), 0 1px 4px rgba(255, 255, 255, 0.9);
+}
+
+.heading-sparkle {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  animation: spin-slow 8s linear infinite;
+  display: inline-block;
+}
+
+.activities-sub-heading {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  font-weight: 600;
+  color: #1e293b;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.92);
+  max-width: 620px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 2. Rounded Category Navigation Pills (Horizontally scrollable on mobile) */
+.category-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4rem 0.25rem 0.75rem;
+  scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 2;
+}
+
+.category-pills-bar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.category-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1.35rem;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.category-pill-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  color: #1e1b4b;
+}
+
+.category-pill-btn.is-active {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: #ffffff;
+  border-color: #7c3aed;
+  box-shadow: 0 6px 18px rgba(109, 40, 217, 0.35);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* 3. 4 Activity Cards Per Row on Desktop, 2 on Tablet, 1 on Mobile */
+.activities-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+/* 4. Single Activity Card: Rounded (22–28px), soft shadows, soft pastel backgrounds */
+.activity-card {
+  border-radius: 26px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 2px solid transparent;
+  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Gentle hover animation: Card lifts slightly */
+.activity-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px -6px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(255, 255, 255, 1);
+}
+
+/* Soft Pastel Background Themes for each card */
+.activity-card.theme-blue {
+  background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-color: #bae6fd;
+}
+.activity-card.theme-blue:hover {
+  border-color: #38bdf8;
+}
+
+.activity-card.theme-yellow {
+  background: linear-gradient(180deg, #fefce8 0%, #fef3c7 100%);
+  border-color: #fde68a;
+}
+.activity-card.theme-yellow:hover {
+  border-color: #fbbf24;
+}
+
+.activity-card.theme-purple {
+  background: linear-gradient(180deg, #faf5ff 0%, #f3e8ff 100%);
+  border-color: #e9d5ff;
+}
+.activity-card.theme-purple:hover {
+  border-color: #c084fc;
+}
+
+.activity-card.theme-green {
+  background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
+}
+.activity-card.theme-green:hover {
+  border-color: #4ade80;
+}
+
+/* Card Header: Floating Age Badge & Star Decor */
+.card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-age-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.theme-blue .card-age-badge {
+  background: #ffffff;
+  color: #0284c7;
+  border: 1.5px solid #7dd3fc;
+}
+
+.theme-yellow .card-age-badge {
+  background: #ffffff;
+  color: #b45309;
+  border: 1.5px solid #fcd34d;
+}
+
+.theme-purple .card-age-badge {
+  background: #ffffff;
+  color: #7c3aed;
+  border: 1.5px solid #d8b4fe;
+}
+
+.theme-green .card-age-badge {
+  background: #ffffff;
+  color: #15803d;
+  border: 1.5px solid #86efac;
+}
+
+.card-star-decor {
+  font-size: 1.15rem;
+  opacity: 0.85;
+}
+
+/* Card Illustration: Large colorful illustration that scales on hover */
+.card-illustration-box {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  background: #ffffff;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.card-illustration-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Illustration scales gently on card hover */
+.activity-card:hover .card-illustration-img {
+  transform: scale(1.06);
+}
+
+/* Card Content: Large Activity Title (22–26px) & Description (16–18px) */
+.card-content-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+}
+
+.activity-card-title {
+  font-family: 'Fredoka', 'Quicksand', cursive, sans-serif;
+  font-size: clamp(1.35rem, 1.6vw, 1.6rem); /* 22–26px */
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.activity-card-desc {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(1rem, 1.2vw, 1.125rem); /* 16–18px */
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Large, Bold, Rounded "Play Now →" Buttons */
+.btn-play-now {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin-top: auto;
+  text-decoration: none;
+}
+
+/* Button Colors per Theme */
+.theme-blue .btn-play-now {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+}
+.theme-blue .btn-play-now:hover {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  box-shadow: 0 10px 22px rgba(2, 132, 199, 0.45);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.theme-yellow .btn-play-now {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+.theme-yellow .btn-play-now:hover {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.45);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.theme-purple .btn-play-now {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.35);
+}
+.theme-purple .btn-play-now:hover {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+  box-shadow: 0 10px 22px rgba(139, 92, 246, 0.45);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.theme-green .btn-play-now {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+.theme-green .btn-play-now:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 10px 22px rgba(16, 185, 129, 0.45);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Category Empty State (Joyful mascot banner when a category with no cards is selected) */
+.category-empty-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+  border: 3px dashed #f59e0b;
+  border-radius: 30px;
+  padding: 3rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.category-empty-icon {
+  font-size: 3.5rem;
+  animation: gentle-bounce 3s infinite ease-in-out;
+}
+
+.category-empty-title {
+  font-family: 'Fredoka', 'Quicksand', cursive, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0;
+}
+
+.category-empty-desc {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #b45309;
+  max-width: 500px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.btn-back-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-back-all:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints:
+   - Desktop: 4 cards per row
+   - Tablet (<= 1024px): 2 cards per row
+   - Mobile (<= 640px): 1 card per row
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .activities-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+  }
+
+  .activities-section-wrapper {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .activities-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .activities-section-wrapper {
+    padding: 1.75rem 1.15rem;
+    border-radius: 28px;
+  }
+
+  .category-pills-bar {
+    gap: 0.5rem;
+  }
+
+  .category-pill-btn {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.95rem;
+  }
+}
+
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
