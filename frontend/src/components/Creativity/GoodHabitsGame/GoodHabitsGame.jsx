@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft,
@@ -28,6 +28,8 @@ import { useLanguage } from '../../../context/LanguageContext';
 import './GoodHabitsGame.css';
 
 export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
   const handleExit = onHome || onBack;
 
   // Game Modes: 'good-or-not' | 'put-in-order' | 'explore'
@@ -107,6 +109,9 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
       setStars((st) => st + 1);
       onEarnStars?.(1);
 
+      const praiseText = isMarathi ? (currentGnRound.praiseMr || currentGnRound.praise) : currentGnRound.praise;
+      speak(praiseText);
+
       confetti({
         particleCount: 75,
         spread: 70,
@@ -115,6 +120,9 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
     } else {
       goodHabitsSounds.playWrong();
       setGnFeedback('wrong');
+
+      const hintText = isMarathi ? (currentGnRound.hintMr || currentGnRound.hint) : currentGnRound.hint;
+      speak(hintText);
     }
   };
 
@@ -146,6 +154,9 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
     if (placedSteps.length >= 4) return;
     goodHabitsSounds.playOrderStep(placedSteps.length + 1);
 
+    const stepTitle = isMarathi ? (step.titleMr || step.title) : step.title;
+    speak(stepTitle);
+
     setAvailableSteps((prev) => prev.filter((s) => s.order !== step.order));
     const newPlaced = [...placedSteps, step];
     setPlacedSteps(newPlaced);
@@ -160,6 +171,8 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
         setScore((s) => s + 20);
         setStars((st) => st + 2);
         onEarnStars?.(2);
+
+        speak(isMarathi ? 'उत्तम! तुम्ही योग्य क्रम लावला आहे!' : 'Magnificent! You know the healthy routine step-by-step!');
 
         confetti({
           particleCount: 100,
@@ -211,6 +224,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
               goodHabitsSounds.playTap();
               handleExit?.();
             }}
+            title={isMarathi ? 'मुख्यपृष्ठावर परत जा' : 'Back to Home'}
           >
             <ArrowLeft size={18} />
             <span>{t('btnHome')}</span>
@@ -218,26 +232,26 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
 
           <div className="gh-game-branding">
             <span className="gh-title-icon">🌱</span>
-            <span className="gh-brand-text">Good Habits</span>
+            <span className="gh-brand-text">{t('ghTitle')}</span>
           </div>
         </div>
 
         {/* Center: Stars & Round Badge */}
         <div className="gh-nav-center">
-          <div className="gh-stars-pill" title="Shiny Stars Collected!">
+          <div className="gh-stars-pill" title={isMarathi ? 'मिळालेले तारे!' : 'Shiny Stars Collected!'}>
             <Star size={20} className="gh-star-icon" />
             <span>{stars}</span>
           </div>
 
           <div className="gh-round-pill">
             {activeMode === 'good-or-not' && (
-              <span>Round {gnRoundIdx + 1} / {GOOD_OR_NOT_GOOD_ROUNDS.length}</span>
+              <span>{isMarathi ? 'फेरी' : 'Round'} {gnRoundIdx + 1} / {GOOD_OR_NOT_GOOD_ROUNDS.length}</span>
             )}
             {activeMode === 'put-in-order' && (
-              <span>Routine {routineIdx + 1} / {SEQUENCE_ROUTINES.length}</span>
+              <span>{isMarathi ? 'दिनचर्या' : 'Routine'} {routineIdx + 1} / {SEQUENCE_ROUTINES.length}</span>
             )}
             {activeMode === 'explore' && (
-              <span>8 Core Habits</span>
+              <span>{isMarathi ? '८ मुख्य चांगल्या सवयी' : '8 Core Habits'}</span>
             )}
           </div>
         </div>
@@ -251,7 +265,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
               goodHabitsSounds.playTap();
               setShowHintModal(true);
             }}
-            title="Friendly Habit Hint"
+            title={isMarathi ? 'सवयीची उपयुक्त टीप' : 'Friendly Habit Hint'}
           >
             <Lightbulb size={20} />
           </button>
@@ -260,7 +274,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             type="button"
             className="gh-btn-icon"
             onClick={handleToggleSound}
-            title={soundEnabled ? 'Mute Sounds' : 'Turn On Sounds'}
+            title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Sounds') : (isMarathi ? 'आवाज सुरू करा' : 'Turn On Sounds')}
           >
             {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
           </button>
@@ -269,7 +283,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             type="button"
             className="gh-btn-icon"
             onClick={handleRestart}
-            title="Restart Activity"
+            title={isMarathi ? 'खेळ पुन्हा सुरू करा' : 'Restart Activity'}
           >
             <RotateCcw size={20} />
           </button>
@@ -289,7 +303,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <ThumbsUp size={18} />
-            <span>Good or Not Good?</span>
+            <span>{t('ghTabChoice')}</span>
           </button>
 
           <button
@@ -301,7 +315,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <ListOrdered size={18} />
-            <span>Put in Right Order</span>
+            <span>{t('ghTabOrder')}</span>
           </button>
 
           <button
@@ -313,7 +327,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             }}
           >
             <BookOpen size={18} />
-            <span>Explore Habits</span>
+            <span>{t('ghTabGuide')}</span>
           </button>
         </nav>
 
@@ -339,7 +353,10 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
           <div className="gh-card-challenge">
             <span className="gh-question-category">
               <Sparkles size={14} />
-              <span>{currentGnRound.category} Habit</span>
+              <span>
+                {isMarathi ? (currentGnRound.categoryMr || currentGnRound.category) : currentGnRound.category}{' '}
+                {isMarathi ? 'सवय' : 'Habit'}
+              </span>
             </span>
 
             {/* Cute Custom SVG Illustration */}
@@ -348,8 +365,10 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             </div>
 
             {/* Scenario Title & Subtitle */}
-            <h2 className="gh-scenario-heading">{currentGnRound.scenario}</h2>
-            <p className="gh-scenario-subtitle">Is this a good habit or not good?</p>
+            <h2 className="gh-scenario-heading">
+              {isMarathi ? (currentGnRound.scenarioMr || currentGnRound.scenario) : currentGnRound.scenario}
+            </h2>
+            <p className="gh-scenario-subtitle">{t('ghIsGoodHabit')}</p>
 
             {/* Choice Buttons */}
             <div className="gh-choice-actions">
@@ -360,7 +379,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 disabled={gnFeedback === 'correct'}
               >
                 <span className="gh-choice-icon">👍</span>
-                <span>Good Habit!</span>
+                <span>{t('ghGoodHabitBtn')}</span>
               </button>
 
               <button
@@ -370,7 +389,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 disabled={gnFeedback === 'correct'}
               >
                 <span className="gh-choice-icon">👎</span>
-                <span>Not Good!</span>
+                <span>{t('ghNotGoodBtn')}</span>
               </button>
             </div>
 
@@ -383,9 +402,14 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
               >
                 <div className="gh-feedback-text">
                   {gnFeedback === 'correct' ? (
-                    <span>🎉 {currentGnRound.praise}</span>
+                    <span>🎉 {isMarathi ? (currentGnRound.praiseMr || currentGnRound.praise) : currentGnRound.praise}</span>
                   ) : (
-                    <span>🤔 Not quite! Remember: {currentGnRound.hint}</span>
+                    <span>
+                      🤔{' '}
+                      {isMarathi
+                        ? 'पुन्हा विचार करा! लक्षात ठेवा: ' + (currentGnRound.hintMr || currentGnRound.hint)
+                        : 'Not quite! Remember: ' + currentGnRound.hint}
+                    </span>
                   )}
                 </div>
 
@@ -395,7 +419,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                     className="gh-btn-next-round"
                     onClick={handleNextGnRound}
                   >
-                    <span>Next</span>
+                    <span>{t('btnNext')}</span>
                     <ArrowRight size={18} />
                   </button>
                 )}
@@ -413,10 +437,10 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             <div className="gh-sequence-header">
               <h2 className="gh-sequence-title">
                 <span>{currentRoutine.icon}</span>
-                <span>{currentRoutine.title}</span>
+                <span>{isMarathi ? (currentRoutine.titleMr || currentRoutine.title) : currentRoutine.title}</span>
               </h2>
               <p className="gh-sequence-instruction">
-                Tap the steps below to arrange them in order from 1 to 4!
+                {t('ghDragToOrder')}
               </p>
             </div>
 
@@ -433,7 +457,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                   }}
                 >
                   <span>{rot.icon}</span>
-                  <span>{rot.habitName}</span>
+                  <span>{isMarathi ? (rot.habitNameMr || rot.habitName) : rot.habitName}</span>
                 </button>
               ))}
             </div>
@@ -447,17 +471,23 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                     key={slotIdx}
                     className={`gh-slot-box ${placedStep ? 'has-card' : ''}`}
                     onClick={() => placedStep && handleRemovePlacedStep(slotIdx)}
-                    title={placedStep ? 'Tap to remove step' : `Slot ${slotIdx + 1}`}
+                    title={
+                      placedStep
+                        ? (isMarathi ? 'पायरी काढण्यासाठी टॅप करा' : 'Tap to remove step')
+                        : (isMarathi ? `जागा ${slotIdx + 1}` : `Slot ${slotIdx + 1}`)
+                    }
                   >
                     <span className="gh-slot-number-badge">{slotIdx + 1}</span>
                     {placedStep ? (
                       <div className="gh-step-card">
                         <span className="gh-step-emoji">{placedStep.emoji}</span>
-                        <h4 className="gh-step-title">{placedStep.title}</h4>
-                        <p className="gh-step-desc">{placedStep.desc}</p>
+                        <h4 className="gh-step-title">{isMarathi ? (placedStep.titleMr || placedStep.title) : placedStep.title}</h4>
+                        <p className="gh-step-desc">{isMarathi ? (placedStep.descMr || placedStep.desc) : placedStep.desc}</p>
                       </div>
                     ) : (
-                      <span className="gh-slot-empty-label">Step {slotIdx + 1}</span>
+                      <span className="gh-slot-empty-label">
+                        {isMarathi ? `पायरी ${slotIdx + 1}` : `Step ${slotIdx + 1}`}
+                      </span>
                     )}
                   </div>
                 );
@@ -473,9 +503,17 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
               >
                 <div className="gh-feedback-text">
                   {seqFeedback === 'correct' ? (
-                    <span>🌟 Magnificent! You know the healthy routine step-by-step!</span>
+                    <span>
+                      {isMarathi
+                        ? '🌟 अप्रतिम! तुम्हाला आरोग्याची योग्य दिनचर्या अचूक माहित आहे!'
+                        : '🌟 Magnificent! You know the healthy routine step-by-step!'}
+                    </span>
                   ) : (
-                    <span>Oops! The steps are a little mixed up. Tap a card to swap and try again!</span>
+                    <span>
+                      {isMarathi
+                        ? 'अरेरे! पायऱ्या थोड्या उलट-सुलट झाल्या आहेत. बदलण्यासाठी कार्डवर टॅप करा आणि पुन्हा प्रयत्न करा!'
+                        : 'Oops! The steps are a little mixed up. Tap a card to swap and try again!'}
+                    </span>
                   )}
                 </div>
 
@@ -485,7 +523,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                     className="gh-btn-next-round"
                     onClick={handleNextRoutine}
                   >
-                    <span>Next Routine</span>
+                    <span>{isMarathi ? 'पुढील दिनचर्या' : 'Next Routine'}</span>
                     <ArrowRight size={18} />
                   </button>
                 )}
@@ -495,7 +533,9 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             {/* Available Steps Pool */}
             {availableSteps.length > 0 && (
               <div className="gh-pool-wrapper">
-                <span className="gh-pool-heading">Tap cards to place into sequence:</span>
+                <span className="gh-pool-heading">
+                  {isMarathi ? 'क्रमाने लावण्यासाठी कार्डवर टॅप करा:' : 'Tap cards to place into sequence:'}
+                </span>
                 <div className="gh-pool-cards-row">
                   {availableSteps.map((step) => (
                     <div
@@ -504,8 +544,8 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                       onClick={() => handleTapAvailableStep(step)}
                     >
                       <span className="gh-step-emoji">{step.emoji}</span>
-                      <h4 className="gh-step-title">{step.title}</h4>
-                      <p className="gh-step-desc">{step.desc}</p>
+                      <h4 className="gh-step-title">{isMarathi ? (step.titleMr || step.title) : step.title}</h4>
+                      <p className="gh-step-desc">{isMarathi ? (step.descMr || step.desc) : step.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -521,7 +561,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                   onClick={() => initRoutine(routineIdx)}
                 >
                   <RotateCcw size={18} />
-                  <span>Start Routine Over</span>
+                  <span>{isMarathi ? 'दिनचर्या पुन्हा सुरू करा' : 'Start Routine Over'}</span>
                 </button>
               </div>
             )}
@@ -545,11 +585,11 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                     className="gh-guide-tagline"
                     style={{ background: habit.bg, color: habit.color }}
                   >
-                    {habit.tagline}
+                    {isMarathi ? (habit.taglineMr || habit.tagline) : habit.tagline}
                   </span>
                 </div>
-                <h3 className="gh-guide-title">{habit.title}</h3>
-                <p className="gh-guide-desc">{habit.desc}</p>
+                <h3 className="gh-guide-title">{isMarathi ? (habit.titleMr || habit.title) : habit.title}</h3>
+                <p className="gh-guide-desc">{isMarathi ? (habit.descMr || habit.desc) : habit.desc}</p>
               </div>
             ))}
           </div>
@@ -567,20 +607,24 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
             onClick={(e) => e.stopPropagation()}
           >
             <span className="gh-modal-icon">💡</span>
-            <h3 className="gh-modal-title">Good Habit Tip!</h3>
+            <h3 className="gh-modal-title">{isMarathi ? 'चांगल्या सवयीची टीप!' : 'Good Habit Tip!'}</h3>
             <p className="gh-modal-desc">
               {activeMode === 'good-or-not'
-                ? currentGnRound.hint
+                ? (isMarathi ? (currentGnRound.hintMr || currentGnRound.hint) : currentGnRound.hint)
                 : activeMode === 'put-in-order'
-                ? `Think about what you do first, next, and last when ${currentRoutine.habitName}!`
-                : 'Practicing these habits every day makes you a healthy, happy superstar!'}
+                ? (isMarathi
+                    ? `विचार करा: ${currentRoutine.habitNameMr || currentRoutine.habitName} करताना आपण आधी, नंतर आणि शेवटी काय करतो!`
+                    : `Think about what you do first, next, and last when ${currentRoutine.habitName}!`)
+                : (isMarathi
+                    ? 'दररोज या चांगल्या सवयींचे पालन केल्याने तुम्ही निरोगी आणि आनंदी सुपरस्टार व्हाल!'
+                    : 'Practicing these habits every day makes you a healthy, happy superstar!')}
             </p>
             <button
               type="button"
               className="gh-btn-modal-close"
               onClick={() => setShowHintModal(false)}
             >
-              Got it! 👍
+              {isMarathi ? 'समजले! 👍' : 'Got it! 👍'}
             </button>
           </div>
         </div>
@@ -591,9 +635,15 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
         <div className="gh-modal-overlay">
           <div className="gh-modal-box">
             <span className="gh-modal-icon">🏆</span>
-            <h3 className="gh-modal-title">Superstar of Good Habits!</h3>
+            <h3 className="gh-modal-title">
+              {isMarathi ? 'चांगल्या सवयींचे सुपरस्टार! 🏆' : 'Superstar of Good Habits!'}
+            </h3>
             <p className="gh-modal-desc">
-              You completed all the challenges and earned <strong>{stars} Stars ⭐</strong>! You are a champion of healthy habits and great manners!
+              {isMarathi ? (
+                <>तुम्ही सर्व आव्हाने पूर्ण केली आणि <strong>{stars} तारे ⭐</strong> मिळवले! तुम्ही चांगल्या सवयी आणि उत्तम शिष्टाचारांचे चॅम्पियन आहात!</>
+              ) : (
+                <>You completed all the challenges and earned <strong>{stars} Stars ⭐</strong>! You are a champion of healthy habits and great manners!</>
+              )}
             </p>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
@@ -601,7 +651,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 className="gh-btn-modal-close"
                 onClick={handleRestart}
               >
-                Play Again 🔄
+                {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
               </button>
               <button
                 type="button"
@@ -609,7 +659,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
                 style={{ background: '#3b82f6' }}
                 onClick={() => handleExit?.()}
               >
-                Back to Activities 🌟
+                {isMarathi ? 'खेळांकडे परत जा 🌟' : 'Back to Activities 🌟'}
               </button>
             </div>
           </div>

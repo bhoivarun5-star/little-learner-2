@@ -21,9 +21,13 @@ import {
   PICTURE_SCENES
 } from './pictureCompletionData';
 import { pictureSounds } from './pictureCompletionSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './PictureCompletionGame.css';
 
 export default function PictureCompletionGame({ onHome, onEarnStars }) {
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
+
   // Navigation & Filtering
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
@@ -53,14 +57,19 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
   const currentScene = filteredScenes[currentIndex] || filteredScenes[0] || PICTURE_SCENES[0];
   const activeOptions = currentScene.options[difficulty] || currentScene.options.easy;
 
-  // Reset state on scene or difficulty change
+  // Reset state and speak prompt on scene or difficulty change
   useEffect(() => {
     setIsCompleted(false);
     setFeedback(null);
     setWrongOptionId(null);
     setIsHintActive(false);
     setShowCelebration(false);
-  }, [currentIndex, selectedCategory, difficulty]);
+
+    const speechTxt = isMarathi ? (currentScene.speechMr || currentScene.promptMr || currentScene.speech) : currentScene.speech;
+    if (speechTxt) {
+      speak(speechTxt);
+    }
+  }, [currentIndex, selectedCategory, difficulty, isMarathi]);
 
   const toggleSound = () => {
     const next = !soundEnabled;
@@ -86,9 +95,14 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
         onEarnStars(3);
       }
 
+      const successMsg = isMarathi
+        ? (currentScene.successSpeechMr || `🌟 छान! तुम्ही ${currentScene.titleMr || currentScene.title} पूर्ण केले!`)
+        : `🌟 Awesome! You completed the ${currentScene.title}!`;
+      speak(successMsg);
+
       setFeedback({
         type: 'correct',
-        message: `🌟 Awesome! You completed the ${currentScene.title}!`
+        message: successMsg
       });
 
       confetti({
@@ -104,9 +118,13 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
       // TRY AGAIN!
       pictureSounds.playTryAgain();
       setWrongOptionId(option.id);
+
+      const tryMsg = isMarathi ? 'जवळपास पोहोचलात! दुसरा तुकडा वापरून पहा! 🧩' : 'Almost! Try a different piece! 🧩';
+      speak(tryMsg);
+
       setFeedback({
         type: 'try-again',
-        message: 'Almost! Try a different piece! 🧩'
+        message: tryMsg
       });
 
       setTimeout(() => {
@@ -206,11 +224,11 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
               pictureSounds.playPop();
               onHome();
             }}
-            title="Back to Home"
+            title={isMarathi ? "मुख्यपृष्ठावर परत जा" : "Back to Home"}
             id="btn-pc-home"
           >
             <Home size={20} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           {/* Difficulty Switcher */}
@@ -222,7 +240,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
                 onClick={() => handleDifficultyChange(d.id)}
                 id={`btn-diff-${d.id}`}
               >
-                <span>{d.badge}</span>
+                <span>{isMarathi ? (d.badgeMr || d.badge) : d.badge}</span>
               </button>
             ))}
           </div>
@@ -231,7 +249,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
           <div className="pc-header-right">
             <div className="pc-score-pill">
               <Award size={18} />
-              <span>{score} pts</span>
+              <span>{score} {isMarathi ? 'गुण' : 'pts'}</span>
             </div>
 
             <div className="pc-stars-pill">
@@ -242,7 +260,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
             <button
               className="pc-sound-btn"
               onClick={toggleSound}
-              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Audio') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Audio')}
               id="btn-pc-sound"
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
@@ -261,7 +279,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
             id={`chip-cat-${cat.id}`}
           >
             <span>{cat.icon}</span>
-            <span>{cat.label}</span>
+            <span>{isMarathi ? (cat.labelMr || cat.label) : cat.label}</span>
           </button>
         ))}
       </nav>
@@ -272,9 +290,11 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
         <div className="pc-prompt-card">
           <div className="pc-prompt-info">
             <h2 className="pc-prompt-title">
-              <span>{currentScene.title}</span>
+              <span>{isMarathi ? (currentScene.titleMr || currentScene.title) : currentScene.title}</span>
             </h2>
-            <p className="pc-prompt-subtitle">{currentScene.prompt}</p>
+            <p className="pc-prompt-subtitle">
+              {isMarathi ? (currentScene.promptMr || currentScene.prompt) : currentScene.prompt}
+            </p>
           </div>
         </div>
 
@@ -301,7 +321,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
                 onClick={() => {
                   if (correctOption) handleSelectPiece(correctOption);
                 }}
-                title="Place missing piece here!"
+                title={isMarathi ? "गहाळ झालेला तुकडा येथे लावा!" : "Place missing piece here!"}
                 id="pc-missing-slot"
               >
                 {/* Easy Mode / Hint: Faint ghost preview */}
@@ -331,7 +351,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
         {/* 5. Options Tray: 3-4 Missing Piece Cards */}
         <div className="pc-options-tray">
           <div className="pc-options-label">
-            <span>Choose the missing piece:</span>
+            <span>{isMarathi ? 'गहाळ झालेला तुकडा निवडा:' : 'Choose the missing piece:'}</span>
           </div>
 
           <div className="pc-options-row">
@@ -348,7 +368,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
                   draggable={!isCompleted}
                   onDragStart={(e) => handleDragStart(e, opt)}
                   onClick={() => handleSelectPiece(opt)}
-                  title={`Select ${opt.label}`}
+                  title={isMarathi ? 'हा तुकडा निवडा' : `Select ${opt.label}`}
                   id={`opt-piece-${opt.id}`}
                 >
                   <div className="pc-option-svg-box">
@@ -365,40 +385,40 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
           <button
             className="pc-action-btn secondary"
             onClick={handlePrev}
-            title="Previous Picture"
+            title={isMarathi ? "मागील चित्र" : "Previous Picture"}
             id="btn-pc-prev"
           >
             <ChevronLeft size={20} />
-            <span>Prev</span>
+            <span>{isMarathi ? 'मागील' : 'Prev'}</span>
           </button>
 
           <button
             className="pc-action-btn hint"
             onClick={handleHint}
-            title="Need a Hint?"
+            title={isMarathi ? "टीप हवी आहे?" : "Need a Hint?"}
             id="btn-pc-hint"
           >
             <Lightbulb size={20} />
-            <span>Hint</span>
+            <span>{isMarathi ? 'टीप' : 'Hint'}</span>
           </button>
 
           <button
             className="pc-action-btn secondary"
             onClick={handleReset}
-            title="Reset Picture"
+            title={isMarathi ? "चित्र पुन्हा सुरू करा" : "Reset Picture"}
             id="btn-pc-reset"
           >
             <RotateCcw size={20} />
-            <span>Reset</span>
+            <span>{isMarathi ? 'रीसेट' : 'Reset'}</span>
           </button>
 
           <button
             className="pc-action-btn primary"
             onClick={handleNext}
-            title="Next Picture"
+            title={isMarathi ? "पुढील चित्र" : "Next Picture"}
             id="btn-pc-next"
           >
-            <span>Next</span>
+            <span>{isMarathi ? 'पुढील' : 'Next'}</span>
             <ChevronRight size={20} />
           </button>
         </div>
@@ -409,14 +429,20 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
         <div className="pc-celebration-backdrop">
           <div className="pc-celebration-card">
             <div className="pc-celebration-trophy">🏆</div>
-            <h2 className="pc-celebration-title">Picture Complete!</h2>
+            <h2 className="pc-celebration-title">
+              {isMarathi ? 'चित्र पूर्ण झाले! 🏆' : 'Picture Complete!'}
+            </h2>
             <div className="pc-celebration-stars">
               <span>⭐</span>
               <span>⭐</span>
               <span>⭐</span>
             </div>
             <p className="pc-celebration-subtitle">
-              You completed the <strong>{currentScene.title}</strong>! +3 Stars!
+              {isMarathi ? (
+                <>तुम्ही <strong>{currentScene.titleMr || currentScene.title}</strong> पूर्ण केले! +३ तारे!</>
+              ) : (
+                <>You completed the <strong>{currentScene.title}</strong>! +3 Stars!</>
+              )}
             </p>
             <div className="pc-celebration-actions">
               <button
@@ -424,13 +450,13 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
                 onClick={handleReset}
               >
                 <RotateCcw size={18} />
-                <span>Play Again</span>
+                <span>{isMarathi ? 'पुन्हा खेळा' : 'Play Again'}</span>
               </button>
               <button
                 className="pc-action-btn primary"
                 onClick={handleNext}
               >
-                <span>Next Picture</span>
+                <span>{isMarathi ? 'पुढील चित्र' : 'Next Picture'}</span>
                 <ChevronRight size={18} />
               </button>
             </div>

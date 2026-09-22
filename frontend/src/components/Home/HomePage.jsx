@@ -13,11 +13,12 @@ import PuzzleGame from '../Games/PuzzleGame';
 import DrawingGame from '../Creativity/DrawingGame';
 import TracingGame from '../Creativity/TracingGame';
 import PictureCompletionGame from '../Creativity/PictureCompletionGame';
-import MemoryDevelopmentGame from '../Creativity/MemoryDevelopmentGame';
+import MemoryDevelopmentGame from '../Logic And Thinking/MemoryDevelopmentGame';
 import OddOneOutGame from '../Logic And Thinking/OddOneOutGame';
-import GoodHabitsGame from '../Creativity/GoodHabitsGame';
-import EmotionalRecognitionGame from '../Creativity/EmotionalRecognitionGame';
-import SocialSkillsGame from '../Creativity/SocialSkillsGame';
+import GoodHabitsGame from '../Logic And Thinking/GoodHabitsGame';
+import EmotionalRecognitionGame from '../Logic And Thinking/EmotionalRecognitionGame';
+import SocialSkillsGame from '../Logic And Thinking/SocialSkillsGame';
+
 
 export default function HomePage({ user, onLogout, onToggleDashboard }) {
   const [stars, setStars] = useState(125);

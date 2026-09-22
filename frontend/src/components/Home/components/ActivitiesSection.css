@@ -323,6 +323,14 @@
   border-color: #4ade80;
 }
 
+.activity-card.theme-teal {
+  background: linear-gradient(180deg, #f0fdfa 0%, #ccfbf1 100%);
+  border-color: #99f6e4;
+}
+.activity-card.theme-teal:hover {
+  border-color: #2dd4bf;
+}
+
 /* Card Header: Floating Age Badge & Star Decor */
 .card-top-row {
   display: flex;
@@ -365,6 +373,12 @@
   background: #ffffff;
   color: #15803d;
   border: 1.5px solid #86efac;
+}
+
+.theme-teal .card-age-badge {
+  background: #ffffff;
+  color: #0f766e;
+  border: 1.5px solid #99f6e4;
 }
 
 .card-star-decor {
@@ -500,6 +514,16 @@
 .theme-green .btn-play-now:hover {
   background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
   box-shadow: 0 10px 22px rgba(16, 185, 129, 0.45);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.theme-teal .btn-play-now {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  box-shadow: 0 6px 16px rgba(13, 148, 136, 0.38);
+}
+.theme-teal .btn-play-now:hover {
+  background: linear-gradient(135deg, #2dd4bf 0%, #0f766e 100%);
+  box-shadow: 0 10px 22px rgba(13, 148, 136, 0.48);
   transform: translateY(-2px) scale(1.02);
 }
 

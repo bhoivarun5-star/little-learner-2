@@ -19,12 +19,24 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
       // Progressive Web App Service Worker Registration
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then(reg => console.log('Little Learner ServiceWorker registered with scope:', reg.scope))
             .catch(err => console.log('ServiceWorker registration error:', err));
         });
+      } else if ('serviceWorker' in navigator) {
+        // In local development, purge stale caches and unregister service workers to avoid stale Vite chunks
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (const reg of registrations) {
+            reg.unregister();
+          }
+        });
+        if ('caches' in window) {
+          caches.keys().then(keys => {
+            keys.forEach(k => caches.delete(k));
+          });
+        }
       }
     </script>
   </body>

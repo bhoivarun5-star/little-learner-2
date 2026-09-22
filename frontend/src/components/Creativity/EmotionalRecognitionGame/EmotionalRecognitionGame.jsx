@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import {
   ArrowLeft,
@@ -28,6 +28,8 @@ import { useLanguage } from '../../../context/LanguageContext';
 import './EmotionalRecognitionGame.css';
 
 export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }) {
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
   const handleExit = onHome || onBack;
 
   // Active Modes: 'guess' | 'situations' | 'match' | 'guide'
@@ -88,6 +90,8 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
     if (guessFeedback === 'correct') return;
 
     const isCorrect = emotionId === currentGuessRound.correctEmotionId;
+    const emotionObj = EMOTIONS_CATALOG.find((e) => e.id === emotionId);
+    const emotionName = isMarathi ? (emotionObj?.nameMr || emotionObj?.name) : emotionObj?.name;
 
     if (isCorrect) {
       emotionalRecognitionSounds.playCorrect();
@@ -95,6 +99,8 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
       setScore((s) => s + 10);
       setStars((st) => st + 1);
       onEarnStars?.(1);
+
+      if (speak && emotionName) speak(emotionName);
 
       confetti({
         particleCount: 75,
@@ -104,6 +110,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
     } else {
       emotionalRecognitionSounds.playWrong();
       setGuessFeedback('wrong');
+      if (speak) speak(isMarathi ? 'पुन्हा प्रयत्न करा' : 'Try again');
     }
   };
 
@@ -133,6 +140,8 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
     if (sitFeedback === 'correct') return;
 
     const isCorrect = emotionId === currentSitRound.correctEmotionId;
+    const emotionObj = EMOTIONS_CATALOG.find((e) => e.id === emotionId);
+    const emotionName = isMarathi ? (emotionObj?.nameMr || emotionObj?.name) : emotionObj?.name;
 
     if (isCorrect) {
       emotionalRecognitionSounds.playCorrect();
@@ -140,6 +149,8 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
       setScore((s) => s + 10);
       setStars((st) => st + 1);
       onEarnStars?.(1);
+
+      if (speak && emotionName) speak(emotionName);
 
       confetti({
         particleCount: 80,
@@ -149,6 +160,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
     } else {
       emotionalRecognitionSounds.playWrong();
       setSitFeedback('wrong');
+      if (speak) speak(isMarathi ? 'पुन्हा प्रयत्न करा' : 'Try again');
     }
   };
 
@@ -206,6 +218,10 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
   const handleSelectWord = (id) => {
     if (matchedIds.includes(id)) return;
     emotionalRecognitionSounds.playTap();
+
+    const emotionObj = EMOTIONS_CATALOG.find((e) => e.id === id);
+    const emotionName = isMarathi ? (emotionObj?.nameMr || emotionObj?.name) : emotionObj?.name;
+    if (speak && emotionName) speak(emotionName);
 
     if (selectedFaceId) {
       // Check match
@@ -266,7 +282,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
 
           <div className="er-game-branding">
             <span className="er-title-icon">😊</span>
-            <span className="er-brand-text">Emotional Recognition</span>
+            <span className="er-brand-text">{t('erTitle')}</span>
           </div>
         </div>
 
@@ -279,16 +295,16 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
 
           <div className="er-round-pill">
             {activeMode === 'guess' && (
-              <span>Round {guessRoundIdx + 1} / {GUESS_THE_EMOTION_ROUNDS.length}</span>
+              <span>{isMarathi ? `फेरी ${guessRoundIdx + 1} / ${GUESS_THE_EMOTION_ROUNDS.length}` : `Round ${guessRoundIdx + 1} / ${GUESS_THE_EMOTION_ROUNDS.length}`}</span>
             )}
             {activeMode === 'situations' && (
-              <span>Story {sitRoundIdx + 1} / {SITUATION_ROUNDS.length}</span>
+              <span>{isMarathi ? `गोष्ट ${sitRoundIdx + 1} / ${SITUATION_ROUNDS.length}` : `Story ${sitRoundIdx + 1} / ${SITUATION_ROUNDS.length}`}</span>
             )}
             {activeMode === 'match' && (
-              <span>Matching {matchRoundIdx + 1} / {MATCH_EMOTION_ROUNDS.length}</span>
+              <span>{isMarathi ? `जोड्या ${matchRoundIdx + 1} / ${MATCH_EMOTION_ROUNDS.length}` : `Matching ${matchRoundIdx + 1} / ${MATCH_EMOTION_ROUNDS.length}`}</span>
             )}
             {activeMode === 'guide' && (
-              <span>7 Core Emotions</span>
+              <span>{isMarathi ? '७ मुख्य भावना' : '7 Core Emotions'}</span>
             )}
           </div>
         </div>
@@ -340,7 +356,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <Smile size={18} />
-            <span>Guess Emotion</span>
+            <span>{t('erTabGuess')}</span>
           </button>
 
           <button
@@ -352,7 +368,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <HeartHandshake size={18} />
-            <span>How Do They Feel?</span>
+            <span>{t('erTabSituations')}</span>
           </button>
 
           <button
@@ -364,7 +380,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <LayoutGrid size={18} />
-            <span>Match Emotion</span>
+            <span>{t('erTabMatch')}</span>
           </button>
 
           <button
@@ -376,7 +392,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             }}
           >
             <BookOpen size={18} />
-            <span>Emotion Guide</span>
+            <span>{t('erTabGuide')}</span>
           </button>
         </nav>
 
@@ -404,7 +420,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
           <div className="er-card-challenge">
             <span className="er-badge-topic">
               <Sparkles size={14} />
-              <span>Face Clue</span>
+              <span>{isMarathi ? 'चेहऱ्याचा इशारा' : 'Face Clue'}</span>
             </span>
 
             {/* Expressive SVG Character Face */}
@@ -413,15 +429,19 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             </div>
 
             {/* Question Text */}
-            <h2 className="er-question-heading">{currentGuessRound.question}</h2>
+            <h2 className="er-question-heading">
+              {isMarathi ? (currentGuessRound.questionMr || currentGuessRound.question) : currentGuessRound.question}
+            </h2>
 
             {/* Option Buttons */}
             <div className="er-choices-grid">
               {currentGuessRound.options.map((optId) => {
                 const emotionObj = EMOTIONS_CATALOG.find((e) => e.id === optId) || {
                   name: optId,
+                  nameMr: optId,
                   emoji: '✨'
                 };
+                const emotionName = isMarathi ? (emotionObj.nameMr || emotionObj.name) : emotionObj.name;
                 return (
                   <button
                     key={optId}
@@ -431,7 +451,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                     disabled={guessFeedback === 'correct'}
                   >
                     <span className="er-choice-emoji">{emotionObj.emoji}</span>
-                    <span>{emotionObj.name}</span>
+                    <span>{emotionName}</span>
                   </button>
                 );
               })}
@@ -446,9 +466,9 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
               >
                 <div className="er-feedback-text">
                   {guessFeedback === 'correct' ? (
-                    <span>🎉 {currentGuessRound.praise}</span>
+                    <span>🎉 {isMarathi ? (currentGuessRound.praiseMr || currentGuessRound.praise) : currentGuessRound.praise}</span>
                   ) : (
-                    <span>🤔 Not quite! Hint: {currentGuessRound.hint}</span>
+                    <span>🤔 {isMarathi ? `अरेरे! इशारा: ${currentGuessRound.hintMr || currentGuessRound.hint}` : `Not quite! Hint: ${currentGuessRound.hint}`}</span>
                   )}
                 </div>
 
@@ -458,7 +478,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                     className="er-btn-next"
                     onClick={handleNextGuessRound}
                   >
-                    <span>Next</span>
+                    <span>{isMarathi ? 'पुढे' : 'Next'}</span>
                     <ArrowRight size={18} />
                   </button>
                 )}
@@ -474,7 +494,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
           <div className="er-card-challenge">
             <span className="er-badge-topic">
               <Sparkles size={14} />
-              <span>Real-Life Story</span>
+              <span>{isMarathi ? 'दैनंदिन प्रसंग' : 'Real-Life Story'}</span>
             </span>
 
             {/* Scenario Artwork */}
@@ -483,16 +503,20 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             </div>
 
             {/* Story Prompt */}
-            <p className="er-story-text">"{currentSitRound.story}"</p>
-            <h2 className="er-question-heading">{currentSitRound.question}</h2>
+            <p className="er-story-text">"{isMarathi ? (currentSitRound.storyMr || currentSitRound.story) : currentSitRound.story}"</p>
+            <h2 className="er-question-heading">
+              {isMarathi ? (currentSitRound.questionMr || currentSitRound.question) : currentSitRound.question}
+            </h2>
 
             {/* Option Buttons */}
             <div className="er-choices-grid">
               {currentSitRound.options.map((optId) => {
                 const emotionObj = EMOTIONS_CATALOG.find((e) => e.id === optId) || {
                   name: optId,
+                  nameMr: optId,
                   emoji: '✨'
                 };
+                const emotionName = isMarathi ? (emotionObj.nameMr || emotionObj.name) : emotionObj.name;
                 return (
                   <button
                     key={optId}
@@ -502,7 +526,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                     disabled={sitFeedback === 'correct'}
                   >
                     <span className="er-choice-emoji">{emotionObj.emoji}</span>
-                    <span>{emotionObj.name}</span>
+                    <span>{emotionName}</span>
                   </button>
                 );
               })}
@@ -517,9 +541,9 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
               >
                 <div className="er-feedback-text">
                   {sitFeedback === 'correct' ? (
-                    <span>🌟 {currentSitRound.praise}</span>
+                    <span>🌟 {isMarathi ? (currentSitRound.praiseMr || currentSitRound.praise) : currentSitRound.praise}</span>
                   ) : (
-                    <span>Hint: {currentSitRound.hint}</span>
+                    <span>{isMarathi ? `इशारा: ${currentSitRound.hintMr || currentSitRound.hint}` : `Hint: ${currentSitRound.hint}`}</span>
                   )}
                 </div>
 
@@ -529,7 +553,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                     className="er-btn-next"
                     onClick={handleNextSitRound}
                   >
-                    <span>Next Story</span>
+                    <span>{isMarathi ? 'पुढील गोष्ट' : 'Next Story'}</span>
                     <ArrowRight size={18} />
                   </button>
                 )}
@@ -543,15 +567,17 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             =================================================================== */}
         {activeMode === 'match' && currentMatchRound && (
           <div className="er-match-container">
-            <h2 className="er-match-title">Match the Faces to Their Emotion Names!</h2>
+            <h2 className="er-match-title">
+              {isMarathi ? 'चेहरे आणि त्यांच्या भावनांच्या नावांच्या जोड्या लावा!' : 'Match the Faces to Their Emotion Names!'}
+            </h2>
             <p className="er-match-instruction">
-              Tap a face on the left, then tap its matching emotion name on the right!
+              {isMarathi ? (currentMatchRound.promptMr || 'डावीकडील चेहऱ्यावर टॅप करा, नंतर उजवीकडील भावनांच्या योग्य नावावर टॅप करा!') : currentMatchRound.prompt}
             </p>
 
             <div className="er-match-columns">
               {/* Column 1: Faces */}
               <div className="er-match-column">
-                <span className="er-match-col-header">Faces</span>
+                <span className="er-match-col-header">{isMarathi ? 'चेहरे' : 'Faces'}</span>
                 {currentMatchRound.pairs.map((pair) => {
                   const isMatched = matchedIds.includes(pair.id);
                   const isSelected = selectedFaceId === pair.id;
@@ -564,7 +590,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                       onClick={() => handleSelectFace(pair.id)}
                     >
                       <span style={{ fontSize: '2.5rem' }}>{pair.emoji}</span>
-                      <span>{isMatched ? '✓ Matched!' : 'Face'}</span>
+                      <span>{isMatched ? (isMarathi ? '✓ जोडी जुळली!' : '✓ Matched!') : (isMarathi ? 'चेहरा' : 'Face')}</span>
                     </div>
                   );
                 })}
@@ -572,12 +598,13 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
 
               {/* Column 2: Words (Shuffled display) */}
               <div className="er-match-column">
-                <span className="er-match-col-header">Emotion Words</span>
+                <span className="er-match-col-header">{isMarathi ? 'भावनेचे शब्द' : 'Emotion Words'}</span>
                 {[...currentMatchRound.pairs]
                   .reverse()
                   .map((pair) => {
                     const isMatched = matchedIds.includes(pair.id);
                     const isSelected = selectedWordId === pair.id;
+                    const emotionName = isMarathi ? (pair.nameMr || pair.name) : pair.name;
                     return (
                       <div
                         key={`word-${pair.id}`}
@@ -586,7 +613,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                         }`}
                         onClick={() => handleSelectWord(pair.id)}
                       >
-                        <span style={{ color: pair.color }}>{pair.name}</span>
+                        <span style={{ color: pair.color }}>{emotionName}</span>
                         {isMatched && <CheckCircle2 size={18} color="#15803d" />}
                       </div>
                     );
@@ -598,14 +625,14 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             {matchedIds.length === currentMatchRound.pairs.length && (
               <div className="er-feedback-banner is-correct">
                 <span className="er-feedback-text">
-                  🎉 Fantastic! All emotions matched successfully!
+                  {isMarathi ? '🎉 अप्रतिम! सर्व भावनांच्या योग्य जोड्या जुळल्या!' : '🎉 Fantastic! All emotions matched successfully!'}
                 </span>
                 <button
                   type="button"
                   className="er-btn-next"
                   onClick={handleNextMatchRound}
                 >
-                  <span>Next Round</span>
+                  <span>{isMarathi ? 'पुढील फेरी' : 'Next Round'}</span>
                   <ArrowRight size={18} />
                 </button>
               </div>
@@ -630,13 +657,13 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                     className="er-guide-tagline"
                     style={{ background: emo.bg, color: emo.color }}
                   >
-                    {emo.tagline}
+                    {isMarathi ? (emo.taglineMr || emo.tagline) : emo.tagline}
                   </span>
                 </div>
-                <h3 className="er-guide-title">{emo.name}</h3>
-                <p className="er-guide-desc">{emo.description}</p>
+                <h3 className="er-guide-title">{isMarathi ? (emo.nameMr || emo.name) : emo.name}</h3>
+                <p className="er-guide-desc">{isMarathi ? (emo.descriptionMr || emo.description) : emo.description}</p>
                 <p className="er-guide-when">
-                  <strong>When we feel this:</strong> {emo.whenFeel}
+                  <strong>{isMarathi ? 'जेव्हा आपल्याला हे वाटते:' : 'When we feel this:'}</strong> {isMarathi ? (emo.whenFeelMr || emo.whenFeel) : emo.whenFeel}
                 </p>
               </div>
             ))}
@@ -655,20 +682,20 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
             onClick={(e) => e.stopPropagation()}
           >
             <span className="er-modal-icon">💡</span>
-            <h3 className="er-modal-title">Emotion Clue!</h3>
+            <h3 className="er-modal-title">{isMarathi ? 'भावनेचा इशारा!' : 'Emotion Clue!'}</h3>
             <p className="er-modal-desc">
               {activeMode === 'guess'
-                ? currentGuessRound.hint
+                ? (isMarathi ? (currentGuessRound.hintMr || currentGuessRound.hint) : currentGuessRound.hint)
                 : activeMode === 'situations'
-                ? currentSitRound.hint
-                : 'All feelings are natural and okay! Look closely at the eyebrows, eyes, and mouth to know how someone feels!'}
+                ? (isMarathi ? (currentSitRound.hintMr || currentSitRound.hint) : currentSitRound.hint)
+                : (isMarathi ? 'सर्व भावना स्वाभाविक आहेत! भुवया, डोळे आणि तोंड पाहा म्हणजे भावना समजेल!' : 'All feelings are natural and okay! Look closely at the eyebrows, eyes, and mouth to know how someone feels!')}
             </p>
             <button
               type="button"
               className="er-btn-modal-close"
               onClick={() => setShowHintModal(false)}
             >
-              Got it! 👍
+              {isMarathi ? 'समजले! 👍' : 'Got it! 👍'}
             </button>
           </div>
         </div>
@@ -679,9 +706,9 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
         <div className="er-modal-overlay">
           <div className="er-modal-box">
             <span className="er-modal-icon">🏆</span>
-            <h3 className="er-modal-title">Emotions Master!</h3>
+            <h3 className="er-modal-title">{isMarathi ? 'भावनांचे जादूगार! 🏆' : 'Emotions Master!'}</h3>
             <p className="er-modal-desc">
-              Amazing job! You identified all the emotions, earned <strong>{stars} Stars ⭐</strong>, and learned how to understand feelings with empathy!
+              {isMarathi ? `अप्रतिम कामगिरी! तुम्ही सर्व भावना ओळखल्या, ${stars} तारे मिळवले ⭐ आणि सहानुभूतीने भावना समजून घेणे शिकलात!` : `Amazing job! You identified all the emotions, earned ${stars} Stars ⭐, and learned how to understand feelings with empathy!`}
             </p>
             <div style={{ display: 'flex', gap: '0.75rem' }}>
               <button
@@ -689,7 +716,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                 className="er-btn-modal-close"
                 onClick={handleRestart}
               >
-                Play Again 🔄
+                {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
               </button>
               <button
                 type="button"
@@ -697,7 +724,7 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
                 style={{ background: '#3b82f6' }}
                 onClick={() => handleExit?.()}
               >
-                Back to Activities 🌟
+                {isMarathi ? 'सर्व खेळ 🌟' : 'Back to Activities 🌟'}
               </button>
             </div>
           </div>

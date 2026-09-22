@@ -23,7 +23,8 @@ import { useLanguage } from '../../../context/LanguageContext';
 import './OddOneOutGame.css';
 
 export default function OddOneOutGame({ onBack }) {
-  const { t, speak } = useLanguage();
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
   const [difficulty, setDifficulty] = useState('easy');
   const [roundIndex, setRoundIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -70,18 +71,23 @@ export default function OddOneOutGame({ onBack }) {
     oddSounds.playTap();
     setSelectedCardId(item.id);
 
+    const iconObj = ODD_ICONS[item.key] || { name: 'Item', nameMr: 'वस्तू' };
+    const itemName = isMarathi ? (iconObj.nameMr || iconObj.name) : iconObj.name;
+
     if (item.isOdd) {
       // Correct!
       setIsCorrect(true);
       setWrongCardId(null);
       setScore(prev => prev + 25);
       setStars(prev => prev + 3);
+      const correctMsg = t('oddCorrectMsg');
       setFeedback({
         type: 'correct',
-        text: 'Hooray! You found the odd one! 🌟'
+        text: correctMsg
       });
 
       oddSounds.playCorrect();
+      if (speak) speak(itemName);
 
       // Confetti burst
       try {
@@ -103,10 +109,12 @@ export default function OddOneOutGame({ onBack }) {
       // Wrong card
       setWrongCardId(item.id);
       oddSounds.playWrong();
+      const wrongMsg = t('oddWrongMsg');
       setFeedback({
         type: 'wrong',
-        text: "Almost! Look for the one that's different! 🔍"
+        text: wrongMsg
       });
+      if (speak) speak(wrongMsg);
 
       // Clear wobble after animation
       setTimeout(() => {
@@ -120,10 +128,14 @@ export default function OddOneOutGame({ onBack }) {
     if (isCorrect) return;
     oddSounds.playHint();
     setIsHinted(true);
+    const hintMsg = isMarathi
+      ? (currentRound.hintTextMr || currentRound.hintText || t('oddHintMsg'))
+      : (currentRound.hintText || t('oddHintMsg'));
     setFeedback({
       type: 'hint',
-      text: currentRound.hintText || t('oddHintMsg')
+      text: hintMsg
     });
+    if (speak) speak(hintMsg);
   };
 
   // Next Round
@@ -173,17 +185,21 @@ export default function OddOneOutGame({ onBack }) {
 
           {/* Center: Difficulty Selector */}
           <div className="odd-diff-group">
-            {DIFFICULTY_LEVELS.map((lvl) => (
-              <button
-                key={lvl.id}
-                type="button"
-                className={`odd-diff-pill ${difficulty === lvl.id ? 'active' : ''}`}
-                onClick={() => handleSelectDifficulty(lvl.id)}
-              >
-                <span>{lvl.emoji}</span>
-                <span>{lvl.label}</span>
-              </button>
-            ))}
+            {DIFFICULTY_LEVELS.map((lvl) => {
+              const diffKey = `odd${lvl.id.charAt(0).toUpperCase() + lvl.id.slice(1)}`;
+              const diffLabel = t(diffKey) || lvl.label;
+              return (
+                <button
+                  key={lvl.id}
+                  type="button"
+                  className={`odd-diff-pill ${difficulty === lvl.id ? 'active' : ''}`}
+                  onClick={() => handleSelectDifficulty(lvl.id)}
+                >
+                  <span>{lvl.emoji}</span>
+                  <span>{diffLabel}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Right: Stars, Hints, Audio, Restart */}
@@ -242,17 +258,18 @@ export default function OddOneOutGame({ onBack }) {
         {/* Question Banner */}
         <div className="odd-question-banner">
           <h2 className="odd-question-title">
-            <span>{currentRound.title}</span>
+            <span>{isMarathi ? (currentRound.titleMr || currentRound.title) : currentRound.title}</span>
           </h2>
           <p className="odd-question-subtitle">
-            Category: <strong>{currentRound.categoryName}</strong> • Tap the card that does NOT belong!
+            {t('oddCategory')}: <strong>{isMarathi ? (currentRound.categoryNameMr || currentRound.categoryName) : currentRound.categoryName}</strong> • {t('oddSubtitle')}
           </p>
         </div>
 
         {/* Cards Grid */}
         <div className={`odd-cards-grid cards-${currentRound.items.length}`}>
           {currentRound.items.map((item) => {
-            const iconObj = ODD_ICONS[item.key] || { name: 'Item', render: () => null };
+            const iconObj = ODD_ICONS[item.key] || { name: 'Item', nameMr: 'वस्तू', render: () => null };
+            const itemName = isMarathi ? (iconObj.nameMr || iconObj.name) : iconObj.name;
             const isItemCorrect = isCorrect && item.isOdd;
             const isItemWrong = wrongCardId === item.id;
             const isItemHinted = isHinted && item.isOdd;
@@ -266,12 +283,12 @@ export default function OddOneOutGame({ onBack }) {
                 } ${isItemHinted ? 'is-hinted' : ''}`}
                 onClick={() => handleCardClick(item)}
                 disabled={isCorrect}
-                aria-label={iconObj.name}
+                aria-label={itemName}
               >
                 <div className="odd-card-svg-wrap">
                   {iconObj.render()}
                 </div>
-                <span className="odd-card-label">{iconObj.name}</span>
+                <span className="odd-card-label">{itemName}</span>
               </button>
             );
           })}
@@ -306,19 +323,19 @@ export default function OddOneOutGame({ onBack }) {
         <div className="odd-modal-backdrop">
           <div className="odd-modal-content">
             <div className="odd-modal-trophy">🏆</div>
-            <h3 className="odd-modal-title">Spectacular Job!</h3>
+            <h3 className="odd-modal-title">{t('oddSpectacular')}</h3>
             <p className="odd-modal-desc">
-              You completed all <strong>{difficulty.toUpperCase()}</strong> levels of Odd One Out! Your eagle eyes found every different item!
+              {t('oddCompletedAll')}
             </p>
 
             <div className="odd-modal-stats">
               <div className="odd-stat-card">
                 <div className="odd-stat-value">⭐ {stars}</div>
-                <div className="odd-stat-label">Total Stars</div>
+                <div className="odd-stat-label">{t('totalStars')}</div>
               </div>
               <div className="odd-stat-card">
                 <div className="odd-stat-value">🎯 {score}</div>
-                <div className="odd-stat-label">Score</div>
+                <div className="odd-stat-label">{t('score')}</div>
               </div>
             </div>
 
@@ -333,30 +350,30 @@ export default function OddOneOutGame({ onBack }) {
                     setShowCelebration(false);
                   }}
                 >
-                  <span>Play {difficulty === 'easy' ? 'Medium (4 cards)' : 'Hard (5 cards)'}</span>
+                  <span>{difficulty === 'easy' ? t('oddPlayMedium') : t('oddPlayHard')}</span>
                   <ArrowRight size={18} />
                 </button>
               )}
 
-              <button
-                type="button"
-                className="odd-home-btn"
-                style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
-                onClick={handleRestart}
-              >
-                <RotateCcw size={18} />
-                <span>{t('btnPlayAgain')}</span>
-              </button>
+                <button
+                  type="button"
+                  className="odd-home-btn"
+                  style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
+                  onClick={handleRestart}
+                >
+                  <RotateCcw size={18} />
+                  <span>{t('btnPlayAgain')}</span>
+                </button>
 
               <button
-                type="button"
-                className="odd-home-btn"
-                style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
-                onClick={onBack}
-              >
-                <Home size={18} />
-                <span>{t('btnHome')}</span>
-              </button>
+                  type="button"
+                  className="odd-home-btn"
+                  style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
+                  onClick={onBack}
+                >
+                  <Home size={18} />
+                  <span>{t('btnHome')}</span>
+                </button>
             </div>
           </div>
         </div>

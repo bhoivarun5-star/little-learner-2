@@ -5,6 +5,7 @@ export const ODD_ICONS = {
   // Animals
   duck: {
     name: 'Duckling',
+    nameMr: 'बदकाचे पिल्लू',
     category: 'animals',
     color: '#facc15',
     render: () => (
@@ -21,6 +22,7 @@ export const ODD_ICONS = {
   },
   frog: {
     name: 'Little Frog',
+    nameMr: 'छोटा बेडूक',
     category: 'animals',
     color: '#4ade80',
     render: () => (
@@ -41,6 +43,7 @@ export const ODD_ICONS = {
   },
   cat: {
     name: 'Kitten',
+    nameMr: 'मांजराचे पिल्लू',
     category: 'animals',
     color: '#fb923c',
     render: () => (
@@ -65,6 +68,7 @@ export const ODD_ICONS = {
   },
   puppy: {
     name: 'Puppy',
+    nameMr: 'कुत्र्याचे पिल्लू',
     category: 'animals',
     color: '#d97706',
     render: () => (
@@ -84,6 +88,7 @@ export const ODD_ICONS = {
   },
   bird: {
     name: 'Little Bird',
+    nameMr: 'छोटा पक्षी',
     category: 'animals',
     color: '#38bdf8',
     render: () => (
@@ -99,6 +104,7 @@ export const ODD_ICONS = {
   },
   fish: {
     name: 'Fish',
+    nameMr: 'मासा',
     category: 'animals',
     color: '#ec4899',
     render: () => (
@@ -116,6 +122,7 @@ export const ODD_ICONS = {
   // Fruits & Foods
   apple: {
     name: 'Red Apple',
+    nameMr: 'लाल सफरचंद',
     category: 'fruits',
     color: '#ef4444',
     render: () => (
@@ -131,6 +138,7 @@ export const ODD_ICONS = {
   },
   banana: {
     name: 'Banana',
+    nameMr: 'केळे',
     category: 'fruits',
     color: '#eab308',
     render: () => (
@@ -148,6 +156,7 @@ export const ODD_ICONS = {
   },
   strawberry: {
     name: 'Strawberry',
+    nameMr: 'स्ट्रॉबेरी',
     category: 'fruits',
     color: '#f43f5e',
     render: () => (
@@ -169,6 +178,7 @@ export const ODD_ICONS = {
   },
   carrot: {
     name: 'Carrot',
+    nameMr: 'गाजर',
     category: 'fruits',
     color: '#f97316',
     render: () => (
@@ -186,6 +196,7 @@ export const ODD_ICONS = {
   },
   watermelon: {
     name: 'Watermelon',
+    nameMr: 'कलिंगड',
     category: 'fruits',
     color: '#ef4444',
     render: () => (
@@ -203,6 +214,7 @@ export const ODD_ICONS = {
   // Vehicles
   car: {
     name: 'Car',
+    nameMr: 'गाडी',
     category: 'vehicles',
     color: '#3b82f6',
     render: () => (
@@ -219,6 +231,7 @@ export const ODD_ICONS = {
   },
   airplane: {
     name: 'Airplane',
+    nameMr: 'विमान',
     category: 'vehicles',
     color: '#8b5cf6',
     render: () => (
@@ -235,6 +248,7 @@ export const ODD_ICONS = {
   },
   boat: {
     name: 'Sailboat',
+    nameMr: 'बोट',
     category: 'vehicles',
     color: '#06b6d4',
     render: () => (
@@ -248,6 +262,7 @@ export const ODD_ICONS = {
   },
   rocket: {
     name: 'Rocket',
+    nameMr: 'रॉकेट',
     category: 'vehicles',
     color: '#ef4444',
     render: () => (
@@ -267,6 +282,7 @@ export const ODD_ICONS = {
   // Shapes
   circle_purple: {
     name: 'Purple Circle',
+    nameMr: 'जांभळा गोल',
     category: 'shapes',
     color: '#a855f7',
     render: () => (
@@ -281,6 +297,7 @@ export const ODD_ICONS = {
   },
   triangle_orange: {
     name: 'Orange Triangle',
+    nameMr: 'केशरी त्रिकोण',
     category: 'shapes',
     color: '#f97316',
     render: () => (
@@ -294,6 +311,7 @@ export const ODD_ICONS = {
   },
   star_yellow: {
     name: 'Yellow Star',
+    nameMr: 'चमकता तारा',
     category: 'shapes',
     color: '#eab308',
     render: () => (
@@ -312,6 +330,7 @@ export const ODD_ICONS = {
   },
   square_blue: {
     name: 'Blue Square',
+    nameMr: 'निळा चौरस',
     category: 'shapes',
     color: '#3b82f6',
     render: () => (
@@ -325,6 +344,7 @@ export const ODD_ICONS = {
   },
   heart_pink: {
     name: 'Pink Heart',
+    nameMr: 'गुलाबी हृदय',
     category: 'shapes',
     color: '#ec4899',
     render: () => (
@@ -343,6 +363,7 @@ export const ODD_ICONS = {
   // Colors / Balloons
   balloon_blue: {
     name: 'Blue Balloon',
+    nameMr: 'निळा फुगा',
     category: 'colors',
     color: '#3b82f6',
     render: () => (
@@ -356,6 +377,7 @@ export const ODD_ICONS = {
   },
   balloon_yellow: {
     name: 'Yellow Balloon',
+    nameMr: 'पिवळा फुगा',
     category: 'colors',
     color: '#eab308',
     render: () => (
@@ -369,6 +391,7 @@ export const ODD_ICONS = {
   },
   balloon_red: {
     name: 'Red Balloon',
+    nameMr: 'लाल फुगा',
     category: 'colors',
     color: '#ef4444',
     render: () => (
@@ -384,6 +407,7 @@ export const ODD_ICONS = {
   // Toys
   teddy: {
     name: 'Teddy Bear',
+    nameMr: 'टेडी बेअर',
     category: 'toys',
     color: '#b45309',
     render: () => (
@@ -403,6 +427,7 @@ export const ODD_ICONS = {
   },
   robot: {
     name: 'Toy Robot',
+    nameMr: 'खेळण्यातील रोबोट',
     category: 'toys',
     color: '#0284c7',
     render: () => (
@@ -434,8 +459,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-e1',
     level: 'easy',
     title: 'Find the odd one!',
+    titleMr: 'वेगळा घटक शोधा!',
     categoryName: 'Animals',
+    categoryNameMr: 'प्राणी',
     hintText: 'Look for the green frog with a crown among the yellow ducklings!',
+    hintTextMr: 'पिवळ्या बदकांमध्ये मुकुट असलेला हिरवा बेडूक शोधा!',
     items: [
       { id: 'item-1', key: 'duck' },
       { id: 'item-2', key: 'frog', isOdd: true },
@@ -446,8 +474,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-e2',
     level: 'easy',
     title: 'Which one is different?',
+    titleMr: 'यातील काय वेगळे आहे?',
     categoryName: 'Fruits',
+    categoryNameMr: 'फळे',
     hintText: 'Two are red apples, and one is a sweet yellow banana!',
+    hintTextMr: 'दोन लाल सफरचंद आहेत आणि एक गोड पिवळे केळे आहे!',
     items: [
       { id: 'item-1', key: 'apple' },
       { id: 'item-2', key: 'apple' },
@@ -458,8 +489,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-e3',
     level: 'easy',
     title: 'Spot the difference!',
+    titleMr: 'फरक ओळखा!',
     categoryName: 'Vehicles',
+    categoryNameMr: 'वाहने',
     hintText: 'Cars drive on roads, but airplanes fly high in the sky!',
+    hintTextMr: 'गाड्या रस्त्यावर धावतात, पण विमाने आकाशात उंच उडतात!',
     items: [
       { id: 'item-1', key: 'car' },
       { id: 'item-2', key: 'airplane', isOdd: true },
@@ -470,8 +504,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-e4',
     level: 'easy',
     title: 'Which shape does not belong?',
+    titleMr: 'कोणता आकार बसत नाही?',
     categoryName: 'Shapes',
+    categoryNameMr: 'आकार',
     hintText: 'Find the bright triangle among the round circles!',
+    hintTextMr: 'गोल वर्तुळांमध्ये त्रिकोण शोधा!',
     items: [
       { id: 'item-1', key: 'circle_purple' },
       { id: 'item-2', key: 'circle_purple' },
@@ -482,8 +519,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-e5',
     level: 'easy',
     title: 'Which balloon is unique?',
+    titleMr: 'कोणता फुगा वेगळा आहे?',
     categoryName: 'Colors',
+    categoryNameMr: 'रंग',
     hintText: 'Find the sunny yellow balloon!',
+    hintTextMr: 'चमकणारा पिवळा फुगा शोधा!',
     items: [
       { id: 'item-1', key: 'balloon_blue' },
       { id: 'item-2', key: 'balloon_yellow', isOdd: true },
@@ -496,8 +536,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-m1',
     level: 'medium',
     title: 'Find the odd one out!',
+    titleMr: 'वेगळा घटक ओळखा!',
     categoryName: 'Animals',
+    categoryNameMr: 'प्राणी',
     hintText: 'Kittens purr, but the cute puppy barks!',
+    hintTextMr: 'मांजराचे पिल्लू म्याऊ करते, पण कुत्र्याचे पिल्लू भुंकते!',
     items: [
       { id: 'item-1', key: 'cat' },
       { id: 'item-2', key: 'cat' },
@@ -509,8 +552,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-m2',
     level: 'medium',
     title: 'Spot the different fruit!',
+    titleMr: 'वेगळे फळ शोधा!',
     categoryName: 'Fruits & Food',
+    categoryNameMr: 'फळे आणि अन्न',
     hintText: 'Find the crunchy orange carrot among the red strawberries!',
+    hintTextMr: 'लाल स्ट्रॉबेरीमध्ये केशरी गाजर शोधा!',
     items: [
       { id: 'item-1', key: 'strawberry' },
       { id: 'item-2', key: 'carrot', isOdd: true },
@@ -522,8 +568,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-m3',
     level: 'medium',
     title: 'Which vehicle is different?',
+    titleMr: 'कोणते वाहन वेगळे आहे?',
     categoryName: 'Vehicles',
+    categoryNameMr: 'वाहने',
     hintText: 'Boats float on water, but the rocket flies to outer space!',
+    hintTextMr: 'बोटी पाण्यावर तरंगतात, पण रॉकेट अंतराळात जाते!',
     items: [
       { id: 'item-1', key: 'boat' },
       { id: 'item-2', key: 'boat' },
@@ -535,8 +584,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-m4',
     level: 'medium',
     title: 'Which toy is not like the others?',
+    titleMr: 'कोणते खेळणे वेगळे आहे?',
     categoryName: 'Toys',
+    categoryNameMr: 'खेळणी',
     hintText: 'Three cuddly teddy bears and one cool beep-boop robot!',
+    hintTextMr: 'तीन मऊ टेडी बेअर आणि एक छान रोबोट!',
     items: [
       { id: 'item-1', key: 'teddy' },
       { id: 'item-2', key: 'robot', isOdd: true },
@@ -548,8 +600,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-m5',
     level: 'medium',
     title: 'Find the odd shape!',
+    titleMr: 'वेगळा आकार शोधा!',
     categoryName: 'Shapes',
+    categoryNameMr: 'आकार',
     hintText: 'Find the blue square among the shiny stars!',
+    hintTextMr: 'चमकत्या ताऱ्यांमध्ये निळा चौरस शोधा!',
     items: [
       { id: 'item-1', key: 'star_yellow' },
       { id: 'item-2', key: 'star_yellow' },
@@ -563,8 +618,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-h1',
     level: 'hard',
     title: 'Spot the odd one!',
+    titleMr: 'वेगळा घटक ओळखा!',
     categoryName: 'Animals',
+    categoryNameMr: 'प्राणी',
     hintText: 'Birds fly in the air, but the little pink fish swims in water!',
+    hintTextMr: 'पक्षी हवेत उडतात, पण गुलाबी मासा पाण्यात पोहतो!',
     items: [
       { id: 'item-1', key: 'bird' },
       { id: 'item-2', key: 'bird' },
@@ -577,8 +635,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-h2',
     level: 'hard',
     title: 'Which food is different?',
+    titleMr: 'कोणते अन्न वेगळे आहे?',
     categoryName: 'Fruits & Food',
+    categoryNameMr: 'फळे आणि अन्न',
     hintText: 'Find the delicious juicy watermelon slice among the red apples!',
+    hintTextMr: 'लाल सफरचंदांमध्ये रसाळ कलिंगडाची फोड शोधा!',
     items: [
       { id: 'item-1', key: 'apple' },
       { id: 'item-2', key: 'watermelon', isOdd: true },
@@ -591,8 +652,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-h3',
     level: 'hard',
     title: 'Which shape does not match?',
+    titleMr: 'कोणता आकार जुळत नाही?',
     categoryName: 'Shapes',
+    categoryNameMr: 'आकार',
     hintText: 'Look for the pink heart among the blue squares!',
+    hintTextMr: 'निळ्या चौरसांमध्ये गुलाबी हृदय शोधा!',
     items: [
       { id: 'item-1', key: 'square_blue' },
       { id: 'item-2', key: 'square_blue' },
@@ -605,8 +669,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-h4',
     level: 'hard',
     title: 'Which vehicle stands out?',
+    titleMr: 'कोणते वाहन वेगळे आहे?',
     categoryName: 'Vehicles',
+    categoryNameMr: 'वाहने',
     hintText: 'Find the blue car among the high-flying airplanes!',
+    hintTextMr: 'उंच उडणाऱ्या विमानांमध्ये निळी गाडी शोधा!',
     items: [
       { id: 'item-1', key: 'airplane' },
       { id: 'item-2', key: 'airplane' },
@@ -619,8 +686,11 @@ export const ODD_ONE_OUT_ROUNDS = [
     id: 'round-h5',
     level: 'hard',
     title: 'Color challenge!',
+    titleMr: 'रंग आव्हान!',
     categoryName: 'Colors',
+    categoryNameMr: 'रंग',
     hintText: 'Find the bright red balloon among the blue ones!',
+    hintTextMr: 'निळ्या फुग्यांमध्ये चमकदार लाल फुगा शोधा!',
     items: [
       { id: 'item-1', key: 'balloon_blue' },
       { id: 'item-2', key: 'balloon_blue' },

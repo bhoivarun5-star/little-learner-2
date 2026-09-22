@@ -56,6 +56,11 @@ self.addEventListener('fetch', (event) => {
   // Ignore chrome-extension or unsupported schemes
   if (!url.protocol.startsWith('http')) return;
 
+  // Never intercept or cache requests during local development
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+    return;
+  }
+
   // Handle API calls: Network first, offline mock fallback
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(

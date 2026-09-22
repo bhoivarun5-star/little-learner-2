@@ -2,9 +2,12 @@ export const NUMBERS_DATA = [
   {
     number: 1,
     word: 'One',
+    wordMr: 'एक',
     emoji: '🍎',
     itemName: 'Apple',
+    itemNameMr: 'सफरचंद',
     itemPlural: 'Apples',
+    itemPluralMr: 'सफरचंद',
     color: '#ef4444',
     bg: '#fee2e2',
     borderColor: '#fca5a5'
@@ -12,9 +15,12 @@ export const NUMBERS_DATA = [
   {
     number: 2,
     word: 'Two',
+    wordMr: 'दोन',
     emoji: '⭐',
     itemName: 'Star',
+    itemNameMr: 'चांदणी',
     itemPlural: 'Stars',
+    itemPluralMr: 'चांदण्या',
     color: '#f59e0b',
     bg: '#fef3c7',
     borderColor: '#fde68a'
@@ -22,9 +28,12 @@ export const NUMBERS_DATA = [
   {
     number: 3,
     word: 'Three',
+    wordMr: 'तीन',
     emoji: '🚗',
     itemName: 'Car',
+    itemNameMr: 'गाडी',
     itemPlural: 'Cars',
+    itemPluralMr: 'गाड्या',
     color: '#3b82f6',
     bg: '#dbeafe',
     borderColor: '#93c5fd'
@@ -32,9 +41,12 @@ export const NUMBERS_DATA = [
   {
     number: 4,
     word: 'Four',
+    wordMr: 'चार',
     emoji: '🐶',
     itemName: 'Puppy',
+    itemNameMr: 'पिल्लू',
     itemPlural: 'Puppies',
+    itemPluralMr: 'पिल्ले',
     color: '#10b981',
     bg: '#d1fae5',
     borderColor: '#6ee7b7'
@@ -42,9 +54,12 @@ export const NUMBERS_DATA = [
   {
     number: 5,
     word: 'Five',
+    wordMr: 'पाच',
     emoji: '🎈',
     itemName: 'Balloon',
+    itemNameMr: 'फुगा',
     itemPlural: 'Balloons',
+    itemPluralMr: 'फुगे',
     color: '#8b5cf6',
     bg: '#ede9fe',
     borderColor: '#c4b5fd'
@@ -52,9 +67,12 @@ export const NUMBERS_DATA = [
   {
     number: 6,
     word: 'Six',
+    wordMr: 'सहा',
     emoji: '🍓',
     itemName: 'Strawberry',
+    itemNameMr: 'स्ट्रॉबेरी',
     itemPlural: 'Strawberries',
+    itemPluralMr: 'स्ट्रॉबेरी',
     color: '#f43f5e',
     bg: '#ffe4e6',
     borderColor: '#fda4af'
@@ -62,9 +80,12 @@ export const NUMBERS_DATA = [
   {
     number: 7,
     word: 'Seven',
+    wordMr: 'सात',
     emoji: '🐟',
     itemName: 'Fish',
+    itemNameMr: 'मासा',
     itemPlural: 'Fishes',
+    itemPluralMr: 'मासे',
     color: '#06b6d4',
     bg: '#cffafe',
     borderColor: '#67e8f9'
@@ -72,9 +93,12 @@ export const NUMBERS_DATA = [
   {
     number: 8,
     word: 'Eight',
+    wordMr: 'आठ',
     emoji: '🦋',
     itemName: 'Butterfly',
+    itemNameMr: 'फुलपाखरू',
     itemPlural: 'Butterflies',
+    itemPluralMr: 'फुलपाखरे',
     color: '#9333ea',
     bg: '#f3e8ff',
     borderColor: '#d8b4fe'
@@ -82,9 +106,12 @@ export const NUMBERS_DATA = [
   {
     number: 9,
     word: 'Nine',
+    wordMr: 'नऊ',
     emoji: '🌸',
     itemName: 'Flower',
+    itemNameMr: 'फूल',
     itemPlural: 'Flowers',
+    itemPluralMr: 'फुले',
     color: '#ec4899',
     bg: '#fce7f3',
     borderColor: '#f9a8d4'
@@ -92,9 +119,12 @@ export const NUMBERS_DATA = [
   {
     number: 10,
     word: 'Ten',
+    wordMr: 'दहा',
     emoji: '🧁',
     itemName: 'Cupcake',
+    itemNameMr: 'कपकेक',
     itemPlural: 'Cupcakes',
+    itemPluralMr: 'कपकेक',
     color: '#f97316',
     bg: '#ffedd5',
     borderColor: '#fdba74'
@@ -102,9 +132,12 @@ export const NUMBERS_DATA = [
   {
     number: 11,
     word: 'Eleven',
+    wordMr: 'अकरा',
     emoji: '⚽',
     itemName: 'Ball',
+    itemNameMr: 'चेंडू',
     itemPlural: 'Balls',
+    itemPluralMr: 'चेंडू',
     color: '#0284c7',
     bg: '#e0f2fe',
     borderColor: '#7dd3fc'
@@ -112,9 +145,12 @@ export const NUMBERS_DATA = [
   {
     number: 12,
     word: 'Twelve',
+    wordMr: 'बारा',
     emoji: '🦆',
     itemName: 'Duck',
+    itemNameMr: 'बदक',
     itemPlural: 'Ducks',
+    itemPluralMr: 'बदके',
     color: '#eab308',
     bg: '#fef9c3',
     borderColor: '#fde047'
@@ -122,9 +158,12 @@ export const NUMBERS_DATA = [
   {
     number: 13,
     word: 'Thirteen',
+    wordMr: 'तेरा',
     emoji: '🥕',
     itemName: 'Carrot',
+    itemNameMr: 'गाजर',
     itemPlural: 'Carrots',
+    itemPluralMr: 'गाजरे',
     color: '#ea580c',
     bg: '#ffedd5',
     borderColor: '#fdba74'
@@ -132,9 +171,12 @@ export const NUMBERS_DATA = [
   {
     number: 14,
     word: 'Fourteen',
+    wordMr: 'चौदा',
     emoji: '🚀',
     itemName: 'Rocket',
+    itemNameMr: 'रॉकेट',
     itemPlural: 'Rockets',
+    itemPluralMr: 'रॉकेट्स',
     color: '#6366f1',
     bg: '#e0e7ff',
     borderColor: '#a5b4fc'
@@ -142,9 +184,12 @@ export const NUMBERS_DATA = [
   {
     number: 15,
     word: 'Fifteen',
+    wordMr: 'पंधरा',
     emoji: '🐸',
     itemName: 'Frog',
+    itemNameMr: 'बेडूक',
     itemPlural: 'Frogs',
+    itemPluralMr: 'बेडूक',
     color: '#16a34a',
     bg: '#dcfce7',
     borderColor: '#86efac'
@@ -152,9 +197,12 @@ export const NUMBERS_DATA = [
   {
     number: 16,
     word: 'Sixteen',
+    wordMr: 'सोळा',
     emoji: '🍦',
     itemName: 'Ice Cream',
+    itemNameMr: 'आईस्क्रीम',
     itemPlural: 'Ice Creams',
+    itemPluralMr: 'आईस्क्रीम',
     color: '#d946ef',
     bg: '#fae8ff',
     borderColor: '#f0abfc'
@@ -162,9 +210,12 @@ export const NUMBERS_DATA = [
   {
     number: 17,
     word: 'Seventeen',
+    wordMr: 'सतरा',
     emoji: '🐝',
     itemName: 'Bee',
+    itemNameMr: 'मधमाशी',
     itemPlural: 'Bees',
+    itemPluralMr: 'मधमाश्या',
     color: '#ca8a04',
     bg: '#fef9c3',
     borderColor: '#fde047'
@@ -172,9 +223,12 @@ export const NUMBERS_DATA = [
   {
     number: 18,
     word: 'Eighteen',
+    wordMr: 'अठरा',
     emoji: '🍉',
     itemName: 'Watermelon',
+    itemNameMr: 'कलिंगड',
     itemPlural: 'Watermelons',
+    itemPluralMr: 'कलिंगड',
     color: '#059669',
     bg: '#d1fae5',
     borderColor: '#6ee7b7'
@@ -182,9 +236,12 @@ export const NUMBERS_DATA = [
   {
     number: 19,
     word: 'Nineteen',
+    wordMr: 'एकोणीस',
     emoji: '🐢',
     itemName: 'Turtle',
+    itemNameMr: 'कासव',
     itemPlural: 'Turtles',
+    itemPluralMr: 'कासवे',
     color: '#0d9488',
     bg: '#ccfbf1',
     borderColor: '#5eead4'
@@ -192,9 +249,12 @@ export const NUMBERS_DATA = [
   {
     number: 20,
     word: 'Twenty',
+    wordMr: 'वीस',
     emoji: '🎁',
     itemName: 'Gift',
+    itemNameMr: 'भेटवस्तू',
     itemPlural: 'Gifts',
+    itemPluralMr: 'भेटवस्तू',
     color: '#dc2626',
     bg: '#fee2e2',
     borderColor: '#fca5a5'

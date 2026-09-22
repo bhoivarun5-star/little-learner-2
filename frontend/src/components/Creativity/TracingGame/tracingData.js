@@ -30,7 +30,9 @@ export const UPPERCASE_DATA = [
     word: 'Apple',
     icon: '🍎',
     color: '#ef4444',
+    wordMr: 'सफरचंद',
     soundText: 'A is for Apple! /æ/ /æ/ Apple!',
+    soundTextMr: 'A म्हणजे सफरचंद!',
     strokes: [
       { id: 1, label: '1', start: { x: 200, y: 70 }, arrow: '⬇️', path: 'M 200 70 L 100 330' },
       { id: 2, label: '2', start: { x: 200, y: 70 }, arrow: '⬇️', path: 'M 200 70 L 300 330' },
@@ -47,7 +49,9 @@ export const UPPERCASE_DATA = [
     word: 'Butterfly',
     icon: '🦋',
     color: '#3b82f6',
+    wordMr: 'फुलपाखरू',
     soundText: 'B is for Butterfly! /b/ /b/ Butterfly!',
+    soundTextMr: 'B म्हणजे फुलपाखरू!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 70 }, arrow: '⬇️', path: 'M 120 70 L 120 330' },
       { id: 2, label: '2', start: { x: 120, y: 70 }, arrow: '↪️', path: 'M 120 70 C 260 70, 260 200, 120 200' },
@@ -66,7 +70,9 @@ export const UPPERCASE_DATA = [
     word: 'Cat',
     icon: '🐱',
     color: '#f59e0b',
+    wordMr: 'मांजर',
     soundText: 'C is for Cat! /k/ /k/ Cat!',
+    soundTextMr: 'C म्हणजे मांजर!',
     strokes: [
       { id: 1, label: '1', start: { x: 280, y: 110 }, arrow: '↩️', path: 'M 280 110 C 130 90, 110 310, 280 290' }
     ],
@@ -82,7 +88,9 @@ export const UPPERCASE_DATA = [
     word: 'Dolphin',
     icon: '🐬',
     color: '#06b6d4',
+    wordMr: 'डॉल्फिन',
     soundText: 'D is for Dolphin! /d/ /d/ Dolphin!',
+    soundTextMr: 'D म्हणजे डॉल्फिन!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 130, y: 70 }, arrow: '↪️', path: 'M 130 70 C 300 70, 300 330, 130 330' }
@@ -99,7 +107,9 @@ export const UPPERCASE_DATA = [
     word: 'Elephant',
     icon: '🐘',
     color: '#10b981',
+    wordMr: 'हत्ती',
     soundText: 'E is for Elephant! /e/ /e/ Elephant!',
+    soundTextMr: 'E म्हणजे हत्ती!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 130, y: 70 }, arrow: '➡️', path: 'M 130 70 L 280 70' },
@@ -118,7 +128,9 @@ export const UPPERCASE_DATA = [
     word: 'Fox',
     icon: '🦊',
     color: '#f97316',
+    wordMr: 'कोल्हा',
     soundText: 'F is for Fox! /f/ /f/ Fox!',
+    soundTextMr: 'F म्हणजे कोल्हा!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 130, y: 70 }, arrow: '➡️', path: 'M 130 70 L 280 70' },
@@ -135,7 +147,9 @@ export const UPPERCASE_DATA = [
     word: 'Giraffe',
     icon: '🦒',
     color: '#eab308',
+    wordMr: 'जिराफ',
     soundText: 'G is for Giraffe! /dʒ/ /dʒ/ Giraffe!',
+    soundTextMr: 'G म्हणजे जिराफ!',
     strokes: [
       { id: 1, label: '1', start: { x: 280, y: 110 }, arrow: '↩️', path: 'M 280 110 C 120 90, 100 310, 280 290' },
       { id: 2, label: '2', start: { x: 280, y: 290 }, arrow: '⬆️', path: 'M 280 290 L 280 210' },
@@ -153,7 +167,9 @@ export const UPPERCASE_DATA = [
     word: 'Horse',
     icon: '🐴',
     color: '#854d0e',
+    wordMr: 'घोडा',
     soundText: 'H is for Horse! /h/ /h/ Horse!',
+    soundTextMr: 'H म्हणजे घोडा!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 270, y: 70 }, arrow: '⬇️', path: 'M 270 70 L 270 330' },
@@ -170,7 +186,9 @@ export const UPPERCASE_DATA = [
     word: 'Ice cream',
     icon: '🍦',
     color: '#ec4899',
+    wordMr: 'आईस्क्रीम',
     soundText: 'I is for Ice cream! /aɪ/ /aɪ/ Ice cream!',
+    soundTextMr: 'I म्हणजे आईस्क्रीम!',
     strokes: [
       { id: 1, label: '1', start: { x: 200, y: 70 }, arrow: '⬇️', path: 'M 200 70 L 200 330' },
       { id: 2, label: '2', start: { x: 140, y: 70 }, arrow: '➡️', path: 'M 140 70 L 260 70' },
@@ -187,7 +205,9 @@ export const UPPERCASE_DATA = [
     word: 'Jellyfish',
     icon: '🪼',
     color: '#8b5cf6',
+    wordMr: 'जेलीफिश',
     soundText: 'J is for Jellyfish! /dʒ/ /dʒ/ Jellyfish!',
+    soundTextMr: 'J म्हणजे जेलीफिश!',
     strokes: [
       { id: 1, label: '1', start: { x: 150, y: 70 }, arrow: '➡️', path: 'M 150 70 L 260 70' },
       { id: 2, label: '2', start: { x: 230, y: 70 }, arrow: '↪️', path: 'M 230 70 L 230 270 C 230 330, 140 330, 140 270' }
@@ -203,7 +223,9 @@ export const UPPERCASE_DATA = [
     word: 'Kite',
     icon: '🪁',
     color: '#0284c7',
+    wordMr: 'कांगारू',
     soundText: 'K is for Kite! /k/ /k/ Kite!',
+    soundTextMr: 'K म्हणजे कांगारू!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 260, y: 80 }, arrow: '↙️', path: 'M 260 80 L 130 200' },
@@ -220,7 +242,9 @@ export const UPPERCASE_DATA = [
     word: 'Lion',
     icon: '🦁',
     color: '#f59e0b',
+    wordMr: 'सिंह',
     soundText: 'L is for Lion! /l/ /l/ Lion!',
+    soundTextMr: 'L म्हणजे सिंह!',
     strokes: [
       { id: 1, label: '1', start: { x: 140, y: 70 }, arrow: '⬇️', path: 'M 140 70 L 140 330' },
       { id: 2, label: '2', start: { x: 140, y: 330 }, arrow: '➡️', path: 'M 140 330 L 270 330' }
@@ -235,7 +259,9 @@ export const UPPERCASE_DATA = [
     word: 'Monkey',
     icon: '🐵',
     color: '#854d0e',
+    wordMr: 'माकड',
     soundText: 'M is for Monkey! /m/ /m/ Monkey!',
+    soundTextMr: 'M म्हणजे माकड!',
     strokes: [
       { id: 1, label: '1', start: { x: 110, y: 330 }, arrow: '⬆️', path: 'M 110 330 L 110 70' },
       { id: 2, label: '2', start: { x: 110, y: 70 }, arrow: '↘️', path: 'M 110 70 L 200 230' },
@@ -254,7 +280,9 @@ export const UPPERCASE_DATA = [
     word: 'Nest',
     icon: '🪺',
     color: '#10b981',
+    wordMr: 'घरटे',
     soundText: 'N is for Nest! /n/ /n/ Nest!',
+    soundTextMr: 'N म्हणजे घरटे!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 330 }, arrow: '⬆️', path: 'M 120 330 L 120 70' },
       { id: 2, label: '2', start: { x: 120, y: 70 }, arrow: '↘️', path: 'M 120 70 L 280 330' },
@@ -271,7 +299,9 @@ export const UPPERCASE_DATA = [
     word: 'Owl',
     icon: '🦉',
     color: '#f97316',
+    wordMr: 'घुबड',
     soundText: 'O is for Owl! /ɒ/ /ɒ/ Owl!',
+    soundTextMr: 'O म्हणजे घुबड!',
     strokes: [
       { id: 1, label: '1', start: { x: 200, y: 70 }, arrow: '🔄', path: 'M 200 70 C 100 70, 100 330, 200 330 C 300 330, 300 70, 200 70' }
     ],
@@ -289,7 +319,9 @@ export const UPPERCASE_DATA = [
     word: 'Penguin',
     icon: '🐧',
     color: '#0284c7',
+    wordMr: 'पांडा',
     soundText: 'P is for Penguin! /p/ /p/ Penguin!',
+    soundTextMr: 'P म्हणजे पांडा!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 130, y: 70 }, arrow: '↪️', path: 'M 130 70 C 280 70, 280 200, 130 200' }
@@ -305,7 +337,9 @@ export const UPPERCASE_DATA = [
     word: 'Queen',
     icon: '👑',
     color: '#ec4899',
+    wordMr: 'राणी',
     soundText: 'Q is for Queen! /kw/ /kw/ Queen!',
+    soundTextMr: 'Q म्हणजे राणी!',
     strokes: [
       { id: 1, label: '1', start: { x: 200, y: 70 }, arrow: '🔄', path: 'M 200 70 C 100 70, 100 330, 200 330 C 300 330, 300 70, 200 70' },
       { id: 2, label: '2', start: { x: 220, y: 260 }, arrow: '↘️', path: 'M 220 260 L 290 330' }
@@ -323,7 +357,9 @@ export const UPPERCASE_DATA = [
     word: 'Rainbow',
     icon: '🌈',
     color: '#ef4444',
+    wordMr: 'इंद्रधनुष्य',
     soundText: 'R is for Rainbow! /r/ /r/ Rainbow!',
+    soundTextMr: 'R म्हणजे इंद्रधनुष्य!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '⬇️', path: 'M 130 70 L 130 330' },
       { id: 2, label: '2', start: { x: 130, y: 70 }, arrow: '↪️', path: 'M 130 70 C 270 70, 270 200, 130 200' },
@@ -341,7 +377,9 @@ export const UPPERCASE_DATA = [
     word: 'Star',
     icon: '⭐',
     color: '#facc15',
+    wordMr: 'चांदणी',
     soundText: 'S is for Star! /s/ /s/ Star!',
+    soundTextMr: 'S म्हणजे चांदणी किंवा तारा!',
     strokes: [
       { id: 1, label: '1', start: { x: 270, y: 110 }, arrow: '↩️', path: 'M 270 110 C 170 70, 110 160, 200 200 C 290 240, 230 330, 130 290' }
     ],
@@ -358,7 +396,9 @@ export const UPPERCASE_DATA = [
     word: 'Train',
     icon: '🚂',
     color: '#8b5cf6',
+    wordMr: 'वाघ',
     soundText: 'T is for Train! /t/ /t/ Train!',
+    soundTextMr: 'T म्हणजे वाघ!',
     strokes: [
       { id: 1, label: '1', start: { x: 110, y: 70 }, arrow: '➡️', path: 'M 110 70 L 290 70' },
       { id: 2, label: '2', start: { x: 200, y: 70 }, arrow: '⬇️', path: 'M 200 70 L 200 330' }
@@ -373,7 +413,9 @@ export const UPPERCASE_DATA = [
     word: 'Umbrella',
     icon: '☂️',
     color: '#06b6d4',
+    wordMr: 'छत्री',
     soundText: 'U is for Umbrella! /ʌ/ /ʌ/ Umbrella!',
+    soundTextMr: 'U म्हणजे छत्री!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 70 }, arrow: '↪️', path: 'M 130 70 L 130 260 C 130 340, 270 340, 270 260 L 270 70' }
     ],
@@ -389,7 +431,9 @@ export const UPPERCASE_DATA = [
     word: 'Van',
     icon: '🚐',
     color: '#10b981',
+    wordMr: 'व्हॅन',
     soundText: 'V is for Van! /v/ /v/ Van!',
+    soundTextMr: 'V म्हणजे व्हॅन गाडी!',
     strokes: [
       { id: 1, label: '1', start: { x: 110, y: 70 }, arrow: '↘️', path: 'M 110 70 L 200 330' },
       { id: 2, label: '2', start: { x: 200, y: 330 }, arrow: '↗️', path: 'M 200 330 L 290 70' }
@@ -404,7 +448,9 @@ export const UPPERCASE_DATA = [
     word: 'Watermelon',
     icon: '🍉',
     color: '#ec4899',
+    wordMr: 'कलिंगड',
     soundText: 'W is for Watermelon! /w/ /w/ Watermelon!',
+    soundTextMr: 'W म्हणजे कलिंगड किंवा व्हेल मासा!',
     strokes: [
       { id: 1, label: '1', start: { x: 100, y: 70 }, arrow: '↘️', path: 'M 100 70 L 150 330' },
       { id: 2, label: '2', start: { x: 150, y: 330 }, arrow: '↗️', path: 'M 150 330 L 200 170' },
@@ -423,7 +469,9 @@ export const UPPERCASE_DATA = [
     word: 'Xylophone',
     icon: '🎵',
     color: '#8b5cf6',
+    wordMr: 'झायलोफोन',
     soundText: 'X is for Xylophone! /ks/ /ks/ Xylophone!',
+    soundTextMr: 'X म्हणजे झायलोफोन!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 70 }, arrow: '↘️', path: 'M 120 70 L 280 330' },
       { id: 2, label: '2', start: { x: 280, y: 70 }, arrow: '↙️', path: 'M 280 70 L 120 330' }
@@ -438,7 +486,9 @@ export const UPPERCASE_DATA = [
     word: 'Yacht',
     icon: '⛵',
     color: '#0284c7',
+    wordMr: 'नौका',
     soundText: 'Y is for Yacht! /j/ /j/ Yacht!',
+    soundTextMr: 'Y म्हणजे नौका!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 70 }, arrow: '↘️', path: 'M 120 70 L 200 190' },
       { id: 2, label: '2', start: { x: 280, y: 70 }, arrow: '↙️', path: 'M 280 70 L 200 190' },
@@ -455,7 +505,9 @@ export const UPPERCASE_DATA = [
     word: 'Zebra',
     icon: '🦓',
     color: '#1e1b4b',
+    wordMr: 'झेब्रा',
     soundText: 'Z is for Zebra! /z/ /z/ Zebra!',
+    soundTextMr: 'Z म्हणजे झेब्रा!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 70 }, arrow: '➡️', path: 'M 120 70 L 280 70' },
       { id: 2, label: '2', start: { x: 280, y: 70 }, arrow: '↙️', path: 'M 280 70 L 120 330' },
@@ -494,7 +546,9 @@ export const NUMBERS_DATA = [
     word: '1 Sun',
     icon: '☀️',
     color: '#f59e0b',
+    wordMr: '१ सूर्य',
     soundText: 'Number 1! One bright shining sun!',
+    soundTextMr: 'अंक १! एक तेजस्वी सूर्य!',
     strokes: [
       { id: 1, label: '1', start: { x: 150, y: 130 }, arrow: '↗️', path: 'M 150 130 L 200 80' },
       { id: 2, label: '2', start: { x: 200, y: 80 }, arrow: '⬇️', path: 'M 200 80 L 200 330' }
@@ -509,7 +563,9 @@ export const NUMBERS_DATA = [
     word: '2 Ducks',
     icon: '🦆',
     color: '#0284c7',
+    wordMr: '२ बदके',
     soundText: 'Number 2! Two friendly ducks!',
+    soundTextMr: 'अंक २! दोन पोहणारी बदके!',
     strokes: [
       { id: 1, label: '1', start: { x: 130, y: 130 }, arrow: '↪️', path: 'M 130 130 C 130 60, 270 60, 270 140 C 270 210, 130 270, 130 330' },
       { id: 2, label: '2', start: { x: 130, y: 330 }, arrow: '➡️', path: 'M 130 330 L 270 330' }
@@ -526,7 +582,9 @@ export const NUMBERS_DATA = [
     word: '3 Stars',
     icon: '⭐',
     color: '#eab308',
+    wordMr: '३ चांदण्या',
     soundText: 'Number 3! Three twinkling stars!',
+    soundTextMr: 'अंक ३! तीन चमकणाऱ्या चांदण्या!',
     strokes: [
       { id: 1, label: '1', start: { x: 140, y: 90 }, arrow: '↪️', path: 'M 140 90 C 260 70, 260 190, 180 190' },
       { id: 2, label: '2', start: { x: 180, y: 190 }, arrow: '↪️', path: 'M 180 190 C 270 190, 270 330, 130 310' }
@@ -543,7 +601,9 @@ export const NUMBERS_DATA = [
     word: '4 Apples',
     icon: '🍎',
     color: '#ef4444',
+    wordMr: '४ सफरचंद',
     soundText: 'Number 4! Four crunchy red apples!',
+    soundTextMr: 'अंक ४! चार गोड सफरचंद!',
     strokes: [
       { id: 1, label: '1', start: { x: 230, y: 70 }, arrow: '↙️', path: 'M 230 70 L 120 240' },
       { id: 2, label: '2', start: { x: 120, y: 240 }, arrow: '➡️', path: 'M 120 240 L 280 240' },
@@ -560,7 +620,9 @@ export const NUMBERS_DATA = [
     word: '5 Balloons',
     icon: '🎈',
     color: '#ec4899',
+    wordMr: '५ फुगे',
     soundText: 'Number 5! Five floating balloons!',
+    soundTextMr: 'अंक ५! पाच उडणारे फुगे!',
     strokes: [
       { id: 1, label: '1', start: { x: 250, y: 80 }, arrow: '⬅️', path: 'M 250 80 L 150 80' },
       { id: 2, label: '2', start: { x: 150, y: 80 }, arrow: '⬇️', path: 'M 150 80 L 150 190' },
@@ -578,7 +640,9 @@ export const NUMBERS_DATA = [
     word: '6 Flowers',
     icon: '🌸',
     color: '#10b981',
+    wordMr: '६ फुले',
     soundText: 'Number 6! Six pretty blooming flowers!',
+    soundTextMr: 'अंक ६! सहा टवटवीत फुले!',
     strokes: [
       { id: 1, label: '1', start: { x: 240, y: 80 }, arrow: '↩️', path: 'M 240 80 C 120 120, 100 330, 200 330 C 270 330, 270 210, 150 210' }
     ],
@@ -595,7 +659,9 @@ export const NUMBERS_DATA = [
     word: '7 Butterflies',
     icon: '🦋',
     color: '#8b5cf6',
+    wordMr: '७ फुलपाखरे',
     soundText: 'Number 7! Seven fluttering butterflies!',
+    soundTextMr: 'अंक ७! सात सुंदर फुलपाखरे!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 80 }, arrow: '➡️', path: 'M 120 80 L 270 80' },
       { id: 2, label: '2', start: { x: 270, y: 80 }, arrow: '↙️', path: 'M 270 80 L 150 330' }
@@ -610,7 +676,9 @@ export const NUMBERS_DATA = [
     word: '8 Strawberries',
     icon: '🍓',
     color: '#ef4444',
+    wordMr: '८ स्ट्रॉबेरी',
     soundText: 'Number 8! Eight sweet strawberries!',
+    soundTextMr: 'अंक ८! आठ गोड स्ट्रॉबेरी!',
     strokes: [
       { id: 1, label: '1', start: { x: 200, y: 80 }, arrow: '🔄', path: 'M 200 80 C 130 80, 130 190, 200 190 C 270 190, 270 330, 200 330 C 130 330, 130 190, 200 190 C 270 190, 270 80, 200 80' }
     ],
@@ -630,7 +698,9 @@ export const NUMBERS_DATA = [
     word: '9 Little Fish',
     icon: '🐟',
     color: '#0ea5e9',
+    wordMr: '९ मासे',
     soundText: 'Number 9! Nine swimming little fish!',
+    soundTextMr: 'अंक ९! नऊ पोहणारे मासे!',
     strokes: [
       { id: 1, label: '1', start: { x: 240, y: 160 }, arrow: '🔄', path: 'M 240 160 C 240 80, 140 80, 140 160 C 140 230, 240 230, 240 160' },
       { id: 2, label: '2', start: { x: 240, y: 100 }, arrow: '⬇️', path: 'M 240 100 L 240 280 C 240 330, 160 330, 140 310' }
@@ -648,7 +718,9 @@ export const NUMBERS_DATA = [
     word: '10 Ladybugs',
     icon: '🐞',
     color: '#f43f5e',
+    wordMr: '१० भुंगे',
     soundText: 'Number 10! Ten happy red ladybugs!',
+    soundTextMr: 'अंक १०! दहा लहान भुंगे!',
     strokes: [
       { id: 1, label: '1', start: { x: 120, y: 130 }, arrow: '↗️', path: 'M 120 130 L 150 80 L 150 330' },
       { id: 2, label: '2', start: { x: 250, y: 80 }, arrow: '🔄', path: 'M 250 80 C 190 80, 190 330, 250 330 C 310 330, 310 80, 250 80' }

@@ -377,6 +377,8 @@ export const TRANSLATIONS = {
     ghTabGuide: 'सवयी एक्सप्लोर करा',
     ghGoodHabitBtn: 'चांगली सवय! 👍',
     ghNotGoodBtn: 'वाईट सवय! 👎',
+    ghIsGoodHabit: 'ही चांगली सवय आहे का?',
+    ghDragToOrder: 'पायऱ्या योग्य क्रमाने लावा!',
     ghBrushTeeth: 'दात घासणे',
     ghWashHands: 'हात धुणे',
     ghBath: 'अंघोळ करणे',
@@ -388,6 +390,15 @@ export const TRANSLATIONS = {
 
     // Numbers & Shapes
     numTitle: 'संख्या आणि मोजणी',
-    shapesTitle: 'आकार आणि रंग'
+    shapesTitle: 'आकार आणि रंग',
+
+    // Drawing Game
+    drawingTitle: 'रंगकाम आणि चित्रकला स्टुडिओ',
+    drawingFreeMode: 'मुक्त चित्रकला',
+    drawingTemplates: 'नमुने चित्रे',
+    drawingColors: 'रंग',
+    drawingClear: 'पुसा',
+    drawingSave: 'सेव्ह करा',
+    drawingUndo: 'मागे जा'
   }
 };

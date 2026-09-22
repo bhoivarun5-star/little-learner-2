@@ -28,7 +28,9 @@ import { useLanguage } from '../../../context/LanguageContext';
 import './MemoryDevelopmentGame.css';
 
 export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
-  const { t } = useLanguage();
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
+
   // Navigation & Settings
   const [activeMode, setActiveMode] = useState('match'); // 'match' | 'remember'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
@@ -139,6 +141,9 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
     if (flippedCards.some((c) => c.cardId === card.cardId)) return;
 
     memorySounds.playCardFlip();
+    const itemName = isMarathi ? (card.item.nameMr || card.item.name) : card.item.name;
+    speak(itemName);
+
     const newFlipped = [...flippedCards, card];
     setFlippedCards(newFlipped);
 
@@ -185,6 +190,9 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
   const handleRememberOptionClick = (option) => {
     if (rememberPhase !== 'find') return;
     if (foundTargetIds.has(option.id)) return;
+
+    const optName = isMarathi ? (option.nameMr || option.name) : option.name;
+    speak(optName);
 
     setMoves((m) => m + 1);
     const isTarget = rememberRound.targets.some((t) => t.id === option.id);
@@ -255,7 +263,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
               memorySounds.playPop();
               onHome();
             }}
-            title="Back to Home"
+            title={isMarathi ? "मुख्यपृष्ठावर परत जा" : "Back to Home"}
             id="btn-memory-home"
           >
             <Home size={20} />
@@ -275,24 +283,24 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                 id={`btn-mode-${mode.id}`}
               >
                 <span>{mode.icon}</span>
-                <span>{mode.label}</span>
+                <span>{isMarathi ? (mode.labelMr || mode.label) : mode.label}</span>
               </button>
             ))}
           </div>
 
           {/* Right: Stats (Moves, Timer, Stars, Sound) */}
           <div className="memory-stats-group">
-            <div className="memory-stat-pill" title="Moves Counter">
-              <span>{t('memMoves')}:</span>
+            <div className="memory-stat-pill" title={isMarathi ? "चाली मोजणी" : "Moves Counter"}>
+              <span>{isMarathi ? 'चाली' : t('memMoves')}:</span>
               <strong>{moves}</strong>
             </div>
 
-            <div className="memory-stat-pill" title="Timer">
+            <div className="memory-stat-pill" title={isMarathi ? "वेळ" : "Timer"}>
               <Timer size={16} />
               <span>{formatTime(elapsedSeconds)}</span>
             </div>
 
-            <div className="memory-stat-pill stars" title="Total Stars">
+            <div className="memory-stat-pill stars" title={isMarathi ? "एकूण तारे" : "Total Stars"}>
               <Star size={16} className="memory-star-glow" />
               <span>{stars}</span>
             </div>
@@ -301,7 +309,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
               type="button"
               className="memory-sound-btn"
               onClick={toggleSound}
-              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Audio') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Audio')}
               id="btn-memory-sound"
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
@@ -324,7 +332,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
               }}
               id={`chip-diff-${diff.id}`}
             >
-              <span>{diff.badge}</span>
+              <span>{isMarathi ? (diff.badgeMr || diff.badge) : diff.badge}</span>
             </button>
           ))}
         </div>
@@ -342,7 +350,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
               id={`chip-theme-${th.id}`}
             >
               <span>{th.icon}</span>
-              <span>{th.label}</span>
+              <span>{isMarathi ? (th.labelMr || th.label) : th.label}</span>
             </button>
           ))}
         </div>
@@ -355,17 +363,17 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
           <h2 className="memory-prompt-text">
             {activeMode === 'match' ? (
               <>
-                <span>Flip & Find the Matching Pairs!</span>
+                <span>{isMarathi ? 'जुळणाऱ्या जोड्या शोधा!' : 'Flip & Find the Matching Pairs!'}</span>
                 <span>✨</span>
               </>
             ) : rememberPhase === 'preview' ? (
               <>
-                <span>Memorize these objects!</span>
+                <span>{isMarathi ? 'या वस्तू लक्षात ठेवा!' : 'Memorize these objects!'}</span>
                 <span>🧠</span>
               </>
             ) : (
               <>
-                <span>Now find the items you saw!</span>
+                <span>{isMarathi ? 'आता पाहिलेल्या वस्तू शोधा!' : 'Now find the items you saw!'}</span>
                 <span>🔍</span>
               </>
             )}
@@ -373,9 +381,9 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
 
           <div className="memory-pairs-counter">
             {activeMode === 'match' ? (
-              <span>Pairs: {matchedIds.size} / {currentDiffPreset.pairs}</span>
+              <span>{isMarathi ? 'जोड्या' : 'Pairs'}: {matchedIds.size} / {currentDiffPreset.pairs}</span>
             ) : (
-              <span>Found: {foundTargetIds.size} / {rememberRound ? rememberRound.targets.length : 0}</span>
+              <span>{isMarathi ? 'सापडल्या' : 'Found'}: {foundTargetIds.size} / {rememberRound ? rememberRound.targets.length : 0}</span>
             )}
           </div>
         </div>
@@ -406,7 +414,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                     <div className="memory-card-face memory-card-back">
                       <div className="memory-card-back-pattern">
                         <span className="memory-card-back-star">⭐</span>
-                        <span className="memory-card-back-label">Match</span>
+                        <span className="memory-card-back-label">{isMarathi ? 'जोडी' : 'Match'}</span>
                       </div>
                     </div>
 
@@ -420,7 +428,9 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                       }}
                     >
                       <span className="memory-card-front-icon">{card.item.icon}</span>
-                      <span className="memory-card-front-label">{card.item.name}</span>
+                      <span className="memory-card-front-label">
+                        {isMarathi ? (card.item.nameMr || card.item.name) : card.item.name}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -437,7 +447,9 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
             {/* Spotlight Card */}
             {rememberPhase === 'preview' ? (
               <div className="remember-spotlight-card">
-                <h3 className="remember-spotlight-title">Remember these items!</h3>
+                <h3 className="remember-spotlight-title">
+                  {isMarathi ? 'या वस्तू लक्षात ठेवा!' : 'Remember these items!'}
+                </h3>
                 <div className="remember-targets-row">
                   {rememberRound.targets.map((target) => (
                     <div
@@ -447,7 +459,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                     >
                       <span style={{ fontSize: '2.5rem' }}>{target.icon}</span>
                       <span style={{ fontSize: '0.85rem', fontWeight: 800, color: target.color }}>
-                        {target.name}
+                        {isMarathi ? (target.nameMr || target.name) : target.name}
                       </span>
                     </div>
                   ))}
@@ -476,7 +488,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                       {isFound && <span className="remember-option-badge">✅</span>}
                       <span style={{ fontSize: '2.5rem' }}>{opt.icon}</span>
                       <span style={{ fontSize: '0.85rem', fontWeight: 800, color: opt.color }}>
-                        {opt.name}
+                        {isMarathi ? (opt.nameMr || opt.name) : opt.name}
                       </span>
                     </div>
                   );
@@ -495,21 +507,21 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
               memorySounds.playPop();
               startNewGame();
             }}
-            title="Restart Game"
+            title={isMarathi ? "खेळ पुन्हा सुरू करा" : "Restart Game"}
             id="btn-memory-restart"
           >
             <RotateCcw size={18} />
-            <span>Restart</span>
+            <span>{isMarathi ? 'पुन्हा सुरू करा' : 'Restart'}</span>
           </button>
 
           <button
             type="button"
             className="memory-action-btn primary"
             onClick={handleNextLevel}
-            title="Next Level"
+            title={isMarathi ? "पुढील पातळी" : "Next Level"}
             id="btn-memory-next"
           >
-            <span>Next Level</span>
+            <span>{isMarathi ? 'पुढील पातळी' : 'Next Level'}</span>
             <ChevronRight size={18} />
           </button>
         </div>
@@ -520,15 +532,19 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
         <div className="memory-celebration-backdrop">
           <div className="memory-celebration-card">
             <div className="memory-celebration-trophy">🏆</div>
-            <h2 className="memory-celebration-title">Super Memory!</h2>
+            <h2 className="memory-celebration-title">
+              {isMarathi ? 'उत्कृष्ट स्मरणशक्ती!' : 'Super Memory!'}
+            </h2>
             <div className="memory-celebration-stars">
               <span>⭐</span>
               <span>⭐</span>
               <span>⭐</span>
             </div>
             <div className="memory-celebration-stats">
-              <p>Moves: <strong>{moves}</strong> • Time: <strong>{formatTime(elapsedSeconds)}</strong></p>
-              <p>+3 Stars Awarded! 🌟</p>
+              <p>
+                {isMarathi ? 'चाली' : 'Moves'}: <strong>{moves}</strong> • {isMarathi ? 'वेळ' : 'Time'}: <strong>{formatTime(elapsedSeconds)}</strong>
+              </p>
+              <p>{isMarathi ? '+३ तारे मिळाले! 🌟' : '+3 Stars Awarded! 🌟'}</p>
             </div>
             <div className="memory-celebration-actions">
               <button
@@ -540,7 +556,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                 }}
               >
                 <RotateCcw size={18} />
-                <span>Play Again</span>
+                <span>{isMarathi ? 'पुन्हा खेळा' : 'Play Again'}</span>
               </button>
               <button
                 type="button"
@@ -550,7 +566,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
                   setShowCelebration(false);
                 }}
               >
-                <span>Next Level</span>
+                <span>{isMarathi ? 'पुढील पातळी' : 'Next Level'}</span>
                 <ChevronRight size={18} />
               </button>
             </div>

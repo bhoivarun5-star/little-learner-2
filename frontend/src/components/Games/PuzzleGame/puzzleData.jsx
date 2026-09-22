@@ -1,18 +1,18 @@
 import React from 'react';
 
 export const CATEGORIES = [
-  { id: 'animals', label: 'Animals', icon: '🦁', color: '#f59e0b', bg: '#fef3c7' },
-  { id: 'fruits', label: 'Fruits', icon: '🍓', color: '#ef4444', bg: '#fee2e2' },
-  { id: 'vehicles', label: 'Vehicles', icon: '🚀', color: '#3b82f6', bg: '#dbeafe' },
-  { id: 'numbers', label: 'Numbers', icon: '🔢', color: '#10b981', bg: '#d1fae5' },
-  { id: 'shapes', label: 'Shapes', icon: '⭐', color: '#8b5cf6', bg: '#ede9fe' }
+  { id: 'animals', label: 'Animals', labelMr: 'प्राणी', icon: '🦁', color: '#f59e0b', bg: '#fef3c7' },
+  { id: 'fruits', label: 'Fruits', labelMr: 'फळे', icon: '🍓', color: '#ef4444', bg: '#fee2e2' },
+  { id: 'vehicles', label: 'Vehicles', labelMr: 'वाहने', icon: '🚀', color: '#3b82f6', bg: '#dbeafe' },
+  { id: 'numbers', label: 'Numbers', labelMr: 'अंक', icon: '🔢', color: '#10b981', bg: '#d1fae5' },
+  { id: 'shapes', label: 'Shapes', labelMr: 'आकार', icon: '⭐', color: '#8b5cf6', bg: '#ede9fe' }
 ];
 
 export const DIFFICULTY_LEVELS = [
-  { id: 'easy2', label: '2 Pieces', pieces: 2, rows: 1, cols: 2, badge: '🟢 Very Easy', age: '3 Yrs' },
-  { id: 'easy4', label: '4 Pieces', pieces: 4, rows: 2, cols: 2, badge: '🟢 Easy', age: '3–4 Yrs' },
-  { id: 'medium', label: '6 Pieces', pieces: 6, rows: 2, cols: 3, badge: '🟡 Medium', age: '4–5 Yrs' },
-  { id: 'hard', label: '9 Pieces', pieces: 9, rows: 3, cols: 3, badge: '🔴 Hard', age: '5–6 Yrs' }
+  { id: 'easy2', label: '2 Pieces', labelMr: '२ तुकडे', pieces: 2, rows: 1, cols: 2, badge: '🟢 Very Easy', badgeMr: '🟢 अतिशय सोपे', age: '3 Yrs', ageMr: '३ वर्षे' },
+  { id: 'easy4', label: '4 Pieces', labelMr: '४ तुकडे', pieces: 4, rows: 2, cols: 2, badge: '🟢 Easy', badgeMr: '🟢 सोपे', age: '3–4 Yrs', ageMr: '३–४ वर्षे' },
+  { id: 'medium', label: '6 Pieces', labelMr: '६ तुकडे', pieces: 6, rows: 2, cols: 3, badge: '🟡 Medium', badgeMr: '🟡 मध्यम', age: '4–5 Yrs', ageMr: '४–५ वर्षे' },
+  { id: 'hard', label: '9 Pieces', labelMr: '९ तुकडे', pieces: 9, rows: 3, cols: 3, badge: '🔴 Hard', badgeMr: '🔴 कठीण', age: '5–6 Yrs', ageMr: '५–६ वर्षे' }
 ];
 
 export const PUZZLES_DATA = [
@@ -23,8 +23,11 @@ export const PUZZLES_DATA = [
     id: 'lion',
     category: 'animals',
     name: 'Friendly Lion',
+    nameMr: 'मैत्रीपूर्ण सिंह',
     subtitle: 'The brave and happy king of the jungle!',
+    subtitleMr: 'जंगलाचा शूर आणि आनंदी राजा!',
     funFact: 'Lions love to play and take long sunny cat naps!',
+    funFactMr: 'सिंहांना खेळायला आणि उन्हात छान झोपायला आवडते!',
     badgeColor: '#f59e0b',
     bgGradient: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
     renderArt: () => (
@@ -93,8 +96,11 @@ export const PUZZLES_DATA = [
     id: 'elephant',
     category: 'animals',
     name: 'Happy Elephant',
+    nameMr: 'आनंदी हत्ती',
     subtitle: 'Big flappy ears and a cheerful swinging trunk!',
+    subtitleMr: 'मोठे कान आणि आनंदाने डोलणारी सोंड!',
     funFact: 'Elephants can spray water with their trunk like a garden hose!',
+    funFactMr: 'हत्ती आपल्या सोंडेने पाण्याचे फवारे उडवू शकतात!',
     badgeColor: '#0284c7',
     bgGradient: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)',
     renderArt: () => (
@@ -138,8 +144,11 @@ export const PUZZLES_DATA = [
     id: 'panda',
     category: 'animals',
     name: 'Playful Panda',
+    nameMr: 'खोडकर पांडा',
     subtitle: 'A sweet cuddly panda enjoying tasty bamboo!',
+    subtitleMr: 'गोड बांबू खाणारा गोंडस पांडा!',
     funFact: 'Pandas love munching on crunchy green bamboo shoots all day!',
+    funFactMr: 'पांडांना दिवसभर कुरकुरीत हिरवा बांबू खायला आवडतो!',
     badgeColor: '#10b981',
     bgGradient: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
     renderArt: () => (
@@ -186,8 +195,11 @@ export const PUZZLES_DATA = [
     id: 'strawberry',
     category: 'fruits',
     name: 'Sweet Strawberry',
+    nameMr: 'गोड स्ट्रॉबेरी',
     subtitle: 'Bright red, juicy, and packed with sweet sunshine!',
+    subtitleMr: 'लालभडक, रसाळ आणि गोड स्ट्रॉबेरी!',
     funFact: 'Strawberries are the only fruit that wear their seeds on the outside!',
+    funFactMr: 'स्ट्रॉबेरी हे एकमेव फळ आहे ज्याच्या बिया बाहेर असतात!',
     badgeColor: '#ef4444',
     bgGradient: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
     renderArt: () => (
@@ -238,8 +250,11 @@ export const PUZZLES_DATA = [
     id: 'banana',
     category: 'fruits',
     name: 'Golden Banana',
+    nameMr: 'पिवळे केळे',
     subtitle: 'Sweet, sunny, and super yummy energy booster!',
+    subtitleMr: 'गोड, चवदार आणि भरपूर ताकद देणारे केळे!',
     funFact: 'Bananas naturally smile with a happy curved curve!',
+    funFactMr: 'केळ्याचा सुंदर आकार हसऱ्या चेहऱ्यासारखा दिसतो!',
     badgeColor: '#eab308',
     bgGradient: 'linear-gradient(135deg, #fefce8 0%, #fef08a 100%)',
     renderArt: () => (
@@ -281,8 +296,11 @@ export const PUZZLES_DATA = [
     id: 'apple',
     category: 'fruits',
     name: 'Crunchy Apple',
+    nameMr: 'कुरकुरीत सफरचंद',
     subtitle: 'A sweet rosy apple that keeps the doctor away!',
+    subtitleMr: 'आरोग्यदायी आणि गोड लाल सफरचंद!',
     funFact: 'Apples float in water because 25% of their volume is fresh air!',
+    funFactMr: 'सफरचंद पाण्यात तरंगते कारण त्यात हवा असते!',
     badgeColor: '#dc2626',
     bgGradient: 'linear-gradient(135deg, #fee2e2 0%, #fca5a5 100%)',
     renderArt: () => (
@@ -320,8 +338,11 @@ export const PUZZLES_DATA = [
     id: 'rocket',
     category: 'vehicles',
     name: 'Space Rocket',
+    nameMr: 'अवकाश रॉकेट',
     subtitle: '3, 2, 1... Blast off to the shining stars!',
+    subtitleMr: '३, २, १... चमचमणाऱ्या ताऱ्यांकडे उड्डाण!',
     funFact: 'Rockets travel faster than a speeding shooting star!',
+    funFactMr: 'रॉकेट ताऱ्यांपेक्षाही वेगाने प्रवास करतात!',
     badgeColor: '#3b82f6',
     bgGradient: 'linear-gradient(135deg, #eff6ff 0%, #bfdbfe 100%)',
     renderArt: () => (
@@ -364,8 +385,11 @@ export const PUZZLES_DATA = [
     id: 'train',
     category: 'vehicles',
     name: 'Choo-Choo Train',
+    nameMr: 'आगगाडी (छुक छुक)',
     subtitle: 'Puffing white steam along the joyful countryside!',
+    subtitleMr: 'छुक छुक करत धूर सोडत धावणारी आगगाडी!',
     funFact: 'Trains travel on long steel rails across hills and bridges!',
+    funFactMr: 'आगगाड्या रुळांवरून डोंगर आणि पुलांवरून धावतात!',
     badgeColor: '#8b5cf6',
     bgGradient: 'linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%)',
     renderArt: () => (
@@ -413,8 +437,11 @@ export const PUZZLES_DATA = [
     id: 'num1',
     category: 'numbers',
     name: 'Number 1 & Sun',
+    nameMr: 'अंक १ आणि सूर्य',
     subtitle: 'One bright shining sun warming up the sky!',
+    subtitleMr: 'आकाशात चमकणारा एक तेजस्वी सूर्य!',
     funFact: 'There is only 1 sun in our solar system!',
+    funFactMr: 'आपल्या सूर्यमालेत फक्त १ सूर्य आहे!',
     badgeColor: '#10b981',
     bgGradient: 'linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%)',
     renderArt: () => (
@@ -463,8 +490,11 @@ export const PUZZLES_DATA = [
     id: 'num2',
     category: 'numbers',
     name: 'Number 2 & Ducks',
+    nameMr: 'अंक २ आणि बदके',
     subtitle: 'Two yellow ducklings swimming in the pond!',
+    subtitleMr: 'तलावात पोहणारी दोन पिवळी बदके!',
     funFact: 'Ducklings say quack quack and love warm pond splashes!',
+    funFactMr: 'बदके क्वॅक क्वॅक करतात आणि पाण्यात पोहतात!',
     badgeColor: '#0ea5e9',
     bgGradient: 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)',
     renderArt: () => (
@@ -507,8 +537,11 @@ export const PUZZLES_DATA = [
     id: 'star',
     category: 'shapes',
     name: 'Sparkling Star',
+    nameMr: 'चमकती चांदणी',
     subtitle: 'Twinkle, twinkle little star, shining in the night!',
+    subtitleMr: 'चांदोबाच्या देशातील चमकणारी सुंदर चांदणी!',
     funFact: 'Stars shine bright across the nighttime galaxy!',
+    funFactMr: 'चांदण्या रात्रीच्या आकाशात लखलखतात!',
     badgeColor: '#f59e0b',
     bgGradient: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
     renderArt: () => (
@@ -544,8 +577,11 @@ export const PUZZLES_DATA = [
     id: 'heart',
     category: 'shapes',
     name: 'Lovely Heart',
+    nameMr: 'सुंदर हृदय',
     subtitle: 'A sweet pink heart full of love and warm hugs!',
+    subtitleMr: 'प्रेम आणि आपुलकीचे सुंदर हृदय!',
     funFact: 'Hearts remind us to share kindness and love with our friends!',
+    funFactMr: 'हृदय आपल्याला सर्वांशी प्रेमाने वागण्याची आठवण करून देते!',
     badgeColor: '#ec4899',
     bgGradient: 'linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%)',
     renderArt: () => (

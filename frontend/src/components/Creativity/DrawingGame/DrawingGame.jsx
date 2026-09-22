@@ -20,37 +20,41 @@ import {
 } from 'lucide-react';
 import { TEMPLATES } from './drawingTemplates';
 import { drawingSounds } from './drawingSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './DrawingGame.css';
 
-// 16 Bright Toddler Colors
+// 16 Bright Toddler Colors with Marathi Names
 const COLOR_PALETTE = [
-  { name: 'Red', hex: '#ef4444' },
-  { name: 'Pink', hex: '#ec4899' },
-  { name: 'Orange', hex: '#f97316' },
-  { name: 'Amber', hex: '#f59e0b' },
-  { name: 'Yellow', hex: '#facc15' },
-  { name: 'Lime', hex: '#84cc16' },
-  { name: 'Green', hex: '#10b981' },
-  { name: 'Teal', hex: '#14b8a6' },
-  { name: 'Cyan', hex: '#06b6d4' },
-  { name: 'Sky Blue', hex: '#0ea5e9' },
-  { name: 'Royal Blue', hex: '#3b82f6' },
-  { name: 'Purple', hex: '#8b5cf6' },
-  { name: 'Violet', hex: '#a855f7' },
-  { name: 'Rose', hex: '#fb7185' },
-  { name: 'Brown', hex: '#854d0e' },
-  { name: 'Black', hex: '#1e1b4b' }
+  { name: 'Red', nameMr: 'लाल', hex: '#ef4444' },
+  { name: 'Pink', nameMr: 'गुलाबी', hex: '#ec4899' },
+  { name: 'Orange', nameMr: 'केशरी', hex: '#f97316' },
+  { name: 'Amber', nameMr: 'अंबर', hex: '#f59e0b' },
+  { name: 'Yellow', nameMr: 'पिवळा', hex: '#facc15' },
+  { name: 'Lime', nameMr: 'लिंबू हिरवा', hex: '#84cc16' },
+  { name: 'Green', nameMr: 'हिरवा', hex: '#10b981' },
+  { name: 'Teal', nameMr: 'टील', hex: '#14b8a6' },
+  { name: 'Cyan', nameMr: 'सायन', hex: '#06b6d4' },
+  { name: 'Sky Blue', nameMr: 'आकाशी निळा', hex: '#0ea5e9' },
+  { name: 'Royal Blue', nameMr: 'गडद निळा', hex: '#3b82f6' },
+  { name: 'Purple', nameMr: 'जांभळा', hex: '#8b5cf6' },
+  { name: 'Violet', nameMr: 'व्हायलेट', hex: '#a855f7' },
+  { name: 'Rose', nameMr: 'गुलाब', hex: '#fb7185' },
+  { name: 'Brown', nameMr: 'तपकिरी', hex: '#854d0e' },
+  { name: 'Black', nameMr: 'काळा', hex: '#1e1b4b' }
 ];
 
 // 4 Tactile Brush Sizes
 const BRUSH_SIZES = [
-  { id: 'sm', label: 'Small', size: 8, dot: 8 },
-  { id: 'md', label: 'Medium', size: 16, dot: 14 },
-  { id: 'lg', label: 'Large', size: 26, dot: 20 },
-  { id: 'xl', label: 'Jumbo', size: 40, dot: 28 }
+  { id: 'sm', label: 'Small', labelMr: 'लहान', size: 8, dot: 8 },
+  { id: 'md', label: 'Medium', labelMr: 'मध्यम', size: 16, dot: 14 },
+  { id: 'lg', label: 'Large', labelMr: 'मोठा', size: 26, dot: 20 },
+  { id: 'xl', label: 'Jumbo', labelMr: 'अतिमोठा', size: 40, dot: 28 }
 ];
 
 export default function DrawingGame({ onHome, onEarnStars }) {
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
+
   // Sound
   const [soundEnabled, setSoundEnabled] = useState(true);
 
@@ -125,6 +129,8 @@ export default function DrawingGame({ onHome, onEarnStars }) {
     drawingSounds.playPop();
     setActiveTemplate(template);
     loadTemplate(template);
+    const tmplName = isMarathi ? (template.nameMr || template.name) : template.name;
+    speak(tmplName);
   };
 
   // Get pointer coordinates relative to canvas internal resolution
@@ -393,35 +399,37 @@ export default function DrawingGame({ onHome, onEarnStars }) {
               type="button"
               className="drawing-btn-home"
               onClick={onHome}
-              title="Back to Home"
+              title={isMarathi ? 'मुख्यपृष्ठावर परत जा' : 'Back to Home'}
             >
               <Home size={18} />
-              <span>Home</span>
+              <span>{t('btnHome')}</span>
             </button>
 
             <div className="drawing-title-group">
               <h1 className="drawing-main-title">
-                <span>Drawing Game</span>
+                <span>{isMarathi ? 'रंगकाम आणि चित्रकला' : 'Drawing Game'}</span>
                 <Sparkles size={20} color="#f59e0b" />
               </h1>
-              <span className="drawing-sub-title">Ages 3–6 • Draw & Color Freely!</span>
+              <span className="drawing-sub-title">
+                {isMarathi ? 'वय ३–६ • आपल्या आवडीनुसार चित्रे काढा आणि रंगवा!' : 'Ages 3–6 • Draw & Color Freely!'}
+              </span>
             </div>
           </div>
 
           {/* Right: Stars, Save, New Drawing, Sound */}
           <div className="drawing-hud-right">
-            <div className="drawing-score-badge" title="Stars Collected">
+            <div className="drawing-score-badge" title={isMarathi ? 'मिळालेले तारे' : 'Stars Collected'}>
               <Star size={18} fill="#f59e0b" color="#f59e0b" />
-              <span>{stars} Stars</span>
+              <span>{stars} {isMarathi ? 'तारे' : 'Stars'}</span>
             </div>
 
             <div
               className="drawing-score-badge"
               style={{ background: '#ede9fe', color: '#6d28d9', borderColor: '#ddd6fe' }}
-              title="Artworks Created"
+              title={isMarathi ? 'बनवलेली चित्रे' : 'Artworks Created'}
             >
               <Trophy size={18} color="#7c3aed" />
-              <span>{masterpiecesCount} Art</span>
+              <span>{masterpiecesCount} {isMarathi ? 'चित्रे' : 'Art'}</span>
             </div>
 
             {/* Save / Download Button */}
@@ -429,10 +437,10 @@ export default function DrawingGame({ onHome, onEarnStars }) {
               type="button"
               className="drawing-btn-hud-action download"
               onClick={handleDownload}
-              title="Save & Download My Drawing"
+              title={isMarathi ? 'चित्र सेव्ह करा आणि डाउनलोड करा' : 'Save & Download My Drawing'}
             >
               <Download size={18} />
-              <span>Save Picture</span>
+              <span>{isMarathi ? 'चित्र सेव्ह करा' : 'Save Picture'}</span>
             </button>
 
             {/* New Blank Sheet Button */}
@@ -440,10 +448,10 @@ export default function DrawingGame({ onHome, onEarnStars }) {
               type="button"
               className="drawing-btn-hud-action new-sheet"
               onClick={handleStartNew}
-              title="Start a Fresh New Drawing"
+              title={isMarathi ? 'नवीन कोरे चित्र सुरू करा' : 'Start a Fresh New Drawing'}
             >
               <FilePlus2 size={18} />
-              <span>New</span>
+              <span>{isMarathi ? 'नवीन' : 'New'}</span>
             </button>
 
             {/* Sound Toggle */}
@@ -451,7 +459,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
               type="button"
               className="drawing-icon-circle-btn"
               onClick={handleToggleSound}
-              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Audio') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Audio')}
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} color="#ef4444" />}
             </button>
@@ -466,7 +474,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
           <aside className="drawing-tool-card">
             {/* Mode Tools */}
             <div className="tool-section-group">
-              <span className="tool-section-label">Tools</span>
+              <span className="tool-section-label">{isMarathi ? 'साधने' : 'Tools'}</span>
 
               {/* Brush */}
               <button
@@ -479,11 +487,12 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                 onClick={() => {
                   drawingSounds.playPop();
                   setActiveTool('brush');
+                  speak(isMarathi ? 'ब्रश' : 'Brush');
                 }}
-                title="Paint Brush"
+                title={isMarathi ? 'पेंट ब्रश' : 'Paint Brush'}
               >
                 <Paintbrush size={22} />
-                <span>Brush</span>
+                <span>{isMarathi ? 'ब्रश' : 'Brush'}</span>
               </button>
 
               {/* Paint Bucket (Color Fill) */}
@@ -497,11 +506,12 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                 onClick={() => {
                   drawingSounds.playSplash();
                   setActiveTool('bucket');
+                  speak(isMarathi ? 'रंग भरा' : 'Color Fill');
                 }}
-                title="Paint Bucket (Color Fill)"
+                title={isMarathi ? 'रंग भरा' : 'Paint Bucket (Color Fill)'}
               >
                 <PaintBucket size={22} />
-                <span>Fill</span>
+                <span>{isMarathi ? 'रंग भरा' : 'Fill'}</span>
               </button>
 
               {/* Eraser */}
@@ -515,17 +525,18 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                 onClick={() => {
                   drawingSounds.playSqueak();
                   setActiveTool('eraser');
+                  speak(isMarathi ? 'खोडरबर' : 'Eraser');
                 }}
-                title="Eraser"
+                title={isMarathi ? 'खोडरबर' : 'Eraser'}
               >
                 <Eraser size={22} />
-                <span>Eraser</span>
+                <span>{isMarathi ? 'खोडरबर' : 'Eraser'}</span>
               </button>
             </div>
 
             {/* Brush Sizes */}
             <div className="tool-section-group">
-              <span className="tool-section-label">Size</span>
+              <span className="tool-section-label">{isMarathi ? 'आकार' : 'Size'}</span>
               <div className="brush-sizes-grid">
                 {BRUSH_SIZES.map((bSize) => {
                   const isActive = activeSize.id === bSize.id;
@@ -537,8 +548,9 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                       onClick={() => {
                         drawingSounds.playPop();
                         setActiveSize(bSize);
+                        speak(isMarathi ? bSize.labelMr : bSize.label);
                       }}
-                      title={`${bSize.label} Brush Size`}
+                      title={isMarathi ? `${bSize.labelMr} ब्रश आकार` : `${bSize.label} Brush Size`}
                     >
                       <div
                         className="brush-dot-indicator"
@@ -556,14 +568,14 @@ export default function DrawingGame({ onHome, onEarnStars }) {
 
             {/* Undo / Redo & Clear */}
             <div className="tool-section-group">
-              <span className="tool-section-label">Actions</span>
+              <span className="tool-section-label">{isMarathi ? 'कृती' : 'Actions'}</span>
               <div className="undo-redo-group">
                 <button
                   type="button"
                   className="tool-action-btn"
                   onClick={handleUndo}
                   disabled={historyIndex <= 0}
-                  title="Undo"
+                  title={isMarathi ? 'मागे जा' : 'Undo'}
                 >
                   <RotateCcw size={18} />
                 </button>
@@ -572,7 +584,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                   className="tool-action-btn"
                   onClick={handleRedo}
                   disabled={historyIndex >= history.length - 1}
-                  title="Redo"
+                  title={isMarathi ? 'पुढे जा' : 'Redo'}
                 >
                   <RotateCw size={18} />
                 </button>
@@ -582,7 +594,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                 type="button"
                 className="tool-action-btn clear"
                 onClick={handleClear}
-                title="Clear Artwork"
+                title={isMarathi ? 'सर्व पुसा' : 'Clear Artwork'}
               >
                 <Trash2 size={18} />
               </button>
@@ -605,7 +617,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
 
           {/* Right Panel: 16-Color Rainbow Palette */}
           <aside className="drawing-palette-card">
-            <span className="palette-header-label">Colors</span>
+            <span className="palette-header-label">{isMarathi ? 'रंग' : 'Colors'}</span>
             <div className="drawing-colors-grid">
               {COLOR_PALETTE.map((c) => {
                 const isActive = activeColor === c.hex && activeTool !== 'eraser';
@@ -621,8 +633,9 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                       if (activeTool === 'eraser') {
                         setActiveTool('brush');
                       }
+                      speak(isMarathi ? c.nameMr : c.name);
                     }}
-                    title={`${c.name} (${c.hex})`}
+                    title={isMarathi ? `${c.nameMr} (${c.hex})` : `${c.name} (${c.hex})`}
                   />
                 );
               })}
@@ -635,10 +648,10 @@ export default function DrawingGame({ onHome, onEarnStars }) {
           <div className="templates-bar-header">
             <div className="templates-bar-title">
               <Palette size={20} color="#7c3aed" />
-              <span>Choose a Cute Template to Color</span>
+              <span>{isMarathi ? 'रंगवण्यासाठी सुंदर चित्र निवडा' : 'Choose a Cute Template to Color'}</span>
             </div>
             <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700 }}>
-              {activeTemplate.name}
+              {isMarathi ? (activeTemplate.nameMr || activeTemplate.name) : activeTemplate.name}
             </span>
           </div>
 
@@ -651,10 +664,10 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                   type="button"
                   className={`template-card-btn ${isActive ? 'is-active' : ''}`}
                   onClick={() => handleSelectTemplate(tmpl)}
-                  title={tmpl.subtitle}
+                  title={isMarathi ? (tmpl.subtitleMr || tmpl.subtitle) : tmpl.subtitle}
                 >
                   <span className="template-card-icon">{tmpl.icon}</span>
-                  <span>{tmpl.name}</span>
+                  <span>{isMarathi ? (tmpl.nameMr || tmpl.name) : tmpl.name}</span>
                 </button>
               );
             })}
@@ -679,14 +692,14 @@ export default function DrawingGame({ onHome, onEarnStars }) {
             </div>
 
             <h2 className="drawing-celebration-title">
-              Masterpiece Saved! 🎨
+              {isMarathi ? 'सुंदर चित्र सेव्ह झाले! 🎨' : 'Masterpiece Saved! 🎨'}
             </h2>
 
             <p className="drawing-celebration-msg">
-              Awesome work! Your picture was saved to your device!
+              {isMarathi ? 'छान काम! तुमचे चित्र तुमच्या उपकरणावर सेव्ह झाले आहे!' : 'Awesome work! Your picture was saved to your device!'}
               <br />
               <span style={{ color: '#10b981', fontWeight: 900 }}>
-                +3 Stars ⭐ Added to your Learner Profile!
+                {isMarathi ? '+३ तारे ⭐ तुमच्या प्रोफाइलमध्ये जोडले गेले!' : '+3 Stars ⭐ Added to your Learner Profile!'}
               </span>
             </p>
 
@@ -701,7 +714,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
                 onClick={() => setSavedImageUrl(null)}
               >
                 <CheckCircle2 size={18} />
-                <span>Keep Creating!</span>
+                <span>{isMarathi ? 'आणखी चित्रे काढा!' : 'Keep Creating!'}</span>
               </button>
             </div>
           </div>

@@ -24,7 +24,9 @@ import { useLanguage } from '../../../context/LanguageContext';
 import './ShapesColorsGame.css';
 
 export default function ShapesColorsGame({ onHome, onEarnStars }) {
-  const { t, speak } = useLanguage();
+  const { language, t, speak } = useLanguage();
+  const isMarathi = language === 'mr';
+
   // Navigation & Mode
   // Modes: 'explorer' | 'find-shape' | 'find-color' | 'match-name' | 'color-match' | 'sort-color'
   const [activeMode, setActiveMode] = useState('explorer');
@@ -65,7 +67,10 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      speak({ en: `Can you find the ${target.name}?`, mr: `${target.name} शोधा!` });
+      speak({
+        en: `Can you find the ${target.name}?`,
+        mr: `${target.nameMr || target.name} शोधा!`
+      });
     }, 200);
   };
 
@@ -78,7 +83,12 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
       setScore((s) => s + 10);
       setStars((st) => st + 1);
       onEarnStars?.(1);
-      setFeedback({ type: 'success', message: `Great job! That's the ${findShapeTarget.name}! ⭐` });
+      setFeedback({
+        type: 'success',
+        message: isMarathi
+          ? `खूप छान! हा ${findShapeTarget.nameMr || findShapeTarget.name} आहे! ⭐`
+          : `Great job! That's the ${findShapeTarget.name}! ⭐`
+      });
 
       confetti({
         particleCount: 50,
@@ -86,15 +96,26 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
         origin: { y: 0.6 }
       });
 
-      speak({ en: `Awesome! That is a ${findShapeTarget.name}!`, mr: `वा! तो ${findShapeTarget.name} आहे!` });
+      speak({
+        en: `Awesome! That is a ${findShapeTarget.name}!`,
+        mr: `शाब्बास! तो ${findShapeTarget.nameMr || findShapeTarget.name} आहे!`
+      });
 
       setTimeout(() => {
         initFindShapeGame();
       }, 2000);
     } else {
       shapesSounds.playWrongBoing();
-      speak({ en: `Oops! Look closely for the ${findShapeTarget.name}!`, mr: `अरे! ${findShapeTarget.name} नीट पाहा!` });
-      setFeedback({ type: 'wrong', message: `Try again! Can you find the ${findShapeTarget.name}?` });
+      speak({
+        en: `Oops! Look closely for the ${findShapeTarget.name}!`,
+        mr: `अरेरे! ${findShapeTarget.nameMr || findShapeTarget.name} नीट शोधा!`
+      });
+      setFeedback({
+        type: 'wrong',
+        message: isMarathi
+          ? `पुन्हा प्रयत्न करा! ${findShapeTarget.nameMr || findShapeTarget.name} कुठे आहे?`
+          : `Try again! Can you find the ${findShapeTarget.name}?`
+      });
       setTimeout(() => {
         setFindShapePicked(null);
       }, 1200);
@@ -120,7 +141,10 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      shapesSounds.speak(`Which one is ${target.name}?`);
+      speak({
+        en: `Which one is ${target.name}?`,
+        mr: `यापैकी ${target.nameMr || target.name} रंग कोणता आहे?`
+      });
     }, 200);
   };
 
@@ -133,7 +157,12 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
       setScore((s) => s + 10);
       setStars((st) => st + 1);
       onEarnStars?.(1);
-      setFeedback({ type: 'success', message: `Super! That's ${findColorTarget.name}! ⭐` });
+      setFeedback({
+        type: 'success',
+        message: isMarathi
+          ? `शाब्बास! हा ${findColorTarget.nameMr || findColorTarget.name} रंग आहे! ⭐`
+          : `Super! That's ${findColorTarget.name}! ⭐`
+      });
 
       confetti({
         particleCount: 50,
@@ -141,15 +170,26 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
         origin: { y: 0.6 }
       });
 
-      shapesSounds.speak(`Yay! You found ${findColorTarget.name}!`);
+      speak({
+        en: `Yay! You found ${findColorTarget.name}!`,
+        mr: `छान! तुम्ही ${findColorTarget.nameMr || findColorTarget.name} रंग शोधला!`
+      });
 
       setTimeout(() => {
         initFindColorGame();
       }, 2000);
     } else {
       shapesSounds.playWrongBoing();
-      shapesSounds.speak(`Not quite! Look for the color ${findColorTarget.name}!`);
-      setFeedback({ type: 'wrong', message: `Look again! Tap the ${findColorTarget.name} color!` });
+      speak({
+        en: `Not quite! Look for the color ${findColorTarget.name}!`,
+        mr: `अरेरे! ${findColorTarget.nameMr || findColorTarget.name} रंग शोधा!`
+      });
+      setFeedback({
+        type: 'wrong',
+        message: isMarathi
+          ? `पुन्हा पाहा! ${findColorTarget.nameMr || findColorTarget.name} रंगावर टॅप करा!`
+          : `Look again! Tap the ${findColorTarget.name} color!`
+      });
       setTimeout(() => {
         setFindColorPicked(null);
       }, 1200);
@@ -177,14 +217,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      shapesSounds.speak('Match each cute shape with its correct name!');
+      speak({
+        en: 'Match each cute shape with its correct name!',
+        mr: 'प्रत्येक आकाराची त्याच्या नावाशी जोडी लावा!'
+      });
     }, 200);
   };
 
   const handleSelectMatchShape = (shape) => {
     if (matchedIds.has(shape.id)) return;
     shapesSounds.playPop();
-    shapesSounds.speak(shape.name);
+    speak({ en: shape.name, mr: shape.nameMr || shape.name });
     setSelectedShapeMatch(shape);
 
     if (selectedNameMatch) {
@@ -195,7 +238,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
   const handleSelectMatchName = (shapeObj) => {
     if (matchedIds.has(shapeObj.id)) return;
     shapesSounds.playPop();
-    shapesSounds.speak(shapeObj.name);
+    speak({ en: shapeObj.name, mr: shapeObj.nameMr || shapeObj.name });
     setSelectedNameMatch(shapeObj);
 
     if (selectedShapeMatch) {
@@ -217,19 +260,37 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
 
       if (updated.size === 3) {
         shapesSounds.playVictory();
-        setFeedback({ type: 'success', message: 'Hooray! You matched all the shapes! 🎉' });
+        setFeedback({
+          type: 'success',
+          message: isMarathi
+            ? 'शाब्बास! तुम्ही सर्व आकारांच्या जोड्या लावल्या! 🎉'
+            : 'Hooray! You matched all the shapes! 🎉'
+        });
         confetti({ particleCount: 90, spread: 80, origin: { y: 0.5 } });
-        shapesSounds.speak('Fantastic job! You matched all the shapes!');
+        speak({
+          en: 'Fantastic job! You matched all the shapes!',
+          mr: 'खूप छान! तुम्ही सर्व आकारांच्या योग्य जोड्या लावल्या!'
+        });
         setTimeout(() => {
           initMatchNameGame();
         }, 2500);
       } else {
-        setFeedback({ type: 'success', message: `Great match: ${shape.name}! ⭐` });
+        setFeedback({
+          type: 'success',
+          message: isMarathi
+            ? `छान जोडी: ${shape.nameMr || shape.name}! ⭐`
+            : `Great match: ${shape.name}! ⭐`
+        });
         setTimeout(() => setFeedback(null), 1500);
       }
     } else {
       shapesSounds.playWrongBoing();
-      setFeedback({ type: 'wrong', message: `Oops! ${shape.name} does not match ${nameObj.name}!` });
+      setFeedback({
+        type: 'wrong',
+        message: isMarathi
+          ? `अरेरे! ${shape.nameMr || shape.name} आणि ${nameObj.nameMr || nameObj.name} जुळत नाहीत!`
+          : `Oops! ${shape.name} does not match ${nameObj.name}!`
+      });
       setTimeout(() => {
         setSelectedShapeMatch(null);
         setSelectedNameMatch(null);
@@ -246,7 +307,6 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
   const [colorMatchPicked, setColorMatchPicked] = useState(null);
 
   const initColorMatchGame = () => {
-    // Pick random color and a random item from that color
     const targetColor = COLORS_DATA[Math.floor(Math.random() * COLORS_DATA.length)];
     const targetItem = targetColor.items[Math.floor(Math.random() * targetColor.items.length)];
 
@@ -260,7 +320,10 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      shapesSounds.speak(`What color is this ${targetItem.name}?`);
+      speak({
+        en: `What color is this ${targetItem.name}?`,
+        mr: `या ${targetItem.nameMr || targetItem.name} चा रंग कोणता आहे?`
+      });
     }, 200);
   };
 
@@ -275,7 +338,9 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
       onEarnStars?.(1);
       setFeedback({
         type: 'success',
-        message: `Yes! The ${colorMatchTarget.name} is ${colorOption.name}! ⭐`
+        message: isMarathi
+          ? `बरोबर! ${colorMatchTarget.nameMr || colorMatchTarget.name} चा रंग ${colorOption.nameMr || colorOption.name} आहे! ⭐`
+          : `Yes! The ${colorMatchTarget.name} is ${colorOption.name}! ⭐`
       });
 
       confetti({
@@ -284,17 +349,25 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
         origin: { y: 0.6 }
       });
 
-      shapesSounds.speak(`Correct! The ${colorMatchTarget.name} is ${colorOption.name}!`);
+      speak({
+        en: `Correct! The ${colorMatchTarget.name} is ${colorOption.name}!`,
+        mr: `बरोबर! ${colorMatchTarget.nameMr || colorMatchTarget.name} चा रंग ${colorOption.nameMr || colorOption.name} आहे!`
+      });
 
       setTimeout(() => {
         initColorMatchGame();
       }, 2000);
     } else {
       shapesSounds.playWrongBoing();
-      shapesSounds.speak(`Try again! What color is the ${colorMatchTarget.name}?`);
+      speak({
+        en: `Try again! What color is the ${colorMatchTarget.name}?`,
+        mr: `पुन्हा प्रयत्न करा! ${colorMatchTarget.nameMr || colorMatchTarget.name} चा रंग कोणता आहे?`
+      });
       setFeedback({
         type: 'wrong',
-        message: `Not quite! Tap the matching color for the ${colorMatchTarget.name}!`
+        message: isMarathi
+          ? `पुन्हा प्रयत्न करा! ${colorMatchTarget.nameMr || colorMatchTarget.name} चा योग्य रंग निवडा!`
+          : `Not quite! Tap the matching color for the ${colorMatchTarget.name}!`
       });
       setTimeout(() => {
         setColorMatchPicked(null);
@@ -311,7 +384,6 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
   const [bucketItems, setBucketItems] = useState({});
 
   const initSortGame = () => {
-    // Pick 3 random colors for buckets
     const selectedBuckets = [...COLORS_DATA].sort(() => 0.5 - Math.random()).slice(0, 3);
     const items = [];
     selectedBuckets.forEach((bucket) => {
@@ -334,14 +406,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      shapesSounds.speak(`Place each cute item into the matching color bucket!`);
+      speak({
+        en: 'Place each cute item into the matching color bucket!',
+        mr: 'प्रत्येक वस्तू तिच्या रंगाच्या बादलीत ठेवा!'
+      });
     }, 200);
   };
 
   const handleSelectSortItem = (item) => {
     shapesSounds.playPop();
     setSelectedSortItem(item);
-    shapesSounds.speak(item.name);
+    speak({ en: item.name, mr: item.nameMr || item.name });
   };
 
   const handleDropIntoBucket = (bucket) => {
@@ -364,21 +439,37 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
 
       if (updatedQueue.length === 0) {
         shapesSounds.playVictory();
-        setFeedback({ type: 'success', message: 'Awesome! All items sorted correctly! 🎉' });
+        setFeedback({
+          type: 'success',
+          message: isMarathi
+            ? 'अप्रतिम! सर्व वस्तू योग्य रंगात ठेवल्या! 🎉'
+            : 'Awesome! All items sorted correctly! 🎉'
+        });
         confetti({ particleCount: 90, spread: 80, origin: { y: 0.5 } });
-        shapesSounds.speak('Hooray! You sorted every colorful item!');
+        speak({
+          en: 'Hooray! You sorted every colorful item!',
+          mr: 'शाब्बास! तुम्ही सर्व वस्तू योग्य रंगात ठेवल्या!'
+        });
         setTimeout(() => {
           initSortGame();
         }, 2500);
       } else {
-        shapesSounds.speak(`Into the ${bucket.name} bucket!`);
+        speak({
+          en: `Into the ${bucket.name} bucket!`,
+          mr: `${bucket.nameMr || bucket.name} बादलीत!`
+        });
       }
     } else {
       shapesSounds.playWrongBoing();
-      shapesSounds.speak(`Oops! That belongs in the ${selectedSortItem.colorId} bucket!`);
+      speak({
+        en: `Oops! That belongs in the ${selectedSortItem.colorId} bucket!`,
+        mr: 'अरेरे! ते दुसऱ्या रंगाच्या बादलीत ठेवा!'
+      });
       setFeedback({
         type: 'wrong',
-        message: `That doesn't match! Look for the ${selectedSortItem.colorId} bucket!`
+        message: isMarathi
+          ? 'रंग जुळत नाही! योग्य रंगाची बादली निवडा!'
+          : `That doesn't match! Look for the ${selectedSortItem.colorId} bucket!`
       });
       setTimeout(() => setFeedback(null), 1500);
     }
@@ -398,8 +489,10 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     } else if (activeMode === 'sort-color') {
       initSortGame();
     } else if (activeMode === 'explorer') {
-      // Announce initial shape
-      shapesSounds.speak(`This is a ${selectedShape.name}! ${selectedShape.description}`);
+      speak({
+        en: `This is a ${selectedShape.name}! ${selectedShape.description}`,
+        mr: `हा ${selectedShape.nameMr || selectedShape.name} आकार आहे! ${selectedShape.descriptionMr || selectedShape.description}`
+      });
     }
   }, [activeMode]);
 
@@ -409,22 +502,34 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
     setActiveShapeColorHex(SHAPES_DATA[index].defaultColor);
     shapesSounds.playPop();
     const item = SHAPES_DATA[index];
-    shapesSounds.speak(`${item.name}! ${item.description}`);
+    speak({
+      en: `${item.name}! ${item.description}`,
+      mr: `${item.nameMr || item.name}! ${item.descriptionMr || item.description}`
+    });
   };
 
   const handleSelectColor = (index) => {
     setCurrentColorIndex(index);
     shapesSounds.playPop();
     const item = COLORS_DATA[index];
-    shapesSounds.speak(item.soundDesc);
+    speak({
+      en: item.soundDesc,
+      mr: item.soundDescMr || item.soundDesc
+    });
   };
 
   const handleListenShape = () => {
-    shapesSounds.speak(`${selectedShape.name}! Pronounced: ${selectedShape.pronunciation}. ${selectedShape.description}`);
+    speak({
+      en: `${selectedShape.name}! Pronounced: ${selectedShape.pronunciation}. ${selectedShape.description}`,
+      mr: `${selectedShape.nameMr || selectedShape.name}! उच्चार: ${selectedShape.pronunciationMr || selectedShape.pronunciation}. ${selectedShape.descriptionMr || selectedShape.description}`
+    });
   };
 
   const handleListenColor = () => {
-    shapesSounds.speak(selectedColor.soundDesc);
+    speak({
+      en: selectedColor.soundDesc,
+      mr: selectedColor.soundDescMr || selectedColor.soundDesc
+    });
   };
 
   const handleNext = () => {
@@ -434,11 +539,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
         const nextIndex = (currentShapeIndex + 1) % SHAPES_DATA.length;
         setCurrentShapeIndex(nextIndex);
         setActiveShapeColorHex(SHAPES_DATA[nextIndex].defaultColor);
-        shapesSounds.speak(SHAPES_DATA[nextIndex].name);
+        speak({
+          en: SHAPES_DATA[nextIndex].name,
+          mr: SHAPES_DATA[nextIndex].nameMr || SHAPES_DATA[nextIndex].name
+        });
       } else {
         const nextIndex = (currentColorIndex + 1) % COLORS_DATA.length;
         setCurrentColorIndex(nextIndex);
-        shapesSounds.speak(COLORS_DATA[nextIndex].name);
+        speak({
+          en: COLORS_DATA[nextIndex].name,
+          mr: COLORS_DATA[nextIndex].nameMr || COLORS_DATA[nextIndex].name
+        });
       }
     } else if (activeMode === 'find-shape') {
       initFindShapeGame();
@@ -462,15 +573,30 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
         handleListenColor();
       }
     } else if (activeMode === 'find-shape') {
-      shapesSounds.speak(`Can you find the ${findShapeTarget.name}?`);
+      speak({
+        en: `Can you find the ${findShapeTarget.name}?`,
+        mr: `${findShapeTarget.nameMr || findShapeTarget.name} शोधा!`
+      });
     } else if (activeMode === 'find-color') {
-      shapesSounds.speak(`Which one is ${findColorTarget.name}?`);
+      speak({
+        en: `Which one is ${findColorTarget.name}?`,
+        mr: `यापैकी ${findColorTarget.nameMr || findColorTarget.name} रंग कोणता आहे?`
+      });
     } else if (activeMode === 'match-name') {
-      shapesSounds.speak('Match each cute shape with its correct name!');
+      speak({
+        en: 'Match each cute shape with its correct name!',
+        mr: 'प्रत्येक आकाराची त्याच्या नावाशी जोडी लावा!'
+      });
     } else if (activeMode === 'color-match') {
-      shapesSounds.speak(`What color is this ${colorMatchTarget?.name}?`);
+      speak({
+        en: `What color is this ${colorMatchTarget?.name}?`,
+        mr: `या ${colorMatchTarget?.nameMr || colorMatchTarget?.name} चा रंग कोणता आहे?`
+      });
     } else if (activeMode === 'sort-color') {
-      shapesSounds.speak('Place each cute item into the matching color bucket!');
+      speak({
+        en: 'Place each cute item into the matching color bucket!',
+        mr: 'प्रत्येक वस्तू तिच्या रंगाच्या बादलीत ठेवा!'
+      });
     }
   };
 
@@ -500,18 +626,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
               type="button"
               className="hud-btn-home"
               onClick={onHome}
-              title="Return to Home"
+              title={isMarathi ? 'मुख्यपृष्ठावर परत जा' : 'Return to Home'}
             >
               <Home size={20} />
-              <span>Home</span>
+              <span>{isMarathi ? 'मुख्यपृष्ठ' : 'Home'}</span>
             </button>
 
             <div className="hud-game-title-group">
               <h1 className="hud-game-title">
-                <span>Shapes & Colors</span>
+                <span>{isMarathi ? 'आकार आणि रंग' : 'Shapes & Colors'}</span>
                 <Sparkles size={18} color="#f59e0b" />
               </h1>
-              <span className="hud-game-subtitle">Ages 3–6 • Shapes, Colors & Mini-Games!</span>
+              <span className="hud-game-subtitle">
+                {isMarathi ? 'वय ३–६ • आकार, रंग आणि मिनी-गेम्स!' : 'Ages 3–6 • Shapes, Colors & Mini-Games!'}
+              </span>
             </div>
           </div>
 
@@ -520,9 +648,9 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
             <span className="hud-progress-label">
               {activeMode === 'explorer'
                 ? explorerTab === 'shapes'
-                  ? `Shape ${currentShapeIndex + 1} of ${SHAPES_DATA.length}`
-                  : `Color ${currentColorIndex + 1} of ${COLORS_DATA.length}`
-                : `Score: ${score} pts`}
+                  ? (isMarathi ? `आकार ${currentShapeIndex + 1} / ${SHAPES_DATA.length}` : `Shape ${currentShapeIndex + 1} of ${SHAPES_DATA.length}`)
+                  : (isMarathi ? `रंग ${currentColorIndex + 1} / ${COLORS_DATA.length}` : `Color ${currentColorIndex + 1} of ${COLORS_DATA.length}`)
+                : (isMarathi ? `गुण: ${score}` : `Score: ${score} pts`)}
             </span>
             <div className="hud-progress-track">
               <div className="hud-progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -531,7 +659,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
 
           {/* Right: Stars, Sound, Replay, Next */}
           <div className="hud-right-group">
-            <div className="hud-pill-badge stars" title="Stars collected!">
+            <div className="hud-pill-badge stars" title={isMarathi ? 'मिळालेले तारे!' : 'Stars collected!'}>
               <Star size={20} fill="#f59e0b" color="#f59e0b" />
               <span>{stars}</span>
             </div>
@@ -540,7 +668,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
               type="button"
               className="hud-icon-btn"
               onClick={handleToggleSound}
-              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Audio') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Audio')}
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} color="#dc2626" />}
             </button>
@@ -549,19 +677,19 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
               type="button"
               className="hud-btn-nav replay"
               onClick={handleReplay}
-              title="Replay Sound"
+              title={isMarathi ? 'पुन्हा ऐका' : 'Replay Sound'}
             >
               <RotateCcw size={18} />
-              <span>Replay</span>
+              <span>{isMarathi ? 'पुन्हा ऐका' : 'Replay'}</span>
             </button>
 
             <button
               type="button"
               className="hud-btn-nav next"
               onClick={handleNext}
-              title="Next"
+              title={isMarathi ? 'पुढे' : 'Next'}
             >
-              <span>Next</span>
+              <span>{isMarathi ? 'पुढे' : 'Next'}</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -576,7 +704,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           onClick={() => setActiveMode('explorer')}
         >
           <Shapes size={18} />
-          <span>Shapes & Colors</span>
+          <span>{isMarathi ? 'आकार आणि रंग' : 'Shapes & Colors'}</span>
         </button>
 
         <button
@@ -584,7 +712,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           className={`sc-mode-btn ${activeMode === 'find-shape' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('find-shape')}
         >
-          <span>⭐ Find the Shape</span>
+          <span>⭐ {isMarathi ? 'आकार शोधा' : 'Find the Shape'}</span>
         </button>
 
         <button
@@ -592,7 +720,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           className={`sc-mode-btn ${activeMode === 'find-color' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('find-color')}
         >
-          <span>🎨 Find the Color</span>
+          <span>🎨 {isMarathi ? 'रंग शोधा' : 'Find the Color'}</span>
         </button>
 
         <button
@@ -600,7 +728,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           className={`sc-mode-btn ${activeMode === 'match-name' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('match-name')}
         >
-          <span>🧩 Match Shape & Name</span>
+          <span>🧩 {isMarathi ? 'आकार आणि नावाची जोडी' : 'Match Shape & Name'}</span>
         </button>
 
         <button
@@ -608,7 +736,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           className={`sc-mode-btn ${activeMode === 'color-match' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('color-match')}
         >
-          <span>🎯 Color Match</span>
+          <span>🎯 {isMarathi ? 'रंग जुळवा' : 'Color Match'}</span>
         </button>
 
         <button
@@ -616,7 +744,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           className={`sc-mode-btn ${activeMode === 'sort-color' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('sort-color')}
         >
-          <span>🧺 Sort by Color</span>
+          <span>🧺 {isMarathi ? 'रंगानुसार वर्गीकरण' : 'Sort by Color'}</span>
         </button>
       </nav>
 
@@ -647,10 +775,13 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                 onClick={() => {
                   setExplorerTab('shapes');
                   shapesSounds.playPop();
-                  shapesSounds.speak(`Let's explore Shapes!`);
+                  speak({
+                    en: `Let's explore Shapes!`,
+                    mr: `चला आकार शिकूया!`
+                  });
                 }}
               >
-                🔺 Shapes (1–7)
+                🔺 {isMarathi ? 'आकार (१–७)' : 'Shapes (1–7)'}
               </button>
               <button
                 type="button"
@@ -658,10 +789,13 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                 onClick={() => {
                   setExplorerTab('colors');
                   shapesSounds.playPop();
-                  shapesSounds.speak(`Let's explore Colors!`);
+                  speak({
+                    en: `Let's explore Colors!`,
+                    mr: `चला रंग शिकूया!`
+                  });
                 }}
               >
-                🎨 Colors (1–7)
+                🎨 {isMarathi ? 'रंग (१–७)' : 'Colors (1–7)'}
               </button>
             </div>
 
@@ -672,14 +806,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                   <div
                     className="sc-shape-display-stage"
                     onClick={handleListenShape}
-                    title="Click to hear shape!"
+                    title={isMarathi ? 'आकार ऐकण्यासाठी टॅप करा!' : 'Click to hear shape!'}
                   >
                     {renderShapeSVG(selectedShape.id, activeShapeColorHex, 200)}
                   </div>
 
-                  <h2 className="sc-spotlight-title">{selectedShape.name}</h2>
-                  <p className="sc-spotlight-phonics">Says: "{selectedShape.pronunciation}"</p>
-                  <p className="sc-spotlight-desc">{selectedShape.description}</p>
+                  <h2 className="sc-spotlight-title">
+                    {isMarathi ? selectedShape.nameMr : selectedShape.name}
+                  </h2>
+                  <p className="sc-spotlight-phonics">
+                    {isMarathi ? `उच्चार: "${selectedShape.pronunciationMr || selectedShape.pronunciation}"` : `Says: "${selectedShape.pronunciation}"`}
+                  </p>
+                  <p className="sc-spotlight-desc">
+                    {isMarathi ? selectedShape.descriptionMr : selectedShape.description}
+                  </p>
 
                   <button
                     type="button"
@@ -687,13 +827,13 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                     onClick={handleListenShape}
                   >
                     <Volume2 size={24} />
-                    <span>Listen</span>
+                    <span>{isMarathi ? 'ऐका' : 'Listen'}</span>
                   </button>
 
                   {/* Change Shape Color Palette */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
                     <span style={{ fontSize: '0.88rem', fontWeight: 600, color: '#64748b' }}>
-                      Pick a color for the shape:
+                      {isMarathi ? 'आकारासाठी रंग निवडा:' : 'Pick a color for the shape:'}
                     </span>
                     <div className="sc-color-palette-bar">
                       {COLORS_DATA.map((color) => (
@@ -705,9 +845,12 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                           onClick={() => {
                             setActiveShapeColorHex(color.hex);
                             shapesSounds.playPop();
-                            shapesSounds.speak(`${color.name} ${selectedShape.name}!`);
+                            speak({
+                              en: `${color.name} ${selectedShape.name}!`,
+                              mr: `${color.nameMr || color.name} ${selectedShape.nameMr || selectedShape.name}!`
+                            });
                           }}
-                          title={color.name}
+                          title={isMarathi ? color.nameMr : color.name}
                         />
                       ))}
                     </div>
@@ -726,7 +869,9 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                         <div style={{ transform: 'scale(0.55)', width: '90px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           {renderShapeSVG(shape.id, shape.defaultColor, 120)}
                         </div>
-                        <span className="sc-selector-card-name">{shape.name}</span>
+                        <span className="sc-selector-card-name">
+                          {isMarathi ? shape.nameMr : shape.name}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -734,7 +879,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                   {/* Real World Objects */}
                   <div className="sc-real-world-box">
                     <h3 className="sc-real-world-title">
-                      <span>Real-World {selectedShape.name}s:</span>
+                      <span>{isMarathi ? `आपल्या सभोवतालचे ${selectedShape.nameMr}:` : `Real-World ${selectedShape.name}s:`}</span>
                     </h3>
                     <div className="sc-real-world-grid">
                       {selectedShape.realWorld.map((item, i) => (
@@ -743,12 +888,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                           className="sc-real-world-item"
                           onClick={() => {
                             shapesSounds.playPop();
-                            shapesSounds.speak(`A ${item.name} is a ${selectedShape.name}!`);
+                            speak({
+                              en: `A ${item.name} is a ${selectedShape.name}!`,
+                              mr: `${item.nameMr || item.name} हा ${selectedShape.nameMr || selectedShape.name} आकाराचा असतो!`
+                            });
                           }}
-                          title={`Listen to ${item.name}`}
+                          title={isMarathi ? `${item.nameMr} ऐका` : `Listen to ${item.name}`}
                         >
                           <span className="sc-real-world-emoji">{item.emoji}</span>
-                          <span className="sc-real-world-name">{item.name}</span>
+                          <span className="sc-real-world-name">
+                            {isMarathi ? item.nameMr : item.name}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -767,15 +917,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                       border: `4px solid ${selectedColor.borderHex}`
                     }}
                     onClick={handleListenColor}
-                    title="Click to hear color!"
+                    title={isMarathi ? 'रंग ऐकण्यासाठी टॅप करा!' : 'Click to hear color!'}
                   >
                     <span style={{ fontSize: '5rem' }}>{selectedColor.iconEmoji}</span>
                   </div>
 
                   <h2 className="sc-spotlight-title" style={{ color: selectedColor.accentColor }}>
-                    {selectedColor.name}
+                    {isMarathi ? selectedColor.nameMr : selectedColor.name}
                   </h2>
-                  <p className="sc-spotlight-desc">{selectedColor.soundDesc}</p>
+                  <p className="sc-spotlight-desc">
+                    {isMarathi ? selectedColor.soundDescMr : selectedColor.soundDesc}
+                  </p>
 
                   <button
                     type="button"
@@ -784,7 +936,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                     onClick={handleListenColor}
                   >
                     <Volume2 size={24} />
-                    <span>Listen</span>
+                    <span>{isMarathi ? 'ऐका' : 'Listen'}</span>
                   </button>
                 </div>
 
@@ -807,7 +959,9 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                             boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
                           }}
                         />
-                        <span className="sc-selector-card-name">{color.name}</span>
+                        <span className="sc-selector-card-name">
+                          {isMarathi ? color.nameMr : color.name}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -815,7 +969,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                   {/* Things that are this color */}
                   <div className="sc-real-world-box">
                     <h3 className="sc-real-world-title">
-                      <span>Things that are {selectedColor.name}:</span>
+                      <span>{isMarathi ? `या रंगाच्या गोष्टी (${selectedColor.nameMr}):` : `Things that are ${selectedColor.name}:`}</span>
                     </h3>
                     <div className="sc-real-world-grid">
                       {selectedColor.items.map((item, i) => (
@@ -824,12 +978,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                           className="sc-real-world-item"
                           onClick={() => {
                             shapesSounds.playPop();
-                            shapesSounds.speak(`A ${item.name} is ${selectedColor.name}!`);
+                            speak({
+                              en: `A ${item.name} is ${selectedColor.name}!`,
+                              mr: `${item.nameMr || item.name} ${selectedColor.nameMr || selectedColor.name} रंगाचा असतो!`
+                            });
                           }}
-                          title={`Listen to ${item.name}`}
+                          title={isMarathi ? `${item.nameMr} ऐका` : `Listen to ${item.name}`}
                         >
                           <span className="sc-real-world-emoji">{item.emoji}</span>
-                          <span className="sc-real-world-name">{item.name}</span>
+                          <span className="sc-real-world-name">
+                            {isMarathi ? item.nameMr : item.name}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -847,13 +1006,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           <div className="sc-minigame-container">
             <div className="sc-prompt-box">
               <h2 className="sc-prompt-text">
-                Can you find the <span style={{ color: '#ec4899' }}>{findShapeTarget.name}</span>?
+                {isMarathi ? (
+                  <>तुम्ही <span style={{ color: '#ec4899' }}>{findShapeTarget.nameMr}</span> शोधू शकता का?</>
+                ) : (
+                  <>Can you find the <span style={{ color: '#ec4899' }}>{findShapeTarget.name}</span>?</>
+                )}
               </h2>
               <button
                 type="button"
                 className="sc-prompt-audio-btn"
-                onClick={() => shapesSounds.speak(`Can you find the ${findShapeTarget.name}?`)}
-                title="Hear Question"
+                onClick={() => speak({
+                  en: `Can you find the ${findShapeTarget.name}?`,
+                  mr: `${findShapeTarget.nameMr || findShapeTarget.name} शोधा!`
+                })}
+                title={isMarathi ? 'प्रश्न ऐका' : 'Hear Question'}
               >
                 <Volume2 size={24} />
               </button>
@@ -876,7 +1042,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                       {renderShapeSVG(shape.id, shape.defaultColor, 140)}
                     </div>
                     <span style={{ fontFamily: 'Fredoka', fontSize: '1.4rem', fontWeight: 700, color: '#1e1b4b' }}>
-                      {shape.name}
+                      {isMarathi ? shape.nameMr : shape.name}
                     </span>
                   </button>
                 );
@@ -892,13 +1058,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           <div className="sc-minigame-container">
             <div className="sc-prompt-box">
               <h2 className="sc-prompt-text">
-                Which one is <span style={{ color: findColorTarget.hex }}>{findColorTarget.name}</span>?
+                {isMarathi ? (
+                  <>यापैकी <span style={{ color: findColorTarget.hex }}>{findColorTarget.nameMr}</span> कोणता आहे?</>
+                ) : (
+                  <>Which one is <span style={{ color: findColorTarget.hex }}>{findColorTarget.name}</span>?</>
+                )}
               </h2>
               <button
                 type="button"
                 className="sc-prompt-audio-btn"
-                onClick={() => shapesSounds.speak(`Which one is ${findColorTarget.name}?`)}
-                title="Hear Question"
+                onClick={() => speak({
+                  en: `Which one is ${findColorTarget.name}?`,
+                  mr: `यापैकी ${findColorTarget.nameMr || findColorTarget.name} रंग कोणता आहे?`
+                })}
+                title={isMarathi ? 'प्रश्न ऐका' : 'Hear Question'}
               >
                 <Volume2 size={24} />
               </button>
@@ -929,7 +1102,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                       }}
                     />
                     <span style={{ fontFamily: 'Fredoka', fontSize: '1.4rem', fontWeight: 700, color: '#1e1b4b' }}>
-                      {color.name}
+                      {isMarathi ? color.nameMr : color.name}
                     </span>
                   </button>
                 );
@@ -945,13 +1118,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           <div className="sc-minigame-container">
             <div className="sc-prompt-box">
               <h2 className="sc-prompt-text">
-                Match each <span style={{ color: '#ec4899' }}>Shape</span> with its <span style={{ color: '#8b5cf6' }}>Name</span>!
+                {isMarathi ? (
+                  <>प्रत्येक <span style={{ color: '#ec4899' }}>आकाराची</span> त्याच्या <span style={{ color: '#8b5cf6' }}>नावाशी</span> जोडी लावा!</>
+                ) : (
+                  <>Match each <span style={{ color: '#ec4899' }}>Shape</span> with its <span style={{ color: '#8b5cf6' }}>Name</span>!</>
+                )}
               </h2>
               <button
                 type="button"
                 className="sc-prompt-audio-btn"
-                onClick={() => shapesSounds.speak('Match each cute shape with its correct name!')}
-                title="Hear instruction"
+                onClick={() => speak({
+                  en: 'Match each cute shape with its correct name!',
+                  mr: 'प्रत्येक आकाराची त्याच्या नावाशी जोडी लावा!'
+                })}
+                title={isMarathi ? 'सूचना ऐका' : 'Hear instruction'}
               >
                 <Volume2 size={24} />
               </button>
@@ -961,7 +1141,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
               {/* Left: Shape cards */}
               <div className="sc-match-column">
                 <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#64748b', textAlign: 'center' }}>
-                  Shapes
+                  {isMarathi ? 'आकार' : 'Shapes'}
                 </span>
                 {matchShapesList.map((shape) => {
                   const isMatched = matchedIds.has(shape.id);
@@ -977,7 +1157,11 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                       <div style={{ transform: 'scale(0.65)' }}>
                         {renderShapeSVG(shape.id, shape.defaultColor, 80)}
                       </div>
-                      <span>{isMatched ? `✓ ${shape.name}` : 'Tap Me'}</span>
+                      <span>
+                        {isMatched
+                          ? `✓ ${isMarathi ? shape.nameMr : shape.name}`
+                          : (isMarathi ? 'टॅप करा' : 'Tap Me')}
+                      </span>
                     </button>
                   );
                 })}
@@ -986,7 +1170,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
               {/* Right: Name cards */}
               <div className="sc-match-column">
                 <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#64748b', textAlign: 'center' }}>
-                  Names
+                  {isMarathi ? 'नावे' : 'Names'}
                 </span>
                 {matchNamesList.map((shapeObj) => {
                   const isMatched = matchedIds.has(shapeObj.id);
@@ -1000,7 +1184,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                       onClick={() => handleSelectMatchName(shapeObj)}
                     >
                       <Volume2 size={20} color="#64748b" />
-                      <span>{shapeObj.name}</span>
+                      <span>{isMarathi ? shapeObj.nameMr : shapeObj.name}</span>
                     </button>
                   );
                 })}
@@ -1016,13 +1200,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           <div className="sc-minigame-container">
             <div className="sc-prompt-box">
               <h2 className="sc-prompt-text">
-                What color is this <span style={{ color: colorMatchTarget.color.hex }}>{colorMatchTarget.name}</span>?
+                {isMarathi ? (
+                  <>या <span style={{ color: colorMatchTarget.color.hex }}>{colorMatchTarget.nameMr || colorMatchTarget.name}</span> चा रंग कोणता आहे?</>
+                ) : (
+                  <>What color is this <span style={{ color: colorMatchTarget.color.hex }}>{colorMatchTarget.name}</span>?</>
+                )}
               </h2>
               <button
                 type="button"
                 className="sc-prompt-audio-btn"
-                onClick={() => shapesSounds.speak(`What color is this ${colorMatchTarget.name}?`)}
-                title="Hear Question"
+                onClick={() => speak({
+                  en: `What color is this ${colorMatchTarget.name}?`,
+                  mr: `या ${colorMatchTarget.nameMr || colorMatchTarget.name} चा रंग कोणता आहे?`
+                })}
+                title={isMarathi ? 'प्रश्न ऐका' : 'Hear Question'}
               >
                 <Volume2 size={24} />
               </button>
@@ -1044,7 +1235,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
             >
               <span style={{ fontSize: '5.5rem', lineHeight: 1 }}>{colorMatchTarget.emoji}</span>
               <span style={{ fontFamily: 'Fredoka', fontSize: '1.6rem', fontWeight: 700, color: '#1e1b4b' }}>
-                {colorMatchTarget.name}
+                {isMarathi ? (colorMatchTarget.nameMr || colorMatchTarget.name) : colorMatchTarget.name}
               </span>
             </div>
 
@@ -1073,7 +1264,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                       }}
                     />
                     <span style={{ fontFamily: 'Fredoka', fontSize: '1.35rem', fontWeight: 700, color: '#1e1b4b' }}>
-                      {color.name}
+                      {isMarathi ? color.nameMr : color.name}
                     </span>
                   </button>
                 );
@@ -1089,13 +1280,20 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
           <div className="sc-sort-container">
             <div className="sc-prompt-box">
               <h2 className="sc-prompt-text">
-                Tap an item, then tap its <span style={{ color: '#ec4899' }}>Color Bucket</span>!
+                {isMarathi ? (
+                  <>एका वस्तूवर टॅप करा, मग तिच्या <span style={{ color: '#ec4899' }}>रंगाच्या बादलीवर</span> टॅप करा!</>
+                ) : (
+                  <>Tap an item, then tap its <span style={{ color: '#ec4899' }}>Color Bucket</span>!</>
+                )}
               </h2>
               <button
                 type="button"
                 className="sc-prompt-audio-btn"
-                onClick={() => shapesSounds.speak('Place each cute item into the matching color bucket!')}
-                title="Hear instruction"
+                onClick={() => speak({
+                  en: 'Place each cute item into the matching color bucket!',
+                  mr: 'प्रत्येक वस्तू तिच्या रंगाच्या बादलीत ठेवा!'
+                })}
+                title={isMarathi ? 'सूचना ऐका' : 'Hear instruction'}
               >
                 <Volume2 size={24} />
               </button>
@@ -1114,14 +1312,16 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                     >
                       <span style={{ fontSize: '2.5rem' }}>{item.emoji}</span>
                       <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#475569' }}>
-                        {item.name}
+                        {isMarathi ? item.nameMr : item.name}
                       </span>
                     </div>
                   );
                 })
               ) : (
                 <div style={{ padding: '1rem', fontWeight: 700, color: '#15803d', fontSize: '1.3rem' }}>
-                  🎉 All items sorted! Tap Next or Replay to play again!
+                  {isMarathi
+                    ? '🎉 सर्व वस्तू योग्य रंगात ठेवल्या! पुढे जाण्यासाठी नेक्स्ट किंवा पुन्हा खेळावर टॅप करा!'
+                    : '🎉 All items sorted! Tap Next or Replay to play again!'}
                 </div>
               )}
             </div>
@@ -1143,15 +1343,17 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
                     onClick={() => handleDropIntoBucket(bucket)}
                   >
                     <span style={{ fontSize: '3rem' }}>{bucket.iconEmoji}</span>
-                    <h3 className="sc-sort-bucket-label">{bucket.name} Bucket</h3>
+                    <h3 className="sc-sort-bucket-label">
+                      {isMarathi ? `${bucket.nameMr} बादली` : `${bucket.name} Bucket`}
+                    </h3>
                     <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
-                      {itemsInThisBucket.length} items placed
+                      {itemsInThisBucket.length} {isMarathi ? 'वस्तू ठेवल्या' : 'items placed'}
                     </span>
 
                     {/* Tray of collected items */}
                     <div className="sc-bucket-items-tray">
                       {itemsInThisBucket.map((item) => (
-                        <span key={item.uid} className="sc-bucket-item-badge" title={item.name}>
+                        <span key={item.uid} className="sc-bucket-item-badge" title={isMarathi ? item.nameMr : item.name}>
                           {item.emoji}
                         </span>
                       ))}

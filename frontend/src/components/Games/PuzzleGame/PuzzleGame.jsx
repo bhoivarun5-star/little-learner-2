@@ -23,9 +23,14 @@ import {
   PUZZLES_DATA
 } from './puzzleData';
 import { puzzleSounds } from './puzzleSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './PuzzleGame.css';
 
 export default function PuzzleGame({ onHome, onEarnStars }) {
+  // Navigation & Language
+  const { language, t, speak } = useLanguage();
+  const isMarathi = language === 'mr';
+
   // Sound toggle
   const [soundEnabled, setSoundEnabled] = useState(true);
 
@@ -50,7 +55,6 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
   const [isPeekModalOpen, setIsPeekModalOpen] = useState(false);
 
   // Board and Tray State
-  // placedPieces is an array of size (rows * cols), each holding the pieceIndex or null
   const totalPieces = activeDifficulty.pieces;
   const numRows = activeDifficulty.rows;
   const numCols = activeDifficulty.cols;
@@ -89,9 +93,12 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
     setTrayPieces(shuffled);
 
     setTimeout(() => {
-      puzzleSounds.speak(`Let's solve the ${currentPuzzle.name}! Drag or tap the pieces to place them.`);
+      speak({
+        en: `Let's solve the ${currentPuzzle.name}! Drag or tap the pieces to place them.`,
+        mr: `चला ${currentPuzzle.nameMr || currentPuzzle.name} चे कोडे सोडवूया! तुकडे जागेवर लावा.`
+      });
     }, 200);
-  }, [activeDifficulty, currentPuzzle]);
+  }, [activeDifficulty, currentPuzzle, speak]);
 
   // Re-initialize when puzzle or difficulty changes
   useEffect(() => {
@@ -131,14 +138,16 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
       onEarnStars?.(earnedStarsAmount);
 
       setTimeout(() => {
-        puzzleSounds.speak(`Hooray! Fantastic job! You solved the ${currentPuzzle.name}! You earned ${earnedStarsAmount} stars!`);
+        speak({
+          en: `Hooray! Fantastic job! You solved the ${currentPuzzle.name}! You earned ${earnedStarsAmount} stars!`,
+          mr: `शाब्बास! खूप छान! तुम्ही ${currentPuzzle.nameMr || currentPuzzle.name} चे कोडे सोडवले! तुम्हाला ${earnedStarsAmount} तारे मिळाले!`
+        });
       }, 350);
     }
-  }, [placedPieces, isCelebrated, trayPieces, activeDifficulty, currentPuzzle, onEarnStars]);
+  }, [placedPieces, isCelebrated, trayPieces, activeDifficulty, currentPuzzle, onEarnStars, speak]);
 
   // Place a piece into a slot
   const tryPlacePiece = (pieceIdx, targetSlotIdx) => {
-    // If slot matches the piece index
     if (pieceIdx === targetSlotIdx) {
       puzzleSounds.playSnap();
       setPlacedPieces((prev) => {
@@ -153,14 +162,16 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
     } else {
       // Wrong slot
       puzzleSounds.playWrongBoing();
-      puzzleSounds.speak('Oops! Look closely for the matching piece!');
+      speak({
+        en: 'Oops! Look closely for the matching piece!',
+        mr: 'अरेरे! जुळणारा योग्य तुकडा नीट शोधा!'
+      });
       setSelectedTrayPiece(null);
       setHoveredSlotIndex(null);
     }
   };
 
   // Tap-to-Place Interactions:
-  // 1. Click a piece in tray -> select it
   const handleTrayPieceClick = (pieceIdx) => {
     puzzleSounds.playPop();
     if (selectedTrayPiece === pieceIdx) {
@@ -170,17 +181,17 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
     }
   };
 
-  // 2. Click a slot on the board
   const handleSlotClick = (slotIdx) => {
-    // If slot already filled, do nothing
     if (placedPieces[slotIdx] !== null) return;
 
     if (selectedTrayPiece !== null) {
       tryPlacePiece(selectedTrayPiece, slotIdx);
     } else {
-      // If no piece selected, offer friendly encouragement
       puzzleSounds.playPop();
-      puzzleSounds.speak('Tap a puzzle piece first, then tap where it belongs!');
+      speak({
+        en: 'Tap a puzzle piece first, then tap where it belongs!',
+        mr: 'आधी पझलच्या तुकड्यावर टॅप करा, मग तो कुठे बसतो त्यावर टॅप करा!'
+      });
     }
   };
 
@@ -226,7 +237,10 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
     const targetPiece = trayPieces[0];
     setHintSlotIndex(targetPiece);
 
-    puzzleSounds.speak(`Here's a hint for piece ${targetPiece + 1}!`);
+    speak({
+      en: `Here's a hint for piece ${targetPiece + 1}!`,
+      mr: `तुकडा ${targetPiece + 1} साठी ही एक मदत!`
+    });
 
     setTimeout(() => {
       tryPlacePiece(targetPiece, targetPiece);
@@ -239,7 +253,6 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
     if (puzzleIndex + 1 < categoryPuzzles.length) {
       setPuzzleIndex((prev) => prev + 1);
     } else {
-      // Wrap to next category
       const currentCatIndex = CATEGORIES.findIndex((c) => c.id === activeCategory);
       const nextCat = CATEGORIES[(currentCatIndex + 1) % CATEGORIES.length];
       setActiveCategory(nextCat.id);
@@ -251,7 +264,10 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
   const handleReplay = () => {
     puzzleSounds.playPop();
     initPuzzle();
-    puzzleSounds.speak(`Let's solve the ${currentPuzzle.name} again!`);
+    speak({
+      en: `Let's solve the ${currentPuzzle.name} again!`,
+      mr: `चला ${currentPuzzle.nameMr || currentPuzzle.name} चे कोडे पुन्हा सोडवूया!`
+    });
   };
 
   // Toggle Outline / Ghost Mode
@@ -301,18 +317,20 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               type="button"
               className="puzzle-btn-home"
               onClick={onHome}
-              title="Back to Home"
+              title={isMarathi ? 'मुख्यपृष्ठावर परत जा' : 'Back to Home'}
             >
               <Home size={18} />
-              <span>Home</span>
+              <span>{isMarathi ? 'मुख्यपृष्ठ' : 'Home'}</span>
             </button>
 
             <div className="puzzle-title-group">
               <h1 className="puzzle-main-title">
-                <span>Picture Puzzles</span>
+                <span>{isMarathi ? 'चित्र कोडी (पझल्स)' : 'Picture Puzzles'}</span>
                 <Sparkles size={20} color="#f59e0b" />
               </h1>
-              <span className="puzzle-sub-title">Ages 3–6 • Drag & Fit the Pieces!</span>
+              <span className="puzzle-sub-title">
+                {isMarathi ? 'वय ३–६ • तुकडे जोडून कोडी सोडवा!' : 'Ages 3–6 • Drag & Fit the Pieces!'}
+              </span>
             </div>
           </div>
 
@@ -327,7 +345,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
                   className={`puzzle-diff-btn ${isActive ? 'is-active' : ''}`}
                   onClick={() => handleSelectDifficulty(diff)}
                 >
-                  <span>{diff.label}</span>
+                  <span>{isMarathi ? diff.labelMr : diff.label}</span>
                 </button>
               );
             })}
@@ -335,25 +353,25 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
 
           {/* Right: Stars, Score, and Audio Button */}
           <div className="puzzle-hud-right">
-            <div className="puzzle-score-badge" title="Total Stars Collected">
+            <div className="puzzle-score-badge" title={isMarathi ? 'मिळालेले एकूण तारे' : 'Total Stars Collected'}>
               <Star size={18} fill="#f59e0b" color="#f59e0b" />
-              <span>{stars} Stars</span>
+              <span>{stars} {isMarathi ? 'तारे' : 'Stars'}</span>
             </div>
 
             <div
               className="puzzle-score-badge"
               style={{ background: '#ede9fe', color: '#6d28d9', borderColor: '#ddd6fe' }}
-              title="Game Score"
+              title={isMarathi ? 'खेळाचे गुण' : 'Game Score'}
             >
               <Trophy size={18} color="#7c3aed" />
-              <span>{score} pts</span>
+              <span>{score} {isMarathi ? 'गुण' : 'pts'}</span>
             </div>
 
             <button
               type="button"
               className="puzzle-icon-circle-btn"
               onClick={handleToggleSound}
-              title={soundEnabled ? 'Mute Sound' : 'Unmute Sound'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Sound') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Sound')}
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} color="#ef4444" />}
             </button>
@@ -377,7 +395,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               onClick={() => handleSelectCategory(cat.id)}
             >
               <span className="puzzle-cat-icon">{cat.icon}</span>
-              <span>{cat.label}</span>
+              <span>{isMarathi ? cat.labelMr : cat.label}</span>
             </button>
           );
         })}
@@ -392,11 +410,17 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               className="puzzle-badge-tag"
               style={{ backgroundColor: currentPuzzle.badgeColor }}
             >
-              {currentPuzzle.category}
+              {isMarathi
+                ? (CATEGORIES.find((c) => c.id === currentPuzzle.category)?.labelMr || currentPuzzle.category)
+                : currentPuzzle.category}
             </span>
             <div>
-              <div className="puzzle-item-name">{currentPuzzle.name}</div>
-              <div className="puzzle-item-subtitle">{currentPuzzle.subtitle}</div>
+              <div className="puzzle-item-name">
+                {isMarathi ? currentPuzzle.nameMr : currentPuzzle.name}
+              </div>
+              <div className="puzzle-item-subtitle">
+                {isMarathi ? currentPuzzle.subtitleMr : currentPuzzle.subtitle}
+              </div>
             </div>
           </div>
 
@@ -406,11 +430,11 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               type="button"
               className="puzzle-btn-action hint"
               onClick={handleHint}
-              title="Show a Hint"
+              title={isMarathi ? 'मदत मिळवा' : 'Show a Hint'}
               disabled={trayPieces.length === 0}
             >
               <Lightbulb size={18} />
-              <span>Hint</span>
+              <span>{isMarathi ? 'मदत' : 'Hint'}</span>
             </button>
 
             {/* Peek Picture Button */}
@@ -418,10 +442,10 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               type="button"
               className="puzzle-btn-action preview"
               onClick={() => setIsPeekModalOpen(true)}
-              title="Peek at Completed Picture"
+              title={isMarathi ? 'पूर्ण चित्र पाहा' : 'Peek at Completed Picture'}
             >
               <Eye size={18} />
-              <span>Peek</span>
+              <span>{isMarathi ? 'चित्राची झलक' : 'Peek'}</span>
             </button>
 
             {/* Reset Button */}
@@ -429,10 +453,10 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               type="button"
               className="puzzle-btn-action reset"
               onClick={initPuzzle}
-              title="Reset Puzzle"
+              title={isMarathi ? 'पुन्हा कोडे लावा' : 'Reset Puzzle'}
             >
               <RefreshCw size={18} />
-              <span>Reset</span>
+              <span>{isMarathi ? 'पुन्हा लावा' : 'Reset'}</span>
             </button>
 
             {/* Replay Sound */}
@@ -440,10 +464,10 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               type="button"
               className="puzzle-btn-action replay"
               onClick={handleReplay}
-              title="Replay Puzzle"
+              title={isMarathi ? 'पुन्हा ऐका' : 'Replay Puzzle'}
             >
               <RotateCcw size={18} />
-              <span>Replay</span>
+              <span>{isMarathi ? 'पुन्हा ऐका' : 'Replay'}</span>
             </button>
 
             {/* Next Puzzle */}
@@ -451,9 +475,9 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               type="button"
               className="puzzle-btn-action next"
               onClick={handleNextPuzzle}
-              title="Next Puzzle"
+              title={isMarathi ? 'पुढील कोडे' : 'Next Puzzle'}
             >
-              <span>Next</span>
+              <span>{isMarathi ? 'पुढील कोडे' : 'Next'}</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -466,7 +490,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
             <div className="puzzle-board-header">
               <div className="puzzle-board-heading">
                 <Puzzle size={20} color="#7c3aed" />
-                <span>Puzzle Board</span>
+                <span>{isMarathi ? 'पझल बोर्ड' : 'Puzzle Board'}</span>
               </div>
 
               {/* Ghost Outline Toggle */}
@@ -474,11 +498,13 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
                 type="button"
                 className={`puzzle-outline-toggle ${outlineMode !== 'hidden' ? 'is-active' : ''}`}
                 onClick={handleToggleOutline}
-                title="Toggle Picture Outline Guide"
+                title={isMarathi ? 'रेखाचित्र मार्गदर्शक टॉगल करा' : 'Toggle Picture Outline Guide'}
               >
                 {outlineMode !== 'hidden' ? <Eye size={16} /> : <EyeOff size={16} />}
                 <span>
-                  {outlineMode === 'clear' ? 'Outline: Clear' : outlineMode === 'faint' ? 'Outline: Faint' : 'Outline: Off'}
+                  {isMarathi
+                    ? (outlineMode === 'clear' ? 'रेखाचित्र: स्पष्ट' : outlineMode === 'faint' ? 'रेखाचित्र: फिकट' : 'रेखाचित्र: बंद')
+                    : (outlineMode === 'clear' ? 'Outline: Clear' : outlineMode === 'faint' ? 'Outline: Faint' : 'Outline: Off')}
                 </span>
               </button>
             </div>
@@ -537,16 +563,20 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
             <div className="puzzle-tray-header">
               <div className="puzzle-tray-title">
                 <Sparkles size={20} color="#f59e0b" />
-                <span>Puzzle Pieces</span>
+                <span>{isMarathi ? 'पझलचे तुकडे' : 'Puzzle Pieces'}</span>
               </div>
               <span className="puzzle-tray-count-badge">
-                {trayPieces.length} Remaining
+                {trayPieces.length} {isMarathi ? 'शिल्लक' : 'Remaining'}
               </span>
             </div>
 
             <div className="puzzle-tray-tip">
-              <span>💡 Tip:</span>
-              <span>Drag pieces onto the board OR tap a piece and tap a slot!</span>
+              <span>{isMarathi ? '💡 टीप:' : '💡 Tip:'}</span>
+              <span>
+                {isMarathi
+                  ? 'तुकडे बोर्डवर ड्रॅग करा किंवा तुकड्यावर टॅप करून रिकाम्या जागेवर टॅप करा!'
+                  : 'Drag pieces onto the board OR tap a piece and tap a slot!'}
+              </span>
             </div>
 
             <div className="puzzle-pieces-tray">
@@ -563,7 +593,9 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
                       onDragStart={(e) => handleDragStart(e, pieceIdx)}
                       onDragEnd={() => setDraggedPiece(null)}
                       onClick={() => handleTrayPieceClick(pieceIdx)}
-                      title={`Piece ${pieceIdx + 1} - Tap to select or drag to board`}
+                      title={isMarathi
+                        ? `तुकडा ${pieceIdx + 1} - निवडण्यासाठी टॅप करा किंवा बोर्डवर ड्रॅग करा`
+                        : `Piece ${pieceIdx + 1} - Tap to select or drag to board`}
                     >
                       {renderPieceArt(pieceIdx)}
                       <span className="puzzle-piece-label-tag">
@@ -576,7 +608,9 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
                 <div className="puzzle-tray-completed-box">
                   <div className="puzzle-tray-completed-icon">🎉</div>
                   <div className="puzzle-tray-completed-text">
-                    All Pieces Placed! Great Job!
+                    {isMarathi
+                      ? 'सर्व तुकडे योग्य जागी बसवले! खूप छान!'
+                      : 'All Pieces Placed! Great Job!'}
                   </div>
                 </div>
               )}
@@ -596,10 +630,12 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', color: '#1e1b4b' }}>
-              Completed Picture Preview 🖼️
+              {isMarathi ? 'पूर्ण चित्राची झलक 🖼️' : 'Completed Picture Preview 🖼️'}
             </h3>
             <p style={{ color: '#64748b', fontSize: '0.9rem', margin: 0 }}>
-              Look at the picture closely to see where all pieces fit!
+              {isMarathi
+                ? 'सर्व तुकडे कुठे बसतात हे पाहण्यासाठी चित्र नीट पाहा!'
+                : 'Look at the picture closely to see where all pieces fit!'}
             </p>
             <div className="puzzle-peek-image-frame">
               {currentPuzzle.renderArt()}
@@ -609,7 +645,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
               className="puzzle-peek-btn-close"
               onClick={() => setIsPeekModalOpen(false)}
             >
-              Back to Puzzle ✨
+              {isMarathi ? 'कोड्याकडे परत जा ✨' : 'Back to Puzzle ✨'}
             </button>
           </div>
         </div>
@@ -627,15 +663,27 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
             </div>
 
             <h2 className="puzzle-celebration-title">
-              Hooray! You Solved It! 🎈
+              {isMarathi ? 'शाब्बास! तुम्ही कोडे सोडवले! 🎈' : 'Hooray! You Solved It! 🎈'}
             </h2>
 
             <p className="puzzle-celebration-msg">
-              Awesome job! You finished the <strong>{currentPuzzle.name}</strong> puzzle!
-              <br />
-              <span style={{ color: '#10b981', fontWeight: 900 }}>
-                +{activeDifficulty.pieces >= 6 ? 3 : 2} Stars ⭐ & +15 Points 🏆
-              </span>
+              {isMarathi ? (
+                <>
+                  अप्रतिम काम! तुम्ही <strong>{currentPuzzle.nameMr || currentPuzzle.name}</strong> चे कोडे पूर्ण केले!
+                  <br />
+                  <span style={{ color: '#10b981', fontWeight: 900 }}>
+                    +{activeDifficulty.pieces >= 6 ? 3 : 2} तारे ⭐ आणि +१५ गुण 🏆
+                  </span>
+                </>
+              ) : (
+                <>
+                  Awesome job! You finished the <strong>{currentPuzzle.name}</strong> puzzle!
+                  <br />
+                  <span style={{ color: '#10b981', fontWeight: 900 }}>
+                    +{activeDifficulty.pieces >= 6 ? 3 : 2} Stars ⭐ & +15 Points 🏆
+                  </span>
+                </>
+              )}
             </p>
 
             <div className="puzzle-celebration-preview-thumb">
@@ -643,7 +691,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
             </div>
 
             <p style={{ fontSize: '0.9rem', color: '#64748b', fontStyle: 'italic', margin: 0 }}>
-              "{currentPuzzle.funFact}"
+              "{isMarathi ? (currentPuzzle.funFactMr || currentPuzzle.funFact) : currentPuzzle.funFact}"
             </p>
 
             <div className="puzzle-celebration-buttons">
@@ -653,7 +701,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
                 onClick={handleReplay}
               >
                 <RotateCcw size={18} />
-                <span>Play Again</span>
+                <span>{isMarathi ? 'पुन्हा खेळा' : 'Play Again'}</span>
               </button>
 
               <button
@@ -661,7 +709,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
                 className="puzzle-btn-celebrate primary"
                 onClick={handleNextPuzzle}
               >
-                <span>Next Puzzle</span>
+                <span>{isMarathi ? 'पुढील कोडे' : 'Next Puzzle'}</span>
                 <ArrowRight size={18} />
               </button>
             </div>

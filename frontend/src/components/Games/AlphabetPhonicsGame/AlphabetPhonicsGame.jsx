@@ -14,10 +14,14 @@ import {
 } from 'lucide-react';
 import { ALPHABET_DATA } from './alphabetData';
 import { sounds } from './soundEffects';
+import { useLanguage } from '../../../context/LanguageContext';
 import './AlphabetPhonicsGame.css';
 
 export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
   // Navigation & Mode
+  const { language, t, speak } = useLanguage();
+  const isMarathi = language === 'mr';
+
   const [activeMode, setActiveMode] = useState('explorer'); // 'explorer' | 'find' | 'match' | 'sound'
   const [soundEnabled, setSoundEnabled] = useState(true);
 
@@ -49,7 +53,10 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      sounds.speak(`Can you find the letter ${target.letter}? As in ${target.word}!`);
+      speak({
+        en: `Can you find the letter ${target.letter}? As in ${target.word}!`,
+        mr: `अक्षर ${target.letter} शोधा! उदा. ${target.wordMr || target.word}!`
+      });
     }, 200);
   };
 
@@ -59,21 +66,37 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
 
     if (choice.letter === findTarget.letter) {
       sounds.playVictoryChime();
-      sounds.speak(`Hooray! That is letter ${choice.letter} for ${choice.word}!`);
+      speak({
+        en: `Hooray! That is letter ${choice.letter} for ${choice.word}!`,
+        mr: `शाब्बास! ${choice.letter} म्हणजे ${choice.wordMr || choice.word}!`
+      });
       confetti({ particleCount: 75, spread: 65, origin: { y: 0.5 } });
 
       setScore((prev) => prev + 10);
       setStars((prev) => prev + 5);
       onEarnStars?.(5);
-      setFeedback({ type: 'success', message: `Awesome! ${choice.letter} is for ${choice.word}! ⭐ +5 Stars` });
+      setFeedback({
+        type: 'success',
+        message: isMarathi
+          ? `शाब्बास! ${choice.letter} म्हणजे ${choice.wordMr || choice.word}! ⭐ +५ तारे`
+          : `Awesome! ${choice.letter} is for ${choice.word}! ⭐ +5 Stars`
+      });
 
       setTimeout(() => {
         initFindGame();
       }, 2200);
     } else {
       sounds.playWrongBoing();
-      sounds.speak(`Oops! That's ${choice.letter}. Try again!`);
-      setFeedback({ type: 'wrong', message: `Try again! Where is letter ${findTarget.letter}?` });
+      speak({
+        en: `Oops! That's ${choice.letter}. Try again!`,
+        mr: `अरेरे! ते अक्षर ${choice.letter} आहे. पुन्हा प्रयत्न करा!`
+      });
+      setFeedback({
+        type: 'wrong',
+        message: isMarathi
+          ? `पुन्हा प्रयत्न करा! अक्षर ${findTarget.letter} कुठे आहे?`
+          : `Try again! Where is letter ${findTarget.letter}?`
+      });
       setTimeout(() => {
         setFindPicked(null);
       }, 1200);
@@ -97,14 +120,20 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      sounds.speak('Match each letter with its cute picture!');
+      speak({
+        en: 'Match each letter with its cute picture!',
+        mr: 'प्रत्येक अक्षराची त्याच्या चित्राशी जोडी लावा!'
+      });
     }, 200);
   };
 
   const handleMatchLetterClick = (item) => {
     sounds.playPop();
     setSelectedMatchLetter(item);
-    sounds.speak(item.letter);
+    speak({
+      en: `Letter ${item.letter}`,
+      mr: `अक्षर ${item.letter}`
+    });
 
     if (selectedMatchObject) {
       checkMatch(item, selectedMatchObject);
@@ -114,7 +143,10 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
   const handleMatchObjectClick = (item) => {
     sounds.playPop();
     setSelectedMatchObject(item);
-    sounds.speak(item.word);
+    speak({
+      en: item.word,
+      mr: item.wordMr || item.word
+    });
 
     if (selectedMatchLetter) {
       checkMatch(selectedMatchLetter, item);
@@ -124,7 +156,10 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
   const checkMatch = (letterItem, objectItem) => {
     if (letterItem.letter === objectItem.letter) {
       sounds.playVictoryChime();
-      sounds.speak(`Match! ${letterItem.letter} is for ${letterItem.word}!`);
+      speak({
+        en: `Match! ${letterItem.letter} is for ${letterItem.word}!`,
+        mr: `जोडी जुळली! ${letterItem.letter} म्हणजे ${letterItem.wordMr || letterItem.word}!`
+      });
       const nextMatched = [...matchedIds, letterItem.letter];
       setMatchedIds(nextMatched);
       setSelectedMatchLetter(null);
@@ -136,14 +171,22 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
 
       if (nextMatched.length === 3) {
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
-        setFeedback({ type: 'success', message: 'You matched them all! Superstar! ⭐ +15 Stars' });
+        setFeedback({
+          type: 'success',
+          message: isMarathi
+            ? 'तुम्ही सर्व जोड्या जुळवल्या! खूप छान! ⭐ +१५ तारे'
+            : 'You matched them all! Superstar! ⭐ +15 Stars'
+        });
         setTimeout(() => {
           initMatchGame();
         }, 2500);
       }
     } else {
       sounds.playWrongBoing();
-      sounds.speak('Not a match, try again!');
+      speak({
+        en: 'Not a match, try again!',
+        mr: 'जोडी जुळत नाही, पुन्हा प्रयत्न करा!'
+      });
       setTimeout(() => {
         setSelectedMatchLetter(null);
         setSelectedMatchObject(null);
@@ -170,7 +213,10 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
     setFeedback(null);
 
     setTimeout(() => {
-      sounds.speak(`Listen carefully: Which letter makes the sound ${target.phonics}, as in ${target.word}?`);
+      speak({
+        en: `Listen carefully: Which letter makes the sound ${target.phonics}, as in ${target.word}?`,
+        mr: `लक्षपूर्वक ऐका: कोणत्या अक्षराचा आवाज ${target.phonics} असा येतो? उदा. ${target.wordMr || target.word}?`
+      });
     }, 200);
   };
 
@@ -180,21 +226,37 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
 
     if (choice.letter === soundTarget.letter) {
       sounds.playVictoryChime();
-      sounds.speak(`Correct! ${choice.letter} ${choice.phonics}, like ${choice.word}!`);
+      speak({
+        en: `Correct! ${choice.letter} ${choice.phonics}, like ${choice.word}!`,
+        mr: `बरोबर! ${choice.letter} चा आवाज ${choice.phonics}, जसे ${choice.wordMr || choice.word}!`
+      });
       confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
 
       setScore((prev) => prev + 10);
       setStars((prev) => prev + 5);
       onEarnStars?.(5);
-      setFeedback({ type: 'success', message: `Great ears! ${choice.letter} ${choice.phonics}! ⭐ +5 Stars` });
+      setFeedback({
+        type: 'success',
+        message: isMarathi
+          ? `उत्तम ऐकले! ${choice.letter} ${choice.phonicsMr || choice.phonics}! ⭐ +५ तारे`
+          : `Great ears! ${choice.letter} ${choice.phonics}! ⭐ +5 Stars`
+      });
 
       setTimeout(() => {
         initSoundGame();
       }, 2300);
     } else {
       sounds.playWrongBoing();
-      sounds.speak(`Not quite! Listen again and find the right letter!`);
-      setFeedback({ type: 'wrong', message: `Listen closely! Which letter says ${soundTarget.phonics}?` });
+      speak({
+        en: 'Not quite! Listen again and find the right letter!',
+        mr: 'नाही, पुन्हा ऐका आणि योग्य अक्षर शोधा!'
+      });
+      setFeedback({
+        type: 'wrong',
+        message: isMarathi
+          ? `लक्षपूर्वक ऐका! कोणत्या अक्षराचा आवाज ${soundTarget.phonics} असा येतो?`
+          : `Listen closely! Which letter says ${soundTarget.phonics}?`
+      });
       setTimeout(() => {
         setSoundPicked(null);
       }, 1200);
@@ -212,7 +274,10 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
       initSoundGame();
     } else if (activeMode === 'explorer') {
       // Announce initial letter
-      sounds.speak(selectedLetter.soundExample);
+      speak({
+        en: `${selectedLetter.letter} says ${selectedLetter.phonics}, as in ${selectedLetter.word}!`,
+        mr: `${selectedLetter.letter} चा आवाज ${selectedLetter.phonics}, जसे ${selectedLetter.wordMr || selectedLetter.word}!`
+      });
     }
   }, [activeMode]);
 
@@ -221,11 +286,17 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
     setCurrentLetterIndex(index);
     sounds.playPop();
     const item = ALPHABET_DATA[index];
-    sounds.speak(item.soundExample);
+    speak({
+      en: `${item.letter} says ${item.phonics}, as in ${item.word}!`,
+      mr: `${item.letter} चा आवाज ${item.phonics}, जसे ${item.wordMr || item.word}!`
+    });
   };
 
   const handleListenSound = () => {
-    sounds.speak(selectedLetter.soundExample);
+    speak({
+      en: `${selectedLetter.letter} says ${selectedLetter.phonics}, as in ${selectedLetter.word}!`,
+      mr: `${selectedLetter.letter} चा आवाज ${selectedLetter.phonics}, जसे ${selectedLetter.wordMr || selectedLetter.word}!`
+    });
   };
 
   const handleNext = () => {
@@ -233,7 +304,11 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
     if (activeMode === 'explorer') {
       const nextIndex = (currentLetterIndex + 1) % ALPHABET_DATA.length;
       setCurrentLetterIndex(nextIndex);
-      sounds.speak(ALPHABET_DATA[nextIndex].soundExample);
+      const nextItem = ALPHABET_DATA[nextIndex];
+      speak({
+        en: `${nextItem.letter} says ${nextItem.phonics}, as in ${nextItem.word}!`,
+        mr: `${nextItem.letter} चा आवाज ${nextItem.phonics}, जसे ${nextItem.wordMr || nextItem.word}!`
+      });
     } else if (activeMode === 'find') {
       initFindGame();
     } else if (activeMode === 'match') {
@@ -246,13 +321,25 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
   const handleReplay = () => {
     sounds.playPop();
     if (activeMode === 'explorer') {
-      sounds.speak(selectedLetter.soundExample);
+      speak({
+        en: `${selectedLetter.letter} says ${selectedLetter.phonics}, as in ${selectedLetter.word}!`,
+        mr: `${selectedLetter.letter} चा आवाज ${selectedLetter.phonics}, जसे ${selectedLetter.wordMr || selectedLetter.word}!`
+      });
     } else if (activeMode === 'find') {
-      sounds.speak(`Can you find the letter ${findTarget.letter}? As in ${findTarget.word}!`);
+      speak({
+        en: `Can you find the letter ${findTarget.letter}? As in ${findTarget.word}!`,
+        mr: `अक्षर ${findTarget.letter} शोधा! उदा. ${findTarget.wordMr || findTarget.word}!`
+      });
     } else if (activeMode === 'match') {
-      sounds.speak('Match each letter with its cute picture!');
+      speak({
+        en: 'Match each letter with its cute picture!',
+        mr: 'प्रत्येक अक्षराची त्याच्या चित्राशी जोडी लावा!'
+      });
     } else if (activeMode === 'sound') {
-      sounds.speak(`Listen carefully: Which letter makes the sound ${soundTarget.phonics}, as in ${soundTarget.word}?`);
+      speak({
+        en: `Listen carefully: Which letter makes the sound ${soundTarget.phonics}, as in ${soundTarget.word}?`,
+        mr: `लक्षपूर्वक ऐका: कोणत्या अक्षराचा आवाज ${soundTarget.phonics} असा येतो? उदा. ${soundTarget.wordMr || soundTarget.word}?`
+      });
     }
   };
 
@@ -279,18 +366,20 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
               type="button"
               className="hud-btn-home"
               onClick={onHome}
-              title="Return to Home"
+              title={isMarathi ? 'मुख्यपृष्ठावर परत जा' : 'Return to Home'}
             >
               <Home size={20} />
-              <span>Home</span>
+              <span>{isMarathi ? 'मुख्यपृष्ठ' : 'Home'}</span>
             </button>
 
             <div className="hud-game-title-group">
               <h1 className="hud-game-title">
-                <span>Alphabet & Phonics</span>
+                <span>{isMarathi ? 'अक्षर आणि फोनिक्स' : 'Alphabet & Phonics'}</span>
                 <Sparkles size={18} color="#f59e0b" />
               </h1>
-              <span className="hud-game-subtitle">Learn letter sounds & play games!</span>
+              <span className="hud-game-subtitle">
+                {isMarathi ? 'अक्षरांचे आवाज शिका आणि खेळ खेळा!' : 'Learn letter sounds & play games!'}
+              </span>
             </div>
           </div>
 
@@ -298,8 +387,8 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
           <div className="hud-progress-group">
             <span className="hud-progress-label">
               {activeMode === 'explorer'
-                ? `Letter ${currentLetterIndex + 1} of 26`
-                : `Score: ${score} pts`}
+                ? (isMarathi ? `अक्षर ${currentLetterIndex + 1} / २६` : `Letter ${currentLetterIndex + 1} of 26`)
+                : (isMarathi ? `गुण: ${score}` : `Score: ${score} pts`)}
             </span>
             <div className="hud-progress-track">
               <div className="hud-progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -308,7 +397,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
 
           {/* Right: Stars, Sound, Replay, Next */}
           <div className="hud-right-group">
-            <div className="hud-pill-badge stars" title="Stars collected!">
+            <div className="hud-pill-badge stars" title={isMarathi ? 'मिळालेले तारे!' : 'Stars collected!'}>
               <Star size={20} fill="#f59e0b" color="#f59e0b" />
               <span>{stars}</span>
             </div>
@@ -317,7 +406,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
               type="button"
               className="hud-icon-btn"
               onClick={handleToggleSound}
-              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Audio') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Audio')}
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} color="#dc2626" />}
             </button>
@@ -326,19 +415,19 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
               type="button"
               className="hud-btn-nav replay"
               onClick={handleReplay}
-              title="Replay Sound"
+              title={isMarathi ? 'पुन्हा ऐका' : 'Replay Sound'}
             >
               <RotateCcw size={18} />
-              <span>Replay</span>
+              <span>{isMarathi ? 'पुन्हा ऐका' : 'Replay'}</span>
             </button>
 
             <button
               type="button"
               className="hud-btn-nav next"
               onClick={handleNext}
-              title="Next"
+              title={isMarathi ? 'पुढे' : 'Next'}
             >
-              <span>Next</span>
+              <span>{isMarathi ? 'पुढे' : 'Next'}</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -352,7 +441,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
           className={`mode-pill-btn ${activeMode === 'explorer' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('explorer')}
         >
-          <span>🔤 A–Z Explorer</span>
+          <span>🔤 {isMarathi ? 'A–Z एक्सप्लोरर' : 'A–Z Explorer'}</span>
         </button>
 
         <button
@@ -360,7 +449,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
           className={`mode-pill-btn ${activeMode === 'find' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('find')}
         >
-          <span>🎯 Find the Letter</span>
+          <span>🎯 {isMarathi ? 'अक्षर शोधा' : 'Find the Letter'}</span>
         </button>
 
         <button
@@ -368,7 +457,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
           className={`mode-pill-btn ${activeMode === 'match' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('match')}
         >
-          <span>🧩 Match Letter & Picture</span>
+          <span>🧩 {isMarathi ? 'अक्षर आणि चित्रांची जोडी' : 'Match Letter & Picture'}</span>
         </button>
 
         <button
@@ -376,7 +465,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
           className={`mode-pill-btn ${activeMode === 'sound' ? 'is-active' : ''}`}
           onClick={() => setActiveMode('sound')}
         >
-          <span>🔊 What Sound?</span>
+          <span>🔊 {isMarathi ? 'कोणता आवाज?' : 'What Sound?'}</span>
         </button>
       </nav>
 
@@ -437,13 +526,17 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
 
               {/* Word & Phonics Tag */}
               <div className="spotlight-word-badge">
-                <span className="spotlight-word-name">{selectedLetter.word}</span>
-                <span className="spotlight-phonics-sound-tag">{selectedLetter.phonics}</span>
+                <span className="spotlight-word-name">
+                  {isMarathi ? selectedLetter.wordMr : selectedLetter.word}
+                </span>
+                <span className="spotlight-phonics-sound-tag">
+                  {isMarathi ? (selectedLetter.phonicsMr || selectedLetter.phonics) : selectedLetter.phonics}
+                </span>
               </div>
 
               {/* Sentence */}
               <p className="spotlight-phonics-desc">
-                "{selectedLetter.letter} {selectedLetter.phonics}, as in {selectedLetter.word}!"
+                "{selectedLetter.letter} {isMarathi ? (selectedLetter.phonicsMr || selectedLetter.phonics) : selectedLetter.phonics}, {isMarathi ? `उदा. ${selectedLetter.wordMr} (${selectedLetter.word})` : `as in ${selectedLetter.word}`}!"
               </p>
 
               {/* Large 🔊 Listen Button */}
@@ -453,7 +546,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
                 onClick={handleListenSound}
               >
                 <Volume2 size={28} />
-                <span>🔊 Listen</span>
+                <span>🔊 {isMarathi ? 'ऐका' : 'Listen'}</span>
               </button>
             </div>
           </div>
@@ -466,10 +559,18 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
           <div className="minigame-center-box">
             <div className="minigame-prompt-card">
               <h2 className="minigame-prompt-title">
-                Can you find the letter <span style={{ color: findTarget.color }}>"{findTarget.letter}"</span>?
+                {isMarathi ? (
+                  <>तुम्ही अक्षर <span style={{ color: findTarget.color }}>"{findTarget.letter}"</span> शोधू शकता का?</>
+                ) : (
+                  <>Can you find the letter <span style={{ color: findTarget.color }}>"{findTarget.letter}"</span>?</>
+                )}
               </h2>
               <p className="minigame-prompt-sub">
-                Look for the letter that starts {findTarget.emoji} <strong>{findTarget.word}</strong>!
+                {isMarathi ? (
+                  <>या {findTarget.emoji} <strong>{findTarget.wordMr || findTarget.word}</strong> ने सुरू होणारे अक्षर शोधा!</>
+                ) : (
+                  <>Look for the letter that starts {findTarget.emoji} <strong>{findTarget.word}</strong>!</>
+                )}
               </p>
             </div>
 
@@ -490,7 +591,9 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
                       {choice.letter} {choice.lower}
                     </span>
                     <span className="option-emoji">{choice.emoji}</span>
-                    <span className="option-word">{choice.word}</span>
+                    <span className="option-word">
+                      {isMarathi ? choice.wordMr : choice.word}
+                    </span>
                   </button>
                 );
               })}
@@ -504,8 +607,14 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
         {activeMode === 'match' && (
           <div className="minigame-center-box">
             <div className="minigame-prompt-card">
-              <h2 className="minigame-prompt-title">Match Letter & Picture</h2>
-              <p className="minigame-prompt-sub">Tap a letter, then tap the matching picture!</p>
+              <h2 className="minigame-prompt-title">
+                {isMarathi ? 'अक्षर आणि चित्रांची जोडी 🧩' : 'Match Letter & Picture'}
+              </h2>
+              <p className="minigame-prompt-sub">
+                {isMarathi
+                  ? 'आधी अक्षरावर टॅप करा, मग जुळणाऱ्या चित्रावर टॅप करा!'
+                  : 'Tap a letter, then tap the matching picture!'}
+              </p>
             </div>
 
             <div className="match-columns-container">
@@ -543,7 +652,7 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
                       onClick={() => handleMatchObjectClick(item)}
                     >
                       <span>{item.emoji}</span>
-                      <span>{item.word}</span>
+                      <span>{isMarathi ? item.wordMr : item.word}</span>
                       {isMatched && <span>✓</span>}
                     </button>
                   );
@@ -564,17 +673,28 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars }) {
                 className="btn-large-listen"
                 style={{ width: 'auto', padding: '0.9rem 2.25rem' }}
                 onClick={() => {
-                  sounds.speak(`Listen closely: Which letter says ${soundTarget.phonics}, as in ${soundTarget.word}?`);
+                  speak({
+                    en: `Listen closely: Which letter says ${soundTarget.phonics}, as in ${soundTarget.word}?`,
+                    mr: `लक्षपूर्वक ऐका: कोणत्या अक्षराचा आवाज ${soundTarget.phonics} असा येतो? उदा. ${soundTarget.wordMr || soundTarget.word}?`
+                  });
                 }}
               >
                 <Volume2 size={28} />
-                <span>🔊 Hear Sound Again</span>
+                <span>🔊 {isMarathi ? 'आवाज पुन्हा ऐका' : 'Hear Sound Again'}</span>
               </button>
 
               <h2 className="minigame-prompt-title" style={{ marginTop: '0.5rem' }}>
-                Which letter makes the sound <span style={{ color: soundTarget.color }}>"{soundTarget.phonics}"</span>?
+                {isMarathi ? (
+                  <>कोणत्या अक्षराचा आवाज <span style={{ color: soundTarget.color }}>"{soundTarget.phonics}"</span> असा येतो?</>
+                ) : (
+                  <>Which letter makes the sound <span style={{ color: soundTarget.color }}>"{soundTarget.phonics}"</span>?</>
+                )}
               </h2>
-              <p className="minigame-prompt-sub">Tap the letter that makes this sound!</p>
+              <p className="minigame-prompt-sub">
+                {isMarathi
+                  ? 'हा आवाज काढणाऱ्या अक्षरावर टॅप करा!'
+                  : 'Tap the letter that makes this sound!'}
+              </p>
             </div>
 
             <div className="minigame-options-grid">

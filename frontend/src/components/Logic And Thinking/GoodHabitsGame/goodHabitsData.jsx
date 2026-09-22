@@ -289,78 +289,103 @@ export const HABIT_ILLUSTRATIONS = {
 };
 
 // 8 Core Habits Guide with badges
+// 8 Core Habits Guide with badges and Marathi translations
 export const HABITS_GUIDE = [
   {
     id: 'brushing',
     title: 'Brushing Teeth',
+    titleMr: 'दात घासणे',
     icon: '🪥',
     color: '#0284c7',
     bg: '#e0f2fe',
     tagline: 'Twice Every Day',
-    desc: 'Brush your teeth every morning and before bed to keep teeth shiny, clean, and strong!'
+    taglineMr: 'दिवसातून दोनदा',
+    desc: 'Brush your teeth every morning and before bed to keep teeth shiny, clean, and strong!',
+    descMr: 'दात पांढरे, स्वच्छ आणि मजबूत ठेवण्यासाठी रोज सकाळी आणि झोपण्यापूर्वी दात घासा!'
   },
   {
     id: 'washing',
     title: 'Washing Hands',
+    titleMr: 'हात धुणे',
     icon: '🧼',
     color: '#0d9488',
     bg: '#ccfbf1',
     tagline: 'With Soapy Bubbles',
-    desc: 'Wash your hands with warm water and soap before meals and after playing outside!'
+    taglineMr: 'साबणाच्या फेसाने',
+    desc: 'Wash your hands with warm water and soap before meals and after playing outside!',
+    descMr: 'जेवणापूर्वी आणि बाहेर खेळून आल्यावर कोमट पाणी आणि साबणाने हात स्वच्छ धुवा!'
   },
   {
     id: 'bathing',
     title: 'Taking a Bath',
+    titleMr: 'अंघोळ करणे',
     icon: '🛁',
     color: '#7c3aed',
     bg: '#f3e8ff',
     tagline: 'Fresh & Sparkling',
-    desc: 'Splish, splash! A warm bath washes away all the dirt and leaves you smelling great!'
+    taglineMr: 'स्वच्छ आणि ताजेतवाने',
+    desc: 'Splish, splash! A warm bath washes away all the dirt and leaves you smelling great!',
+    descMr: 'छान कोमट पाण्याने अंघोळ केल्याने सर्व घाण निघून जाते आणि ताजेतवाने वाटते!'
   },
   {
     id: 'healthy-food',
     title: 'Healthy Eating',
+    titleMr: 'पौष्टिक आहार',
     icon: '🥗',
     color: '#16a34a',
     bg: '#dcfce7',
     tagline: 'Fruits & Veggies',
-    desc: 'Munch crunchy carrots, sweet apples, and drink water to grow big, smart, and strong!'
+    taglineMr: 'फळे आणि भाज्या',
+    desc: 'Munch crunchy carrots, sweet apples, and drink water to grow big, smart, and strong!',
+    descMr: 'हुशार, मोठे आणि निरोगी होण्यासाठी ताज्या हिरव्या भाज्या, सफरचंद खा आणि भरपूर पाणी प्या!'
   },
   {
     id: 'tidy-toys',
     title: 'Tidying Toys',
+    titleMr: 'खेळणी जागेवर ठेवणे',
     icon: '🧸',
     color: '#d97706',
     bg: '#fef3c7',
     tagline: 'Clean Room Hero',
-    desc: 'Put blocks and toys back into the toy box after playtime so nobody trips over them!'
+    taglineMr: 'खोली स्वच्छ ठेवणारा हिरो',
+    desc: 'Put blocks and toys back into the toy box after playtime so nobody trips over them!',
+    descMr: 'खेळून झाल्यावर सर्व खेळणी आणि ठोकळे पुन्हा पेटीत ठेवा, जेणेकरून कोणालाही ठेच लागणार नाही!'
   },
   {
     id: 'manners',
     title: 'Magic Manners',
+    titleMr: 'जादुई शिष्टाचार',
     icon: '💖',
     color: '#db2777',
     bg: '#fce7f3',
     tagline: 'Please & Thank You',
-    desc: 'Use magic words like "Please" when asking and "Thank You" when receiving!'
+    taglineMr: 'कृपया आणि धन्यवाद',
+    desc: 'Use magic words like "Please" when asking and "Thank You" when receiving!',
+    descMr: 'काही मागताना "कृपया" आणि मिळाल्यावर प्रेमाने "धन्यवाद" म्हणा!'
   },
   {
     id: 'sleep',
     title: 'Sleeping on Time',
+    titleMr: 'वेळेवर झोपणे',
     icon: '⏰',
     color: '#4f46e5',
     bg: '#e0e7ff',
     tagline: 'Early to Bed',
-    desc: 'Go to sleep on time every night to get deep rest and wake up full of energy!'
+    taglineMr: 'लवकर निजे लवकर उठे',
+    desc: 'Go to sleep on time every night to get deep rest and wake up full of energy!',
+    descMr: 'शरीराला पूर्ण विश्रांती मिळण्यासाठी आणि सकाळी उत्साहात उठण्यासाठी रात्री वेळेवर झोपा!'
   },
   {
     id: 'helping',
     title: 'Helping Others',
+    titleMr: 'इतरांना मदत करणे',
     icon: '🤝',
     color: '#0284c7',
     bg: '#e0f9ff',
     tagline: 'Sharing & Caring',
-    desc: 'Share your toys and help your friends or family with a bright, loving smile!'
+    taglineMr: 'खेळणी शेअर करणे',
+    desc: 'Share your toys and help your friends or family with a bright, loving smile!',
+    descMr: 'आपली खेळणी मित्रांसोबत शेअर करा आणि कुटुंब व मित्रांना गोड हास्याने मदत करा!'
   }
 ];
 
@@ -369,102 +394,152 @@ export const GOOD_OR_NOT_GOOD_ROUNDS = [
   {
     id: 1,
     title: 'Brushing Teeth Daily',
+    titleMr: 'दररोज दात घासणे',
     scenario: 'Brushing teeth every morning and before going to sleep at night.',
+    scenarioMr: 'दररोज सकाळी आणि रात्री झोपण्यापूर्वी दात घासणे.',
     illustrationKey: 'brushingTeeth',
     isGood: true,
     hint: 'Brushing twice a day washes away sugar bugs and keeps teeth shiny white!',
+    hintMr: 'दिवसातून दोनदा दात घासल्याने दातांचे किडे दूर पळतात आणि दात पांढरे शुभ्र राहतात!',
     praise: 'Super Smile Hero! ⭐ Brushing teeth protects your teeth!',
-    category: 'Hygiene'
+    praiseMr: 'सुपर स्माईल हिरो! ⭐ दात घासल्याने दात निरोगी राहतात!',
+    category: 'Hygiene',
+    categoryMr: 'स्वच्छता'
   },
   {
     id: 2,
     title: 'Messy Scattered Toys',
+    titleMr: 'खेळणी अस्ताव्यस्त पसरवणे',
     scenario: 'Leaving toys and blocks scattered all over the floor after playing.',
+    scenarioMr: 'खेळून झाल्यावर खेळणी आणि ठोकळे जमिनीवर तसेच अस्ताव्यस्त ठेवणे.',
     illustrationKey: 'badLittering',
     isGood: false,
     hint: 'Someone could trip and hurt themselves! Always put toys back into the toy box.',
+    hintMr: 'कोणालाही ठेच लागून दुखापत होऊ शकते! खेळणी नेहमी खेळण्याच्या पेटीत ठेवावीत.',
     praise: 'Correct! 🌟 Leaving toys on the floor is not safe. Clean up your room!',
-    category: 'Tidiness'
+    praiseMr: 'बरोबर! 🌟 खेळणी जमिनीवर पसरवणे सुरक्षित नाही. आपली खोली नेहमी स्वच्छ ठेवा!',
+    category: 'Tidiness',
+    categoryMr: 'स्वच्छता व शिस्त'
   },
   {
     id: 3,
     title: 'Washing Hands with Soap',
+    titleMr: 'साबणाने हात स्वच्छ धुणे',
     scenario: 'Washing hands with soap and water before sitting down to eat lunch.',
+    scenarioMr: 'दुपारी जेवणाला बसण्यापूर्वी साबण आणि पाण्याने हात स्वच्छ धुणे.',
     illustrationKey: 'washingHands',
     isGood: true,
     hint: 'Soap bubbles chase away tiny germs so you can eat clean food!',
+    hintMr: 'साबणाचा फेस जंतू दूर पळवतो, ज्यामुळे तुमचे पोट निरोगी राहते!',
     praise: 'Awesome Job! 🧼 Clean hands keep your tummy happy and healthy!',
-    category: 'Hygiene'
+    praiseMr: 'उत्तम काम! 🧼 स्वच्छ हात पोटाला निरोगी आणि आनंदी ठेवतात!',
+    category: 'Hygiene',
+    categoryMr: 'स्वच्छता'
   },
   {
     id: 4,
     title: 'Saying "Thank You!"',
+    titleMr: '"धन्यवाद!" असे म्हणणे',
     scenario: 'Saying "Thank You" with a smile when someone gives you a toy or snack.',
+    scenarioMr: 'कोणीही खेळणे किंवा खाऊ दिल्यावर हसतमुखाने "धन्यवाद" म्हणणे.',
     illustrationKey: 'sayPleaseThanks',
     isGood: true,
     hint: 'Saying please and thank you makes everyone feel respected and happy!',
+    hintMr: 'कृपया आणि धन्यवाद म्हटल्याने सर्वांना आनंद आणि आदर वाटतो!',
     praise: 'You have Wonderful Manners! 💖 Magic words make friends smile!',
-    category: 'Manners'
+    praiseMr: 'तुमचे शिष्टाचार खूप सुंदर आहेत! 💖 जादुई शब्द सर्वांच्या चेहऱ्यावर हसू आणतात!',
+    category: 'Manners',
+    categoryMr: 'शिष्टाचार'
   },
   {
     id: 5,
     title: 'Staying Awake Very Late',
+    titleMr: 'रात्री उशिरापर्यंत जागे राहणे',
     scenario: 'Staying awake very late at night playing games on the tablet.',
+    scenarioMr: 'रात्री उशिरापर्यंत जागे राहून टॅब्लेटवर गेम खेळणे.',
     illustrationKey: 'badLateNight',
     isGood: false,
     hint: 'Children need 10 hours of sleep so their brain and body can grow big and strong!',
+    hintMr: 'मेंदू आणि शरीराच्या वाढीसाठी लहान मुलांना १० तास झोपेची गरज असते!',
     praise: 'Great Thinking! 🌙 Sleeping late makes us tired and grumpy.',
-    category: 'Sleep'
+    praiseMr: 'छान विचार! 🌙 उशिरा झोपल्याने दुसऱ्या दिवशी थकवा आणि चिडचिड होते.',
+    category: 'Sleep',
+    categoryMr: 'झोप'
   },
   {
     id: 6,
     title: 'Eating Crunchy Fruits & Veggies',
+    titleMr: 'ताजी फळे आणि भाज्या खाणे',
     scenario: 'Munching sweet apples, crunchy carrots, and fresh fruits for snack.',
+    scenarioMr: 'खाऊसाठी गोड सफरचंद, गाजर आणि ताजी फळे आवडीने खाणे.',
     illustrationKey: 'healthyFood',
     isGood: true,
     hint: 'Fruits give you vitamins that help you run fast and stay healthy!',
+    hintMr: 'फळांमधून जीवनसत्त्वे मिळतात, ज्यामुळे तुम्ही वेगाने धावू शकता आणि निरोगी राहता!',
     praise: 'Yummy & Healthy! 🍎 Fruits and veggies are superfoods for champions!',
-    category: 'Nutrition'
+    praiseMr: 'चवदार आणि निरोगी! 🍎 फळे आणि भाज्या ही चॅम्पियन्ससाठी उत्तम आहार आहेत!',
+    category: 'Nutrition',
+    categoryMr: 'पोषण'
   },
   {
     id: 7,
     title: 'Taking a Fresh Warm Bath',
+    titleMr: 'रोज छान अंघोळ करणे',
     scenario: 'Taking a warm bubbly bath every day to stay clean and fresh.',
+    scenarioMr: 'स्वच्छ आणि ताजेतवाने राहण्यासाठी दररोज छान अंघोळ करणे.',
     illustrationKey: 'takingBath',
     isGood: true,
     hint: 'A good bath washes off sweat and dirt from a fun day of playing!',
+    hintMr: 'अंघोळीमुळे खेळून आलेला घाम आणि घाण निघून जाते!',
     praise: 'Splish Splash! 🛁 You are squeaky clean and ready for fun!',
-    category: 'Hygiene'
+    praiseMr: 'छान! 🛁 तुम्ही एकदम स्वच्छ आणि ताजेतवाने झालात!',
+    category: 'Hygiene',
+    categoryMr: 'स्वच्छता'
   },
   {
     id: 8,
     title: 'Putting Toys in the Toy Box',
+    titleMr: 'खेळणी पेटीत व्यवस्थित ठेवणे',
     scenario: 'Tidying up blocks, cars, and dolls into the toy box after playtime.',
+    scenarioMr: 'खेळ संपल्यावर ठोकळे, गाड्या आणि बाहुल्या खेळण्याच्या पेटीत व्यवस्थित ठेवणे.',
     illustrationKey: 'organizeToys',
     isGood: true,
     hint: 'When everything has its place, finding your favorite toy is super easy!',
+    hintMr: 'प्रत्येक वस्तू जागेवर ठेवली तर आवडते खेळणे शोधणे खूप सोपे जाते!',
     praise: 'Room Champion! 🧸 Clean rooms are happy and safe rooms!',
-    category: 'Tidiness'
+    praiseMr: 'खोलीचे चॅम्पियन! 🧸 स्वच्छ खोली नेहमी सुंदर आणि सुरक्षित असते!',
+    category: 'Tidiness',
+    categoryMr: 'स्वच्छता व शिस्त'
   },
   {
     id: 9,
     title: 'Sharing Toys with Friends',
+    titleMr: 'मित्रांसोबत खेळणी शेअर करणे',
     scenario: 'Sharing your crayons and blocks with a friend so you can play together.',
+    scenarioMr: 'एकत्र खेळण्यासाठी मित्रांसोबत रंग आणि ठोकळे शेअर करणे.',
     illustrationKey: 'helpingOthers',
     isGood: true,
     hint: 'Sharing brings joy and makes friendship twice as fun!',
+    hintMr: 'एकमेकांना शेअर केल्याने आनंद द्विगुणीत होतो आणि मैत्री घट्ट होते!',
     praise: 'Heart of Gold! 🤝 Sharing is caring for your friends!',
-    category: 'Sharing'
+    praiseMr: 'दयाळू मन! 🤝 मित्रांशी शेअर करणे ही खूप चांगली सवय आहे!',
+    category: 'Sharing',
+    categoryMr: 'एकमेकांना देणे'
   },
   {
     id: 10,
     title: 'Sleeping on Time in Cozy Bed',
+    titleMr: 'मऊ अंथरुणावर वेळेवर झोपणे',
     scenario: 'Going to bed early at night so you can wake up happy in the morning.',
+    scenarioMr: 'सकाळी आनंदाने उठण्यासाठी रात्री वेळेवर झोपी जाणे.',
     illustrationKey: 'sleepOnTime',
     isGood: true,
     hint: 'Early to bed and early to rise makes you healthy, wealthy, and wise!',
+    hintMr: 'लवकर निजे लवकर उठे त्यासी आरोग्य आणि संपत्ती मिळे!',
     praise: 'Sweet Dreams! 🌟 Good sleep gives you endless energy for tomorrow!',
-    category: 'Sleep'
+    praiseMr: 'गोड स्वप्ने! 🌟 पुरेशी झोप उद्यासाठी भरपूर ऊर्जा देते!',
+    category: 'Sleep',
+    categoryMr: 'झोप'
   }
 ];
 
@@ -473,35 +548,45 @@ export const SEQUENCE_ROUTINES = [
   {
     id: 'seq-brushing',
     title: 'Brushing Teeth Routine',
+    titleMr: 'दात घासण्याची दिनचर्या',
     habitName: 'Brushing Teeth',
+    habitNameMr: 'दात घासणे',
     theme: 'theme-blue',
     icon: '🪥',
     steps: [
       {
         order: 1,
         title: 'Step 1: Toothpaste',
+        titleMr: 'पायरी १: टूथपेस्ट',
         desc: 'Squeeze a pea-sized dot of toothpaste onto your brush',
+        descMr: 'ब्रशवर वाटाण्याच्या आकाराएवढी टूथपेस्ट घ्या',
         emoji: '🪥',
         color: '#bae6fd'
       },
       {
         order: 2,
         title: 'Step 2: Brush Circles',
+        titleMr: 'पायरी २: गोलाकार ब्रश',
         desc: 'Brush top, bottom, and back teeth in gentle round circles',
+        descMr: 'वरचे, खालचे आणि मागचे दात हळुवार गोलाकार घासा',
         emoji: '✨',
         color: '#fed7aa'
       },
       {
         order: 3,
         title: 'Step 3: Rinse Mouth',
+        titleMr: 'पायरी ३: चूळ भरणे',
         desc: 'Swish clean water in your mouth and spit it out',
+        descMr: 'तोंडाला स्वच्छ पाण्याने चूळ भरा आणि पाणी बाहेर टाका',
         emoji: '💧',
         color: '#bbf7d0'
       },
       {
         order: 4,
         title: 'Step 4: Sparkle Smile!',
+        titleMr: 'पायरी ४: चमकदार हास्य!',
         desc: 'Smile into the mirror with clean, sparkling teeth!',
+        descMr: 'आरशात पाहून स्वच्छ, चमकणाऱ्या दातांनी हसा!',
         emoji: '😁',
         color: '#fef08a'
       }
@@ -510,35 +595,45 @@ export const SEQUENCE_ROUTINES = [
   {
     id: 'seq-washing',
     title: 'Washing Hands Routine',
+    titleMr: 'हात धुण्याची दिनचर्या',
     habitName: 'Washing Hands',
+    habitNameMr: 'हात धुणे',
     theme: 'theme-teal',
     icon: '🧼',
     steps: [
       {
         order: 1,
         title: 'Step 1: Wet Hands',
+        titleMr: 'पायरी १: हात ओले करा',
         desc: 'Turn on the tap and wet your hands with clean water',
+        descMr: 'नळ चालू करा आणि स्वच्छ पाण्याने हात ओले करा',
         emoji: '🚰',
         color: '#bae6fd'
       },
       {
         order: 2,
         title: 'Step 2: Soap & Bubbles',
+        titleMr: 'पायरी २: साबण आणि फेस',
         desc: 'Rub soap all over your palms and fingers for 20 seconds',
+        descMr: '२० सेकंद तळहात आणि बोटांवर साबणाचा फेस करा',
         emoji: '🧼',
         color: '#fbcfe8'
       },
       {
         order: 3,
         title: 'Step 3: Rinse Clean',
+        titleMr: 'पायरी ३: स्वच्छ धुवा',
         desc: 'Rinse away all the soapy bubbles under the running water',
+        descMr: 'वाहत्या पाण्याखाली साबणाचा सर्व फेस स्वच्छ धुवून टाका',
         emoji: '🌊',
         color: '#bbf7d0'
       },
       {
         order: 4,
         title: 'Step 4: Dry Hands',
+        titleMr: 'पायरी ४: हात पुसा',
         desc: 'Dry your hands gently with a soft clean towel',
+        descMr: 'मऊ आणि स्वच्छ टॉवेलने हात कोरडे पुसा',
         emoji: '🧺',
         color: '#fde68a'
       }
@@ -547,35 +642,45 @@ export const SEQUENCE_ROUTINES = [
   {
     id: 'seq-bedtime',
     title: 'Bedtime Routine',
+    titleMr: 'झोपेची दिनचर्या',
     habitName: 'Going to Bed',
+    habitNameMr: 'झोपायला जाणे',
     theme: 'theme-purple',
     icon: '🌙',
     steps: [
       {
         order: 1,
         title: 'Step 1: Cozy Pajamas',
+        titleMr: 'पायरी १: रात्रीचे कपडे',
         desc: 'Change into your soft and comfy night pajamas',
+        descMr: 'रात्री झोपण्यासाठी मऊ आणि आरामदायक कपडे घाला',
         emoji: '👕',
         color: '#fed7aa'
       },
       {
         order: 2,
         title: 'Step 2: Brush Teeth',
+        titleMr: 'पायरी २: दात घासा',
         desc: 'Brush your teeth so they are clean before sleeping',
+        descMr: 'झोपण्यापूर्वी दात स्वच्छ घासून घ्या',
         emoji: '🪥',
         color: '#bae6fd'
       },
       {
         order: 3,
         title: 'Step 3: Bedtime Story',
+        titleMr: 'पायरी ३: छान गोष्ट ऐका',
         desc: 'Listen to a fun, cozy story with mom or dad',
+        descMr: 'आई किंवा बाबांकडून सुंदर आणि छान गोष्ट ऐका',
         emoji: '📖',
         color: '#fbcfe8'
       },
       {
         order: 4,
         title: 'Step 4: Sweet Dreams',
+        titleMr: 'पायरी ४: गोड स्वप्ने',
         desc: 'Close your eyes, turn off lights, and sleep on time!',
+        descMr: 'डोळे मिटा, दिवे बंद करा आणि वेळेवर झोपा!',
         emoji: '💤',
         color: '#c7d2fe'
       }
@@ -584,35 +689,45 @@ export const SEQUENCE_ROUTINES = [
   {
     id: 'seq-eating',
     title: 'Healthy Meal Routine',
+    titleMr: 'पौष्टिक जेवणाची दिनचर्या',
     habitName: 'Eating Healthy',
+    habitNameMr: 'पौष्टिक जेवण',
     theme: 'theme-green',
     icon: '🥗',
     steps: [
       {
         order: 1,
         title: 'Step 1: Wash Hands',
+        titleMr: 'पायरी १: हात धुवा',
         desc: 'Always wash hands before touching your delicious meal',
+        descMr: 'स्वादिष्ट जेवणाला हात लावण्यापूर्वी नेहमी हात धुवा',
         emoji: '🧼',
         color: '#bae6fd'
       },
       {
         order: 2,
         title: 'Step 2: Sit at Table',
+        titleMr: 'पायरी २: टेबलावर बसा',
         desc: 'Sit down nicely at the dining table with good posture',
+        descMr: 'जेवणाच्या टेबलावर सरळ आणि व्यवस्थित बसा',
         emoji: '🪑',
         color: '#fef08a'
       },
       {
         order: 3,
         title: 'Step 3: Chew Veggies',
+        titleMr: 'पायरी ३: भाज्या चावून खा',
         desc: 'Chew colorful vegetables and fruits with mouth closed',
+        descMr: 'तोंड बंद ठेवून रंगीबेरंगी भाज्या आणि फळे चावून खा',
         emoji: '🥦',
         color: '#bbf7d0'
       },
       {
         order: 4,
         title: 'Step 4: Say Thank You',
+        titleMr: 'पायरी ४: धन्यवाद म्हणा',
         desc: 'Finish your meal and say "Thank you for the food!"',
+        descMr: 'जेवण संपल्यावर अन्न देणाऱ्यांचे आभार माना',
         emoji: '🙏',
         color: '#fbcfe8'
       }
@@ -621,35 +736,45 @@ export const SEQUENCE_ROUTINES = [
   {
     id: 'seq-tidy',
     title: 'Tidying Up Toys Routine',
+    titleMr: 'खेळणी आवरण्याची दिनचर्या',
     habitName: 'Toy Cleanup',
+    habitNameMr: 'खेळणी आवरणे',
     theme: 'theme-yellow',
     icon: '🧸',
     steps: [
       {
         order: 1,
         title: 'Step 1: Playtime Over',
+        titleMr: 'पायरी १: खेळ संपला',
         desc: 'Notice when playtime is finished and time to clean up',
+        descMr: 'खेळ संपला की खेळणी आवरण्याची वेळ झाली हे ओळखा',
         emoji: '⏰',
         color: '#bae6fd'
       },
       {
         order: 2,
         title: 'Step 2: Pick Up Blocks',
+        titleMr: 'पायरी २: खेळणी उचला',
         desc: 'Gather toys, cars, and blocks off the floor gently',
+        descMr: 'जमिनीवर पडलेली खेळणी, गाड्या आणि ठोकळे गोळा करा',
         emoji: '🚗',
         color: '#fed7aa'
       },
       {
         order: 3,
         title: 'Step 3: Place in Toy Box',
+        titleMr: 'पायरी ३: पेटीत ठेवा',
         desc: 'Put all the toys neatly inside their storage boxes',
+        descMr: 'सर्व खेळणी त्यांच्या पेटीत नीटनेटकी ठेवा',
         emoji: '📦',
         color: '#fef08a'
       },
       {
         order: 4,
         title: 'Step 4: High Five!',
+        titleMr: 'पायरी ४: शाब्बास!',
         desc: 'Celebrate your shiny, clean room with a high five!',
+        descMr: 'स्वच्छ झालेल्या खोलीसाठी स्वतःची पाठ थोपटा!',
         emoji: '⭐',
         color: '#bbf7d0'
       }

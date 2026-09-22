@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   Home,
   BookOpen,
@@ -7,6 +7,8 @@ import {
   Palette,
   MoreHorizontal,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   LogOut,
   Lightbulb,
   Star,
@@ -18,6 +20,21 @@ import { useLanguage } from '../../../context/LanguageContext';
 export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLogout, onToggleDashboard }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
+  const navScrollRef = useRef(null);
+  const profileRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   const navItems = [
     { id: 'home', label: t('navHome', 'Home'), icon: Home },
@@ -28,6 +45,38 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
     { id: 'stories', label: t('navStories', 'Stories'), icon: Book },
     { id: 'more', label: t('navMore', 'More'), icon: MoreHorizontal },
   ];
+
+  // Check scroll positions to show/hide indicator arrows
+  const checkScrollState = useCallback(() => {
+    if (navScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = navScrollRef.current;
+      setCanScrollLeft(scrollLeft > 4);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 4);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkScrollState();
+    window.addEventListener('resize', checkScrollState);
+    return () => window.removeEventListener('resize', checkScrollState);
+  }, [checkScrollState]);
+
+  // Smooth scroll left or right
+  const handleScroll = (direction) => {
+    if (navScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -180 : 180;
+      navScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setTimeout(checkScrollState, 260);
+    }
+  };
+
+  // Enable mouse wheel horizontal scrolling
+  const handleWheel = (e) => {
+    if (navScrollRef.current && e.deltaY !== 0) {
+      navScrollRef.current.scrollLeft += e.deltaY * 0.9;
+      checkScrollState();
+    }
+  };
 
   return (
     <header className="home-navbar-wrapper">
@@ -54,61 +103,123 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
           </div>
         </div>
 
-        {/* Middle: Navigation Links */}
-        <ul className="home-nav-links">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = (activeTab || 'activities') === item.id;
-            return (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  className={`home-nav-item ${isActive ? 'is-active' : ''}`}
-                  onClick={() => onSelectTab?.(item.id)}
-                >
-                  <Icon size={18} />
-                  <span>{item.label}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        {/* Middle: Horizontally Scrollable Navigation Links */}
+        <div className="home-nav-scroll-wrapper">
+          {canScrollLeft && (
+            <button
+              type="button"
+              className="home-nav-scroll-arrow left"
+              onClick={() => handleScroll('left')}
+              title="Scroll left"
+              aria-label="Scroll navigation buttons left"
+            >
+              <ChevronLeft size={17} />
+            </button>
+          )}
+
+          <ul
+            className="home-nav-links"
+            ref={navScrollRef}
+            onScroll={checkScrollState}
+            onWheel={handleWheel}
+          >
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = (activeTab || 'activities') === item.id;
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    className={`home-nav-item ${isActive ? 'is-active' : ''}`}
+                    onClick={() => onSelectTab?.(item.id)}
+                  >
+                    <Icon size={18} />
+                    <span>{item.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {canScrollRight && (
+            <button
+              type="button"
+              className="home-nav-scroll-arrow right"
+              onClick={() => handleScroll('right')}
+              title="Scroll right"
+              aria-label="Scroll navigation buttons right"
+            >
+              <ChevronRight size={17} />
+            </button>
+          )}
+        </div>
 
         {/* Right: Language Toggle, Star Counter & User Profile */}
         <div className="home-nav-right">
-          {/* Language Switcher Pill */}
+          {/* Minimized Language Switcher Pill */}
           <button
             type="button"
-            className="home-lang-toggle-btn"
+            className="home-lang-toggle-btn compact"
             onClick={toggleLanguage}
-            title={language === 'mr' ? 'Switch to English' : 'मराठी भाषेत बदला'}
+            title={language === 'mr' ? 'Switch to English (मराठी चालू आहे)' : 'मराठी भाषेत बदला (English active)'}
             aria-label="Toggle Language"
           >
-            <Languages size={18} />
+            <Languages size={15} />
             <span className="lang-flag">{language === 'mr' ? '🇮🇳' : '🇬🇧'}</span>
-            <span className="lang-name">{language === 'mr' ? 'मराठी' : 'English'}</span>
+            <span className="lang-name">{language === 'mr' ? 'मराठी' : 'EN'}</span>
           </button>
 
           {/* Star Currency Counter */}
           <div className="star-counter-badge" title="Stars collected on Little Learner!">
-            <Star size={20} fill="#f59e0b" color="#f59e0b" />
+            <Star size={18} fill="#f59e0b" color="#f59e0b" />
             <span>{stars}</span>
           </div>
 
-          {/* User Profile Pill with Dropdown */}
-          <div className="user-profile-pill" onClick={() => setDropdownOpen(!dropdownOpen)}>
+          {/* Profile Avatar Icon Only (User name appears in dropdown on click) */}
+          <div
+            ref={profileRef}
+            className={`user-profile-btn ${dropdownOpen ? 'open' : ''}`}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            title={user?.display_name || 'My Profile'}
+            role="button"
+            tabIndex={0}
+            aria-haspopup="true"
+            aria-expanded={dropdownOpen}
+          >
             <div className="user-avatar-circle">
-              <img src="/assets/homepage/user_avatar.jpg" alt="Learner Avatar" />
+              <img
+                src={user?.avatar || '/assets/boy-avatar.jpg'}
+                alt={user?.display_name || 'Learner Avatar'}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/assets/boy-avatar.jpg';
+                }}
+              />
             </div>
-            <div className="user-info-text">
-              <span className="user-name-title">{user?.display_name || 'Aarav'}</span>
-              <span className="user-level-badge">{t('level', 'Level')} 3</span>
-            </div>
-            <ChevronDown size={16} color="#64748b" />
 
             {/* User Options Dropdown */}
             {dropdownOpen && (
               <div className="user-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+                {/* User info header displayed upon clicking profile icon */}
+                <div className="dropdown-user-header">
+                  <div className="dropdown-avatar-circle">
+                    <img
+                      src={user?.avatar || '/assets/boy-avatar.jpg'}
+                      alt={user?.display_name || 'Avatar'}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = '/assets/boy-avatar.jpg';
+                      }}
+                    />
+                  </div>
+                  <div className="dropdown-user-info">
+                    <span className="dropdown-user-name">{user?.display_name || 'Aarav'}</span>
+                    <span className="dropdown-user-role">{t('level', 'Level')} 3 • Learner</span>
+                  </div>
+                </div>
+
+                <div className="dropdown-divider" />
+
                 <button
                   type="button"
                   className="dropdown-item-btn"

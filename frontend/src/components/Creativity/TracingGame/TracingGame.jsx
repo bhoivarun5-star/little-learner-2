@@ -22,20 +22,24 @@ import {
   generateCheckpoints
 } from './tracingData';
 import { tracingSounds } from './tracingSounds';
+import { useLanguage } from '../../../context/LanguageContext';
 import './TracingGame.css';
 
-// Bright Toddler-Friendly Brush Colors
+// Bright Toddler-Friendly Brush Colors with Marathi Names
 const BRUSH_COLORS = [
-  { name: 'Red', hex: '#ef4444' },
-  { name: 'Pink', hex: '#ec4899' },
-  { name: 'Orange', hex: '#f97316' },
-  { name: 'Amber', hex: '#f59e0b' },
-  { name: 'Green', hex: '#10b981' },
-  { name: 'Blue', hex: '#3b82f6' },
-  { name: 'Purple', hex: '#8b5cf6' }
+  { name: 'Red', nameMr: 'लाल', hex: '#ef4444' },
+  { name: 'Pink', nameMr: 'गुलाबी', hex: '#ec4899' },
+  { name: 'Orange', nameMr: 'केशरी', hex: '#f97316' },
+  { name: 'Amber', nameMr: 'अंबर', hex: '#f59e0b' },
+  { name: 'Green', nameMr: 'हिरवा', hex: '#10b981' },
+  { name: 'Blue', nameMr: 'निळा', hex: '#3b82f6' },
+  { name: 'Purple', nameMr: 'जांभळा', hex: '#8b5cf6' }
 ];
 
 export default function TracingGame({ onHome, onEarnStars }) {
+  const { t, speak, language } = useLanguage();
+  const isMarathi = language === 'mr';
+
   // Game Mode: 'uppercase' | 'lowercase' | 'numbers'
   const [activeMode, setActiveMode] = useState('uppercase');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -104,7 +108,8 @@ export default function TracingGame({ onHome, onEarnStars }) {
   // Pronounce character & phonics
   const handleListen = () => {
     tracingSounds.playTap();
-    tracingSounds.speak(currentItem.soundText);
+    const speechTxt = isMarathi ? (currentItem.soundTextMr || currentItem.wordMr || currentItem.soundText) : currentItem.soundText;
+    speak(speechTxt);
   };
 
   // Mode change
@@ -140,7 +145,8 @@ export default function TracingGame({ onHome, onEarnStars }) {
   const handleReplay = () => {
     tracingSounds.playTap();
     resetCanvas();
-    tracingSounds.speak(currentItem.soundText);
+    const speechTxt = isMarathi ? (currentItem.soundTextMr || currentItem.wordMr || currentItem.soundText) : currentItem.soundText;
+    speak(speechTxt);
   };
 
   // Pointer / Touch drawing handlers
@@ -234,7 +240,9 @@ export default function TracingGame({ onHome, onEarnStars }) {
     } else if (drawnDistanceRef.current > 120 && pct < 40) {
       // Child drew a bunch but missed the guide lines
       tracingSounds.playTryAgain();
-      setFeedbackToast({ type: 'try-again', text: 'Follow the dots! You can do it! 👆' });
+      const tryText = isMarathi ? 'ठिपक्यांच्या रेषेवरून गिरवा! तुम्ही करू शकता! 👆' : 'Follow the dots! You can do it! 👆';
+      speak(tryText);
+      setFeedbackToast({ type: 'try-again', text: tryText });
       setTimeout(() => setFeedbackToast(null), 2500);
     }
   };
@@ -243,6 +251,9 @@ export default function TracingGame({ onHome, onEarnStars }) {
     setIsCompleted(true);
     setProgress(100);
     tracingSounds.playSuccessChime();
+
+    const wordSpoken = isMarathi ? (currentItem.wordMr || currentItem.word) : currentItem.word;
+    speak(wordSpoken);
 
     // Confetti celebration
     confetti({
@@ -261,7 +272,8 @@ export default function TracingGame({ onHome, onEarnStars }) {
     const key = `${activeMode}-${currentIndex}`;
     setCompletedSet((prev) => new Set([...prev, key]));
 
-    setFeedbackToast({ type: 'correct', text: `🌟 Super! You traced ${currentItem.char}!` });
+    const superText = isMarathi ? `🌟 शाब्बास! तुम्ही ${currentItem.char} गिरवले!` : `🌟 Super! You traced ${currentItem.char}!`;
+    setFeedbackToast({ type: 'correct', text: superText });
   };
 
   const handleCelebrationNext = () => {
@@ -285,11 +297,11 @@ export default function TracingGame({ onHome, onEarnStars }) {
               tracingSounds.playTap();
               onHome();
             }}
-            title="Back to Home"
+            title={isMarathi ? "मुख्यपृष्ठावर परत जा" : "Back to Home"}
             id="btn-tracing-home"
           >
             <Home size={20} />
-            <span>Home</span>
+            <span>{t('btnHome')}</span>
           </button>
 
           {/* Mode Selector Tabs */}
@@ -302,14 +314,14 @@ export default function TracingGame({ onHome, onEarnStars }) {
                 id={`tab-tracing-${mode.id}`}
               >
                 <span>{mode.icon}</span>
-                <span>{mode.label}</span>
+                <span>{isMarathi ? (mode.labelMr || mode.label) : mode.label}</span>
               </button>
             ))}
           </div>
 
           {/* Stars & Sound Controls */}
           <div className="tracing-header-right">
-            <div className="tracing-stars-pill">
+            <div className="tracing-stars-pill" title={isMarathi ? "मिळालेले तारे" : "Total Stars"}>
               <Star size={20} className="star-icon-glow" />
               <span>{totalStars}</span>
             </div>
@@ -317,7 +329,7 @@ export default function TracingGame({ onHome, onEarnStars }) {
             <button
               className="tracing-sound-btn"
               onClick={toggleSound}
-              title={soundEnabled ? 'Mute Audio' : 'Unmute Audio'}
+              title={soundEnabled ? (isMarathi ? 'आवाज बंद करा' : 'Mute Audio') : (isMarathi ? 'आवाज सुरू करा' : 'Unmute Audio')}
               id="btn-tracing-sound"
             >
               {soundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
@@ -339,10 +351,12 @@ export default function TracingGame({ onHome, onEarnStars }) {
             </div>
             <div className="tracing-word-group">
               <h2 className="tracing-word-title">
-                {currentItem.word} <span>{currentItem.icon}</span>
+                {isMarathi ? (currentItem.wordMr || currentItem.word) : currentItem.word} <span>{currentItem.icon}</span>
               </h2>
               <p className="tracing-word-subtitle">
-                Trace the {activeMode === 'numbers' ? 'number' : 'letter'} with your finger or mouse!
+                {isMarathi
+                  ? `तुमच्या बोटाने किंवा माऊसने ${activeMode === 'numbers' ? 'अंक' : 'अक्षर'} गिरवा!`
+                  : `Trace the ${activeMode === 'numbers' ? 'number' : 'letter'} with your finger or mouse!`}
               </p>
             </div>
           </div>
@@ -350,10 +364,10 @@ export default function TracingGame({ onHome, onEarnStars }) {
           <div className="tracing-char-actions">
             <button className="btn-listen" onClick={handleListen} id="btn-tracing-listen">
               <Volume2 size={24} />
-              <span>Listen</span>
+              <span>{isMarathi ? 'ऐका' : 'Listen'}</span>
             </button>
 
-            <div className="tracing-progress-pill" title="Tracing Progress">
+            <div className="tracing-progress-pill" title={isMarathi ? "गिरवण्याची प्रगती" : "Tracing Progress"}>
               <div className="tracing-progress-bar-bg">
                 <div
                   className="tracing-progress-bar-fill"
@@ -440,7 +454,7 @@ export default function TracingGame({ onHome, onEarnStars }) {
         <div className="tracing-controls-panel">
           {/* Color Swatches */}
           <div className="tracing-color-bar">
-            <span className="tracing-palette-label">Color:</span>
+            <span className="tracing-palette-label">{isMarathi ? 'रंग:' : 'Color:'}</span>
             {BRUSH_COLORS.map((c) => (
               <button
                 key={c.hex}
@@ -450,7 +464,7 @@ export default function TracingGame({ onHome, onEarnStars }) {
                   tracingSounds.playTap();
                   setBrushColor(c.hex);
                 }}
-                title={c.name}
+                title={isMarathi ? c.nameMr : c.name}
               />
             ))}
           </div>
@@ -460,40 +474,40 @@ export default function TracingGame({ onHome, onEarnStars }) {
             <button
               className="tracing-action-btn secondary"
               onClick={handlePrev}
-              title="Previous Character"
+              title={isMarathi ? "मागील" : "Previous Character"}
               id="btn-tracing-prev"
             >
               <ChevronLeft size={22} />
-              <span>Prev</span>
+              <span>{isMarathi ? 'मागील' : 'Prev'}</span>
             </button>
 
             <button
               className="tracing-action-btn secondary"
               onClick={handleClear}
-              title="Clear Canvas"
+              title={isMarathi ? "कॅनव्हास स्वच्छ करा" : "Clear Canvas"}
               id="btn-tracing-clear"
             >
               <Trash2 size={20} />
-              <span>Clear</span>
+              <span>{isMarathi ? 'पुसा' : 'Clear'}</span>
             </button>
 
             <button
               className="tracing-action-btn secondary"
               onClick={handleReplay}
-              title="Replay & Listen"
+              title={isMarathi ? "पुन्हा ऐका" : "Replay & Listen"}
               id="btn-tracing-replay"
             >
               <RotateCcw size={20} />
-              <span>Replay</span>
+              <span>{isMarathi ? 'पुन्हा' : 'Replay'}</span>
             </button>
 
             <button
               className="tracing-action-btn primary"
               onClick={handleNext}
-              title="Next Character"
+              title={isMarathi ? "पुढील" : "Next Character"}
               id="btn-tracing-next"
             >
-              <span>Next</span>
+              <span>{isMarathi ? 'पुढील' : 'Next'}</span>
               <ChevronRight size={22} />
             </button>
           </div>
@@ -509,7 +523,7 @@ export default function TracingGame({ onHome, onEarnStars }) {
                 key={item.char + idx}
                 className={`tracing-char-tray-item ${idx === currentIndex ? 'active' : ''}`}
                 onClick={() => handleDirectSelect(idx)}
-                title={`Trace ${item.char}`}
+                title={isMarathi ? `${item.char} गिरवा` : `Trace ${item.char}`}
               >
                 <span>{item.char}</span>
                 {done && <span className="tracing-char-tray-star">⭐</span>}
@@ -524,14 +538,20 @@ export default function TracingGame({ onHome, onEarnStars }) {
         <div className="tracing-celebration-backdrop">
           <div className="tracing-celebration-card">
             <div className="celebration-trophy-badge">🏆</div>
-            <h2 className="celebration-title">Fantastic Tracing!</h2>
+            <h2 className="celebration-title">
+              {isMarathi ? 'उत्कृष्ट काम! 🏆' : 'Fantastic Tracing!'}
+            </h2>
             <div className="celebration-stars-row">
               <span>⭐</span>
               <span>⭐</span>
               <span>⭐</span>
             </div>
             <p className="celebration-subtitle">
-              You traced <strong>{currentItem.char}</strong> ({currentItem.word}) perfectly!
+              {isMarathi ? (
+                <>तुम्ही <strong>{currentItem.char}</strong> ({currentItem.wordMr || currentItem.word}) अचूक गिरवले!</>
+              ) : (
+                <>You traced <strong>{currentItem.char}</strong> ({currentItem.word}) perfectly!</>
+              )}
             </p>
             <div className="celebration-actions">
               <button
@@ -539,13 +559,13 @@ export default function TracingGame({ onHome, onEarnStars }) {
                 onClick={handleCelebrationAgain}
               >
                 <RotateCcw size={20} />
-                <span>Trace Again</span>
+                <span>{isMarathi ? 'पुन्हा गिरवा' : 'Trace Again'}</span>
               </button>
               <button
                 className="tracing-action-btn primary"
                 onClick={handleCelebrationNext}
               >
-                <span>Next</span>
+                <span>{isMarathi ? 'पुढील' : 'Next'}</span>
                 <ChevronRight size={22} />
               </button>
             </div>

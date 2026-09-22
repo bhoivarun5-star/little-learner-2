@@ -260,7 +260,7 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
     act.categories.includes(selectedCategory)
   );
 
-  const activeCategoryObj = CATEGORY_PILLS.find(c => c.id === selectedCategory) || CATEGORY_PILLS[0];
+  const activeCategoryObj = CATEGORY_PILL_DEFS.find(c => c.id === selectedCategory) || CATEGORY_PILL_DEFS[0];
 
   const handleLaunch = (activity) => {
     confetti({
