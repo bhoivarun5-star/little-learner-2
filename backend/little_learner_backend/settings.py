@@ -127,23 +127,27 @@ if DATABASE_URL:
                 default=DATABASE_URL,
                 conn_max_age=600,
                 conn_health_checks=True,
+                ssl_require=True,
             )
         }
     except ImportError:
         pass
 
 if 'DATABASES' not in locals():
-    # 2. Connect to Supabase PostgreSQL cloud database or fallback to SQLite
+    # 2. Connect to Supabase IPv4 Pooler database or fallback to SQLite
     try:
         import psycopg2
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': os.environ.get('DB_NAME', 'postgres'),
-                'USER': os.environ.get('DB_USER', 'postgres'),
+                'USER': os.environ.get('DB_USER', 'postgres.uciwpoxpcurenwjzpbjc'),
                 'PASSWORD': os.environ.get('DB_PASSWORD', 'VarunBhoi@2711'),
-                'HOST': os.environ.get('DB_HOST', 'db.uciwpoxpcurenwjzpbjc.supabase.co'),
+                'HOST': os.environ.get('DB_HOST', 'aws-0-ap-southeast-2.pooler.supabase.com'),
                 'PORT': os.environ.get('DB_PORT', '5432'),
+                'OPTIONS': {
+                    'sslmode': 'require',
+                },
             }
         }
     except ImportError:
@@ -153,10 +157,13 @@ if 'DATABASES' not in locals():
                 'default': {
                     'ENGINE': 'django.db.backends.postgresql',
                     'NAME': os.environ.get('DB_NAME', 'postgres'),
-                    'USER': os.environ.get('DB_USER', 'postgres'),
+                    'USER': os.environ.get('DB_USER', 'postgres.uciwpoxpcurenwjzpbjc'),
                     'PASSWORD': os.environ.get('DB_PASSWORD', 'VarunBhoi@2711'),
-                    'HOST': os.environ.get('DB_HOST', 'db.uciwpoxpcurenwjzpbjc.supabase.co'),
+                    'HOST': os.environ.get('DB_HOST', 'aws-0-ap-southeast-2.pooler.supabase.com'),
                     'PORT': os.environ.get('DB_PORT', '5432'),
+                    'OPTIONS': {
+                        'sslmode': 'require',
+                    },
                 }
             }
         except ImportError:

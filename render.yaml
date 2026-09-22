@@ -17,7 +17,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
-        value: postgresql://postgres:VarunBhoi%402711@db.uciwpoxpcurenwjzpbjc.supabase.co:5432/postgres
+        value: postgresql://postgres.uciwpoxpcurenwjzpbjc:VarunBhoi%402711@aws-0-ap-southeast-2.pooler.supabase.com:5432/postgres?sslmode=require
       - key: SUPABASE_URL
         value: https://uciwpoxpcurenwjzpbjc.supabase.co
       - key: SUPABASE_PUBLISHABLE_KEY
