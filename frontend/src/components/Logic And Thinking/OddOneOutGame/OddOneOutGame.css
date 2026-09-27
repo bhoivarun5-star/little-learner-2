@@ -120,6 +120,68 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.odd-diff-pill.is-locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+  color: #94a3b8;
+}
+
+.odd-diff-pill.is-locked:hover {
+  background: transparent;
+  transform: none;
+}
+
+.odd-diff-lock-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.odd-diff-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.06);
+  margin-left: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.odd-diff-pill.active .odd-diff-tag {
+  background: rgba(15, 23, 42, 0.08);
+}
+
+.odd-lock-toast {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #fffbeb;
+  border: 2px solid #fde047;
+  color: #92400e;
+  padding: 0.55rem 1.25rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.2);
+  margin: 0.75rem auto 0 auto;
+  max-width: 90%;
+  animation: odd-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.odd-lock-toast-icon {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+@keyframes odd-pop-in {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* Score / Stars HUD Badges */
 .odd-hud-pill {
   display: flex;
@@ -534,6 +596,27 @@
 
   .odd-header-inner {
     padding: 0.5rem 0.75rem;
+  }
+
+  .odd-header-right {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .odd-hud-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  .odd-action-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .odd-home-btn {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
   }
 
   .odd-cards-grid.cards-3 {

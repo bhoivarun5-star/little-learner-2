@@ -1,4 +1,4 @@
-// Web Audio API tactile sound effects for Odd One Out (Zero synthetic speech)
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class SoundEngine {
   constructor() {
@@ -18,13 +18,18 @@ class SoundEngine {
     }
   }
 
+  isSoundActive() {
+    return !this.muted && !isAudioMuted();
+  }
+
   setMuted(val) {
     this.muted = val;
+    setAudioMuted(val);
   }
 
   // Soft wooden bubble pop on tap
   playTap() {
-    if (this.muted) return;
+    if (!this.isSoundActive()) return;
     this.init();
     if (!this.ctx) return;
 
@@ -49,7 +54,7 @@ class SoundEngine {
 
   // Joyful 3-tone arpeggio for correct answer (C5 -> E5 -> G5)
   playCorrect() {
-    if (this.muted) return;
+    if (!this.isSoundActive()) return;
     this.init();
     if (!this.ctx) return;
 
@@ -77,7 +82,7 @@ class SoundEngine {
 
   // Soft friendly cartoon wobble boing for try again
   playWrong() {
-    if (this.muted) return;
+    if (!this.isSoundActive()) return;
     this.init();
     if (!this.ctx) return;
 
@@ -104,7 +109,7 @@ class SoundEngine {
 
   // Shimmering harp glissando for hint
   playHint() {
-    if (this.muted) return;
+    if (!this.isSoundActive()) return;
     this.init();
     if (!this.ctx) return;
 
@@ -131,7 +136,7 @@ class SoundEngine {
 
   // Brass celebratory victory fanfare (5 notes)
   playVictory() {
-    if (this.muted) return;
+    if (!this.isSoundActive()) return;
     this.init();
     if (!this.ctx) return;
 

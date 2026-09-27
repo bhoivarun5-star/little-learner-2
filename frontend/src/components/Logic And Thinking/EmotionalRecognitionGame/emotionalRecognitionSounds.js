@@ -1,5 +1,4 @@
-// Web Audio API procedural sound synthesizer for Emotional Recognition Game
-// 100% self-contained, no external audio files, works offline
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class EmotionalRecognitionSoundPlayer {
   constructor() {
@@ -19,8 +18,12 @@ class EmotionalRecognitionSoundPlayer {
     }
   }
 
+  isSoundActive() {
+    return this.enabled && !isAudioMuted();
+  }
+
   playTap() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -47,7 +50,7 @@ class EmotionalRecognitionSoundPlayer {
   }
 
   playCorrect() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -79,7 +82,7 @@ class EmotionalRecognitionSoundPlayer {
   }
 
   playWrong() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -107,7 +110,7 @@ class EmotionalRecognitionSoundPlayer {
   }
 
   playStar() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -138,7 +141,7 @@ class EmotionalRecognitionSoundPlayer {
   }
 
   playMatchSuccess() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -169,7 +172,7 @@ class EmotionalRecognitionSoundPlayer {
   }
 
   playLevelUp() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 

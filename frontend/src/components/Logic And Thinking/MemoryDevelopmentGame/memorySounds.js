@@ -1,5 +1,4 @@
-// Web Audio API Synthesizer for Memory Development Game (Ages 3-6)
-// Pleasant, child-friendly sound effects with no synthetic speech.
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class MemorySoundSystem {
   constructor() {
@@ -27,12 +26,17 @@ class MemorySoundSystem {
     return this.audioCtx;
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
+    setAudioMuted(!enabled);
   }
 
   playPop() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -57,7 +61,7 @@ class MemorySoundSystem {
   }
 
   playCardFlip() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -83,7 +87,7 @@ class MemorySoundSystem {
   }
 
   playMatchChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -112,7 +116,7 @@ class MemorySoundSystem {
   }
 
   playMismatchBoing() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -138,7 +142,7 @@ class MemorySoundSystem {
   }
 
   playVictoryFanfare() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;

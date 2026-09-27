@@ -666,6 +666,25 @@
     justify-content: space-between;
     gap: 0.5rem;
   }
+  .hud-right-group {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .hud-btn-nav span {
+    display: none;
+  }
+  .hud-btn-nav {
+    padding: 0.45rem 0.65rem;
+  }
+  .hud-pill-badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
+  }
+  .hud-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
   .hud-game-subtitle {
     display: none;
   }

@@ -14,7 +14,8 @@ import {
   Smile,
   HeartHandshake,
   LayoutGrid,
-  BookOpen
+  BookOpen,
+  Lock
 } from 'lucide-react';
 import {
   EMOTION_ILLUSTRATIONS,
@@ -25,20 +26,36 @@ import {
 } from './emotionalRecognitionData';
 import { emotionalRecognitionSounds } from './emotionalRecognitionSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './EmotionalRecognitionGame.css';
 
-export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
   const handleExit = onHome || onBack;
 
+  // Level Locking Progression:
+  // Level 1: "Guess Emotion" ('guess') -> Unlocked by default
+  // Level 2: "How They Feel?" ('situations') -> Locked until Level 1 complete
+  // Level 3: "Match Emotion" ('match') -> Locked until Level 2 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_er_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 3 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+
   // Active Modes: 'guess' | 'situations' | 'match' | 'guide'
   const [activeMode, setActiveMode] = useState('guess');
+  const [completedMode, setCompletedMode] = useState(null);
+  const [lockToast, setLockToast] = useState(null);
 
   // General State
   const [stars, setStars] = useState(0);
   const [score, setScore] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [showHintModal, setShowHintModal] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
 
@@ -62,7 +79,35 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
   }, [soundEnabled]);
 
   const handleToggleSound = () => {
-    setSoundEnabled((prev) => !prev);
+    toggleMute();
+  };
+
+  const handleSelectMode = (mode) => {
+    if (mode === 'situations' && unlockedLevel < 2) {
+      emotionalRecognitionSounds.playWrong();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "भावना ओळखा" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Guess Emotion" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम आधीची पातळी पूर्ण करा' : 'Please complete the first level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    if (mode === 'match' && unlockedLevel < 3) {
+      emotionalRecognitionSounds.playWrong();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "त्यांना कसे वाटते?" (पातळी २) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "How They Feel?" (Level 2) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम आधीची पातळी पूर्ण करा' : 'Please complete the previous level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    emotionalRecognitionSounds.playTap();
+    setLockToast(null);
+    setActiveMode(mode);
   };
 
   const handleRestart = () => {
@@ -79,6 +124,21 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
       setMatchedIds([]);
     }
     setShowWinModal(false);
+  };
+
+  const handleProceedToNextLevel = (nextMode) => {
+    emotionalRecognitionSounds.playTap();
+    setShowWinModal(false);
+    setActiveMode(nextMode);
+    if (nextMode === 'situations') {
+      setSitRoundIdx(0);
+      setSitFeedback(null);
+    } else if (nextMode === 'match') {
+      setMatchRoundIdx(0);
+      setSelectedFaceId(null);
+      setSelectedWordId(null);
+      setMatchedIds([]);
+    }
   };
 
   // =========================================================================
@@ -121,6 +181,15 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
     if (guessRoundIdx < GUESS_THE_EMOTION_ROUNDS.length - 1) {
       setGuessRoundIdx((idx) => idx + 1);
     } else {
+      // Completed Level 1 -> Unlock Level 2 ("How They Feel?")
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 2);
+        try {
+          localStorage.setItem('little_learner_er_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+      setCompletedMode('guess');
       emotionalRecognitionSounds.playLevelUp();
       setShowWinModal(true);
       confetti({
@@ -171,6 +240,15 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
     if (sitRoundIdx < SITUATION_ROUNDS.length - 1) {
       setSitRoundIdx((idx) => idx + 1);
     } else {
+      // Completed Level 2 -> Unlock Level 3 ("Match Emotion")
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 3);
+        try {
+          localStorage.setItem('little_learner_er_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+      setCompletedMode('situations');
       emotionalRecognitionSounds.playLevelUp();
       setShowWinModal(true);
       confetti({
@@ -256,6 +334,8 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
       setSelectedFaceId(null);
       setSelectedWordId(null);
     } else {
+      // Completed Level 3 (Final Level)
+      setCompletedMode('match');
       emotionalRecognitionSounds.playLevelUp();
       setShowWinModal(true);
       confetti({ particleCount: 160, spread: 95, origin: { y: 0.5 } });
@@ -309,8 +389,9 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
           </div>
         </div>
 
-        {/* Right: Controls (Hint, Sound, Restart) */}
+        {/* Right: Controls (Switcher, Hint, Sound, Restart) */}
         <div className="er-nav-right">
+          <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
           <button
             type="button"
             className="er-btn-icon is-hint"
@@ -347,54 +428,63 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
       <main className="er-main-container">
         {/* 2. Mode Selector Pill Tabs */}
         <nav className="er-mode-switcher">
+          {/* Level 1: Guess Emotion */}
           <button
             type="button"
             className={`er-mode-btn ${activeMode === 'guess' ? 'is-active' : ''}`}
-            onClick={() => {
-              emotionalRecognitionSounds.playTap();
-              setActiveMode('guess');
-            }}
+            onClick={() => handleSelectMode('guess')}
           >
             <Smile size={18} />
             <span>{t('erTabGuess')}</span>
+            <span className="er-lvl-tag">{isMarathi ? 'पातळी १' : 'Level 1'}</span>
           </button>
 
+          {/* Level 2: How They Feel? (Locked until Level 1 completed) */}
           <button
             type="button"
-            className={`er-mode-btn ${activeMode === 'situations' ? 'is-active' : ''}`}
-            onClick={() => {
-              emotionalRecognitionSounds.playTap();
-              setActiveMode('situations');
-            }}
+            className={`er-mode-btn ${activeMode === 'situations' ? 'is-active' : ''} ${unlockedLevel < 2 ? 'is-locked' : ''}`}
+            onClick={() => handleSelectMode('situations')}
+            title={unlockedLevel < 2 ? (isMarathi ? 'पातळी १ पूर्ण केल्यावर उघडेल' : 'Complete Level 1 to unlock') : ''}
           >
-            <HeartHandshake size={18} />
+            {unlockedLevel < 2 ? <Lock size={16} className="er-lock-icon" /> : <HeartHandshake size={18} />}
             <span>{t('erTabSituations')}</span>
+            <span className="er-lvl-tag">
+              {unlockedLevel < 2 ? '🔒' : (isMarathi ? 'पातळी २' : 'Level 2')}
+            </span>
           </button>
 
+          {/* Level 3: Match Emotion (Locked until Level 2 completed) */}
           <button
             type="button"
-            className={`er-mode-btn ${activeMode === 'match' ? 'is-active' : ''}`}
-            onClick={() => {
-              emotionalRecognitionSounds.playTap();
-              setActiveMode('match');
-            }}
+            className={`er-mode-btn ${activeMode === 'match' ? 'is-active' : ''} ${unlockedLevel < 3 ? 'is-locked' : ''}`}
+            onClick={() => handleSelectMode('match')}
+            title={unlockedLevel < 3 ? (isMarathi ? 'पातळी २ पूर्ण केल्यावर उघडेल' : 'Complete Level 2 to unlock') : ''}
           >
-            <LayoutGrid size={18} />
+            {unlockedLevel < 3 ? <Lock size={16} className="er-lock-icon" /> : <LayoutGrid size={18} />}
             <span>{t('erTabMatch')}</span>
+            <span className="er-lvl-tag">
+              {unlockedLevel < 3 ? '🔒' : (isMarathi ? 'पातळी ३' : 'Level 3')}
+            </span>
           </button>
 
+          {/* Guide Reference */}
           <button
             type="button"
             className={`er-mode-btn ${activeMode === 'guide' ? 'is-active' : ''}`}
-            onClick={() => {
-              emotionalRecognitionSounds.playTap();
-              setActiveMode('guide');
-            }}
+            onClick={() => handleSelectMode('guide')}
           >
             <BookOpen size={18} />
             <span>{t('erTabGuide')}</span>
           </button>
         </nav>
+
+        {/* Level Lock Alert Toast */}
+        {lockToast && (
+          <div className="er-lock-toast">
+            <Lock size={18} className="er-lock-toast-icon" />
+            <span>{lockToast}</span>
+          </div>
+        )}
 
         {/* Progress Strip */}
         <div className="er-progress-strip">
@@ -705,28 +795,115 @@ export default function EmotionalRecognitionGame({ onBack, onHome, onEarnStars }
       {showWinModal && (
         <div className="er-modal-overlay">
           <div className="er-modal-box">
-            <span className="er-modal-icon">🏆</span>
-            <h3 className="er-modal-title">{isMarathi ? 'भावनांचे जादूगार! 🏆' : 'Emotions Master!'}</h3>
-            <p className="er-modal-desc">
-              {isMarathi ? `अप्रतिम कामगिरी! तुम्ही सर्व भावना ओळखल्या, ${stars} तारे मिळवले ⭐ आणि सहानुभूतीने भावना समजून घेणे शिकलात!` : `Amazing job! You identified all the emotions, earned ${stars} Stars ⭐, and learned how to understand feelings with empathy!`}
-            </p>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                type="button"
-                className="er-btn-modal-close"
-                onClick={handleRestart}
-              >
-                {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
-              </button>
-              <button
-                type="button"
-                className="er-btn-modal-close"
-                style={{ background: '#3b82f6' }}
-                onClick={() => handleExit?.()}
-              >
-                {isMarathi ? 'सर्व खेळ 🌟' : 'Back to Activities 🌟'}
-              </button>
-            </div>
+            <span className="er-modal-icon">
+              {completedMode === 'guess' ? '🌟' : completedMode === 'situations' ? '🎉' : '🏆'}
+            </span>
+
+            {completedMode === 'guess' && (
+              <>
+                <h3 className="er-modal-title">
+                  {isMarathi ? 'पातळी १ पूर्ण! 🔓 पातळी २ खुली झाली!' : 'Level 1 Complete! 🔓 Level 2 Unlocked!'}
+                </h3>
+                <p className="er-modal-desc">
+                  {isMarathi
+                    ? `अप्रतिम! तुम्ही सर्व भावना योग्य ओळखल्या आणि तारे मिळवले ⭐! आता पातळी २ "त्यांना कसे वाटते?" खेळा!`
+                    : `Superb! You correctly identified all the emotions and earned shiny stars ⭐! Level 2 "How They Feel?" is now unlocked!`}
+                </p>
+                <div className="er-modal-actions">
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-primary"
+                    onClick={() => handleProceedToNextLevel('situations')}
+                  >
+                    {isMarathi ? 'पातळी २ खेळा 🔓 ➡️' : 'Play Level 2 🔓 ➡️'}
+                  </button>
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-secondary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 1 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {completedMode === 'situations' && (
+              <>
+                <h3 className="er-modal-title">
+                  {isMarathi ? 'पातळी २ पूर्ण! 🔓 पातळी ३ खुली झाली!' : 'Level 2 Complete! 🔓 Level 3 Unlocked!'}
+                </h3>
+                <p className="er-modal-desc">
+                  {isMarathi
+                    ? `उत्तम! तुम्ही इतरांच्या भावना समजून घेतल्या ⭐! आता पातळी ३ "भावनांच्या जोड्या जुळवा" खुली झाली आहे!`
+                    : `Wonderful! You showed great empathy understanding how people feel ⭐! Level 3 "Match Emotion" is now unlocked!`}
+                </p>
+                <div className="er-modal-actions">
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-primary"
+                    onClick={() => handleProceedToNextLevel('match')}
+                  >
+                    {isMarathi ? 'पातळी ३ खेळा 🔓 ➡️' : 'Play Level 3 🔓 ➡️'}
+                  </button>
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-secondary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 2 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {completedMode === 'match' && (
+              <>
+                <h3 className="er-modal-title">
+                  {isMarathi ? 'भावनांचे महाविजेते! 🏆' : 'Emotions Grand Champion! 🏆'}
+                </h3>
+                <p className="er-modal-desc">
+                  {isMarathi
+                    ? `अप्रतिम कामगिरी! तुम्ही सर्व पातळी यशस्वीरीत्या पूर्ण केल्या, ${stars} तारे मिळवले ⭐ आणि सहानुभूतीने भावना समजून घेणे शिकलात!`
+                    : `Incredible job! You mastered all levels, matched all emotions, earned ${stars} Stars ⭐, and learned to understand feelings with empathy!`}
+                </p>
+                <div className="er-modal-actions">
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-primary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
+                  </button>
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-secondary"
+                    style={{ background: '#3b82f6', color: '#ffffff', borderColor: '#2563eb' }}
+                    onClick={() => handleExit?.()}
+                  >
+                    {isMarathi ? 'सर्व खेळ 🌟' : 'Back to Activities 🌟'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {!['guess', 'situations', 'match'].includes(completedMode) && (
+              <>
+                <h3 className="er-modal-title">{isMarathi ? 'भावनांचे जादूगार! 🏆' : 'Emotions Master!'}</h3>
+                <p className="er-modal-desc">
+                  {isMarathi ? `अप्रतिम कामगिरी! तुम्ही ${stars} तारे मिळवले ⭐!` : `Amazing job! You earned ${stars} Stars ⭐!`}
+                </p>
+                <div className="er-modal-actions">
+                  <button
+                    type="button"
+                    className="er-btn-modal-close is-primary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -1,3 +1,5 @@
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
+
 class SoundEngine {
   constructor() {
     this.ctx = null;
@@ -35,15 +37,20 @@ class SoundEngine {
     }
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
-    if (!enabled && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    setAudioMuted(!enabled);
+    if ((!enabled || isAudioMuted()) && typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
   }
 
   playVictoryChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       this.initContext();
       if (!this.ctx) return;
@@ -68,7 +75,7 @@ class SoundEngine {
   }
 
   playWrongBoing() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       this.initContext();
       if (!this.ctx) return;
@@ -90,7 +97,7 @@ class SoundEngine {
   }
 
   playPop() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       this.initContext();
       if (!this.ctx) return;
@@ -112,7 +119,7 @@ class SoundEngine {
   }
 
   speak(text) {
-    if (!this.soundEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    if (!this.isSoundActive() || typeof window === 'undefined' || !('speechSynthesis' in window)) {
       return;
     }
     try {

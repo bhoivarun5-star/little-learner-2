@@ -1,4 +1,4 @@
-// Sound effects and speech pronunciation for Letter & Number Tracing Game (Ages 3-6)
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class TracingSoundSystem {
   constructor() {
@@ -20,15 +20,20 @@ class TracingSoundSystem {
     return this.audioCtx;
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
-    if (!enabled && this.speechSynthesis) {
+    setAudioMuted(!enabled);
+    if ((!enabled || isAudioMuted()) && this.speechSynthesis) {
       this.speechSynthesis.cancel();
     }
   }
 
   playTap() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -53,7 +58,7 @@ class TracingSoundSystem {
   }
 
   playSuccessChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -82,7 +87,7 @@ class TracingSoundSystem {
   }
 
   playTryAgain() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -108,7 +113,7 @@ class TracingSoundSystem {
   }
 
   speak(text) {
-    if (!this.soundEnabled || !this.speechSynthesis) return;
+    if (!this.isSoundActive() || !this.speechSynthesis) return;
     try {
       this.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);

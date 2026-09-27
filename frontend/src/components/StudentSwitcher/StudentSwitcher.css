@@ -445,16 +445,38 @@
 }
 
 /* Compact mode for in-game HUDs */
+.student-switcher-container.compact {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
 .student-switcher-container.compact .student-switcher-trigger {
-  padding: 0.25rem 0.65rem 0.25rem 0.35rem;
+  padding: 0.2rem 0.55rem 0.2rem 0.35rem;
+  height: 32px;
+  gap: 0.25rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1.5px solid #c7d2fe;
 }
 
 .student-switcher-container.compact .active-student-avatar-badge {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
+  font-size: 0.75rem;
 }
 
 .student-switcher-container.compact .active-student-name {
-  font-size: 0.8rem;
-  max-width: 85px;
+  font-size: 0.78rem;
+  max-width: 75px;
+}
+
+@media (max-width: 640px) {
+  .student-switcher-container.compact .active-student-name {
+    display: none;
+  }
+  .student-switcher-container.compact .student-switcher-trigger {
+    padding: 0.2rem 0.4rem;
+    height: 30px;
+  }
 }

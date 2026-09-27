@@ -737,3 +737,39 @@
   background: #e2e8f0;
   transform: translateY(-2px);
 }
+
+@media (max-width: 640px) {
+  .drawing-hud-header {
+    padding: 0.5rem 0.75rem;
+  }
+  .drawing-hud-inner {
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .drawing-sub-title {
+    display: none;
+  }
+  .drawing-hud-right {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .drawing-btn-hud-action span {
+    display: none;
+  }
+  .drawing-btn-hud-action {
+    padding: 0.45rem 0.65rem;
+  }
+  .drawing-score-badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+  }
+  .drawing-icon-circle-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .drawing-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}

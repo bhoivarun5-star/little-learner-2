@@ -17,10 +17,18 @@ import { useStudent } from '../../context/StudentContext';
 import './SettingsModal.css';
 
 export default function SettingsModal({ isOpen, onClose }) {
-  const { language, setLanguage, t, speak } = useLanguage();
+  const {
+    language,
+    setLanguage,
+    t,
+    speak,
+    isMuted,
+    soundEnabled,
+    toggleMute,
+    setMuted
+  } = useLanguage();
   const { activeStudent } = useStudent();
 
-  const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
   const [speechTestPlaying, setSpeechTestPlaying] = useState(false);
   const openTimeRef = useRef(Date.now());
   const isOverlayMouseDownRef = useRef(false);
@@ -54,15 +62,20 @@ export default function SettingsModal({ isOpen, onClose }) {
 
   const handleSelectLanguage = (newLang) => {
     setLanguage(newLang);
-    // Voice preview in selected language
-    if (newLang === 'mr') {
-      speak({ mr: 'मराठी भाषा निवडली आहे! खेळा आणि शिका!', en: '' });
-    } else {
-      speak({ en: 'English language selected! Enjoy learning!', mr: '' });
+    // Voice preview in selected language if not muted
+    if (!isMuted) {
+      if (newLang === 'mr') {
+        speak({ mr: 'मराठी भाषा निवडली आहे! खेळा आणि शिका!', en: '' });
+      } else {
+        speak({ en: 'English language selected! Enjoy learning!', mr: '' });
+      }
     }
   };
 
   const handleTestSpeech = () => {
+    if (isMuted) {
+      setMuted(false); // Unmute if testing
+    }
     setSpeechTestPlaying(true);
     speak({
       en: 'Welcome to Little Learner! Have fun exploring and learning!',
@@ -177,12 +190,43 @@ export default function SettingsModal({ isOpen, onClose }) {
           <div className="settings-section-card">
             <div className="settings-section-header">
               <div className="section-title-with-icon">
-                <Volume2 size={18} color="#0284c7" />
+                {isMuted ? <VolumeX size={18} color="#ef4444" /> : <Volume2 size={18} color="#0284c7" />}
                 <span className="section-title-text">{t('voiceNarration', 'Audio & Speech Guide')}</span>
               </div>
+              <span style={{
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                padding: '3px 9px',
+                borderRadius: '999px',
+                background: isMuted ? '#fee2e2' : '#ecfdf5',
+                color: isMuted ? '#dc2626' : '#16a34a'
+              }}>
+                {isMuted ? 'Muted 🔇' : 'Sound On 🔊'}
+              </span>
             </div>
 
+            {/* Master Sound & Mute Toggle */}
             <div className="settings-toggle-row">
+              <div className="toggle-label-wrap">
+                <span className="toggle-main-label">{isMuted ? 'Game Audio is Muted' : 'Game Audio & Sound Effects'}</span>
+                <span className="toggle-sub-label">
+                  {isMuted
+                    ? 'All games, stars, and voice narration are completely muted'
+                    : 'Sound effects, chimes, and pronunciation active in all games'}
+                </span>
+              </div>
+              <button
+                type="button"
+                className={`switch-toggle-btn ${!isMuted ? 'on' : 'off'}`}
+                onClick={toggleMute}
+                title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+                aria-label={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+              >
+                <div className="toggle-knob" />
+              </button>
+            </div>
+
+            <div className="settings-toggle-row" style={{ marginTop: '0.65rem' }}>
               <div className="toggle-label-wrap">
                 <span className="toggle-main-label">Pronunciation & Voice Guide</span>
                 <span className="toggle-sub-label">Reads out prompts and phonics for learners</span>
@@ -195,20 +239,6 @@ export default function SettingsModal({ isOpen, onClose }) {
               >
                 <Volume2 size={15} />
                 <span>{speechTestPlaying ? 'Playing...' : 'Test Voice 🔊'}</span>
-              </button>
-            </div>
-
-            <div className="settings-toggle-row" style={{ marginTop: '0.5rem' }}>
-              <div className="toggle-label-wrap">
-                <span className="toggle-main-label">{t('soundEffects', 'Sound Effects & Chimes')}</span>
-                <span className="toggle-sub-label">Stars, level celebrations, and touch chimes</span>
-              </div>
-              <button
-                type="button"
-                className={`switch-toggle-btn ${soundEffectsEnabled ? 'on' : 'off'}`}
-                onClick={() => setSoundEffectsEnabled(!soundEffectsEnabled)}
-              >
-                <div className="toggle-knob" />
               </button>
             </div>
           </div>

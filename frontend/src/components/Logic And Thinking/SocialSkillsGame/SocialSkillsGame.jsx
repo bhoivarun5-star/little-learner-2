@@ -27,10 +27,11 @@ import {
 } from './socialSkillsData';
 import { socialSounds } from './socialSkillsSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './SocialSkillsGame.css';
 
-export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
-  const { t } = useLanguage();
+export default function SocialSkillsGame({ onBack, onHome, onEarnStars, onToggleDashboard }) {
+  const { t, isMuted, soundEnabled, toggleMute } = useLanguage();
   const handleExit = onHome || onBack;
 
   // Active Modes: 'wsid' | 'goodchoice' | 'roleplay' | 'superpowers'
@@ -39,7 +40,6 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
   // Overall State
   const [stars, setStars] = useState(0);
   const [score, setScore] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [showHintModal, setShowHintModal] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
 
@@ -68,7 +68,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
   }, [soundEnabled]);
 
   const handleToggleSound = () => {
-    setSoundEnabled((prev) => !prev);
+    toggleMute();
   };
 
   const handleModeChange = (mode) => {
@@ -353,6 +353,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
 
         {/* Stats & Tools */}
         <div className="ss-header-right">
+          <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
           <div className="ss-stat-pill ss-stars-pill">
             <Star className="ss-star-icon" fill="#FBBF24" />
             <span className="ss-stat-num">{stars}</span>

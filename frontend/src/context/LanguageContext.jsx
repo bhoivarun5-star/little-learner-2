@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { TRANSLATIONS } from './translations';
+import { soundManager } from '../utils/soundManager';
 
 const LanguageContext = createContext(null);
 
@@ -13,6 +14,22 @@ export function LanguageProvider({ children }) {
   });
 
   const [availableVoices, setAvailableVoices] = useState([]);
+  const [isMuted, setIsMuted] = useState(() => soundManager.isMuted());
+
+  // Subscribe to global sound manager mute state
+  useEffect(() => {
+    return soundManager.subscribe((val) => {
+      setIsMuted(val);
+    });
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    return soundManager.toggleMute();
+  }, []);
+
+  const setMuted = useCallback((val) => {
+    return soundManager.setMuted(val);
+  }, []);
 
   // Load and cache browser voices
   useEffect(() => {
@@ -58,9 +75,11 @@ export function LanguageProvider({ children }) {
     [language]
   );
 
-  // Smart speech synthesis supporting English & Marathi
+  // Smart speech synthesis supporting English & Marathi - strictly respects mute state
   const speak = useCallback(
     (textInput, options = {}) => {
+      // If audio is muted, never speak
+      if (soundManager.isMuted()) return;
       if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
 
       try {
@@ -141,7 +160,11 @@ export function LanguageProvider({ children }) {
     toggleLanguage,
     t,
     speak,
-    stopSpeech
+    stopSpeech,
+    isMuted,
+    soundEnabled: !isMuted,
+    toggleMute,
+    setMuted
   };
 
   return (

@@ -24,15 +24,13 @@ import {
 } from './puzzleData';
 import { puzzleSounds } from './puzzleSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './PuzzleGame.css';
 
-export default function PuzzleGame({ onHome, onEarnStars }) {
+export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
   // Navigation & Language
-  const { language, t, speak } = useLanguage();
+  const { language, t, speak, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
-
-  // Sound toggle
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Active Category & Difficulty
   const [activeCategory, setActiveCategory] = useState('animals');
@@ -71,9 +69,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
 
   // Toggle sound helper
   const handleToggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    puzzleSounds.setSoundEnabled(next);
+    toggleMute();
   };
 
   // Initialize or reset puzzle pieces when puzzle or difficulty changes
@@ -353,6 +349,7 @@ export default function PuzzleGame({ onHome, onEarnStars }) {
 
           {/* Right: Stars, Score, and Audio Button */}
           <div className="puzzle-hud-right">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
             <div className="puzzle-score-badge" title={isMarathi ? 'मिळालेले एकूण तारे' : 'Total Stars Collected'}>
               <Star size={18} fill="#f59e0b" color="#f59e0b" />
               <span>{stars} {isMarathi ? 'तारे' : 'Stars'}</span>

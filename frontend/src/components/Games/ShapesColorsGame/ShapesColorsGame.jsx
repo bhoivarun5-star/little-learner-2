@@ -21,16 +21,16 @@ import {
 } from './shapesColorsData';
 import { shapesSounds } from './soundEffects';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './ShapesColorsGame.css';
 
-export default function ShapesColorsGame({ onHome, onEarnStars }) {
-  const { language, t, speak } = useLanguage();
+export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboard }) {
+  const { language, t, speak, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
   // Navigation & Mode
   // Modes: 'explorer' | 'find-shape' | 'find-color' | 'match-name' | 'color-match' | 'sort-color'
   const [activeMode, setActiveMode] = useState('explorer');
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Stats & Progress
   const [score, setScore] = useState(0);
@@ -601,9 +601,7 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
   };
 
   const handleToggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    shapesSounds.setSoundEnabled(next);
+    toggleMute();
   };
 
   const progressPercent =
@@ -657,8 +655,10 @@ export default function ShapesColorsGame({ onHome, onEarnStars }) {
             </div>
           </div>
 
-          {/* Right: Stars, Sound, Replay, Next */}
+          {/* Right: Switcher, Stars, Sound, Replay, Next */}
           <div className="hud-right-group">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
+
             <div className="hud-pill-badge stars" title={isMarathi ? 'मिळालेले तारे!' : 'Stars collected!'}>
               <Star size={20} fill="#f59e0b" color="#f59e0b" />
               <span>{stars}</span>

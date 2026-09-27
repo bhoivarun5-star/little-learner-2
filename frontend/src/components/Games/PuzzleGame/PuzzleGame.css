@@ -952,3 +952,33 @@
   background: #6d28d9;
   transform: translateY(-2px);
 }
+
+@media (max-width: 640px) {
+  .puzzle-hud-header {
+    padding: 0.5rem 0.75rem;
+  }
+  .puzzle-hud-inner {
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .puzzle-sub-title {
+    display: none;
+  }
+  .puzzle-hud-right {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .puzzle-score-badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+  }
+  .puzzle-icon-circle-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .puzzle-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+  }
+}

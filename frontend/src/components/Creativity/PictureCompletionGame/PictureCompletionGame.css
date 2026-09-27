@@ -684,8 +684,28 @@
 /* Responsive Media Queries */
 @media (max-width: 640px) {
   .pc-header {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 0.5rem 0.75rem;
+  }
+  .pc-header-inner {
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .pc-header-right {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .pc-score-pill, .pc-stars-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+  }
+  .pc-sound-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .pc-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
   }
   .pc-difficulty-bar {
     justify-content: center;

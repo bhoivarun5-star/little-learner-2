@@ -818,7 +818,28 @@
 @media (max-width: 768px) {
   .gh-header-nav {
     height: 4.2rem;
-    padding: 0 1rem;
+    padding: 0 0.75rem;
+  }
+
+  .gh-nav-right {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .gh-btn-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .gh-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .gh-stars-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
   }
 
   .gh-brand-text {

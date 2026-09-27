@@ -1,4 +1,4 @@
-// Sound effects and speech synthesis for Kids Puzzle Game (Ages 3-6)
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class PuzzleSoundSystem {
   constructor() {
@@ -20,15 +20,20 @@ class PuzzleSoundSystem {
     return this.audioCtx;
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
-    if (!enabled && this.speechSynthesis) {
+    setAudioMuted(!enabled);
+    if ((!enabled || isAudioMuted()) && this.speechSynthesis) {
       this.speechSynthesis.cancel();
     }
   }
 
   playPop() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -53,7 +58,7 @@ class PuzzleSoundSystem {
   }
 
   playSnap() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -82,7 +87,7 @@ class PuzzleSoundSystem {
   }
 
   playWrongBoing() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -108,7 +113,7 @@ class PuzzleSoundSystem {
   }
 
   playHintChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -137,7 +142,7 @@ class PuzzleSoundSystem {
   }
 
   playSuccessFanfare() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -175,7 +180,7 @@ class PuzzleSoundSystem {
   }
 
   speak(text) {
-    if (!this.soundEnabled || !this.speechSynthesis) return;
+    if (!this.isSoundActive() || !this.speechSynthesis) return;
     try {
       this.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);

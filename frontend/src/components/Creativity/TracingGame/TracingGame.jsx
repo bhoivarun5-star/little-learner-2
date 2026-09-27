@@ -23,6 +23,7 @@ import {
 } from './tracingData';
 import { tracingSounds } from './tracingSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './TracingGame.css';
 
 // Bright Toddler-Friendly Brush Colors with Marathi Names
@@ -36,8 +37,8 @@ const BRUSH_COLORS = [
   { name: 'Purple', nameMr: 'जांभळा', hex: '#8b5cf6' }
 ];
 
-export default function TracingGame({ onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
   // Game Mode: 'uppercase' | 'lowercase' | 'numbers'
@@ -47,9 +48,6 @@ export default function TracingGame({ onHome, onEarnStars }) {
   // Brush styling
   const [brushColor, setBrushColor] = useState(BRUSH_COLORS[4].hex); // Green default
   const brushSize = 22; // Tactile child-friendly stroke width
-
-  // Sound
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Progress & Completion
   const [progress, setProgress] = useState(0);
@@ -100,9 +98,7 @@ export default function TracingGame({ onHome, onEarnStars }) {
 
   // Audio mute/unmute sync
   const toggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    tracingSounds.setSoundEnabled(next);
+    toggleMute();
   };
 
   // Pronounce character & phonics
@@ -321,6 +317,7 @@ export default function TracingGame({ onHome, onEarnStars }) {
 
           {/* Stars & Sound Controls */}
           <div className="tracing-header-right">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
             <div className="tracing-stars-pill" title={isMarathi ? "मिळालेले तारे" : "Total Stars"}>
               <Star size={20} className="star-icon-glow" />
               <span>{totalStars}</span>

@@ -21,6 +21,7 @@ import {
 import { TEMPLATES } from './drawingTemplates';
 import { drawingSounds } from './drawingSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './DrawingGame.css';
 
 // 16 Bright Toddler Colors with Marathi Names
@@ -51,12 +52,12 @@ const BRUSH_SIZES = [
   { id: 'xl', label: 'Jumbo', labelMr: 'अतिमोठा', size: 40, dot: 28 }
 ];
 
-export default function DrawingGame({ onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function DrawingGame({ onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, soundEnabled: globalSoundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
   // Sound
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const soundEnabled = globalSoundEnabled !== undefined ? globalSoundEnabled : true;
 
   // Active Tool: 'brush' | 'bucket' | 'eraser'
   const [activeTool, setActiveTool] = useState('brush');
@@ -84,9 +85,11 @@ export default function DrawingGame({ onHome, onEarnStars }) {
 
   // Sound toggle
   const handleToggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    drawingSounds.setSoundEnabled(next);
+    if (toggleMute) {
+      toggleMute();
+    } else {
+      drawingSounds.setSoundEnabled(!soundEnabled);
+    }
   };
 
   // Helper to save current canvas state to history
@@ -418,6 +421,7 @@ export default function DrawingGame({ onHome, onEarnStars }) {
 
           {/* Right: Stars, Save, New Drawing, Sound */}
           <div className="drawing-hud-right">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
             <div className="drawing-score-badge" title={isMarathi ? 'मिळालेले तारे' : 'Stars Collected'}>
               <Star size={18} fill="#f59e0b" color="#f59e0b" />
               <span>{stars} {isMarathi ? 'तारे' : 'Stars'}</span>

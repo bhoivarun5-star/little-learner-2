@@ -22,10 +22,11 @@ import {
 } from './pictureCompletionData';
 import { pictureSounds } from './pictureCompletionSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './PictureCompletionGame.css';
 
-export default function PictureCompletionGame({ onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, soundEnabled: globalSoundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
   // Navigation & Filtering
@@ -34,7 +35,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Sound
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const soundEnabled = globalSoundEnabled !== undefined ? globalSoundEnabled : true;
 
   // Game Play State
   const [isCompleted, setIsCompleted] = useState(false);
@@ -72,9 +73,11 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
   }, [currentIndex, selectedCategory, difficulty, isMarathi]);
 
   const toggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    pictureSounds.setSoundEnabled(next);
+    if (toggleMute) {
+      toggleMute();
+    } else {
+      pictureSounds.setSoundEnabled(!soundEnabled);
+    }
   };
 
   // Check piece selection (handles both tap and drag drop)
@@ -247,6 +250,7 @@ export default function PictureCompletionGame({ onHome, onEarnStars }) {
 
           {/* Score, Stars & Sound */}
           <div className="pc-header-right">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
             <div className="pc-score-pill">
               <Award size={18} />
               <span>{score} {isMarathi ? 'गुण' : 'pts'}</span>

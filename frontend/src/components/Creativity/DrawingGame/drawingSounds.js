@@ -1,10 +1,9 @@
-// Pure Tap Sound System for Kids Drawing Game
-// Only a gentle, clean tap sound is played on interaction. All voice/narration and extraneous audio removed.
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class DrawingSoundSystem {
   constructor() {
     this.audioCtx = null;
-    this.soundEnabled = true;
+    this.soundEnabled = !isAudioMuted();
   }
 
   getAudioContext() {
@@ -20,13 +19,18 @@ class DrawingSoundSystem {
     return this.audioCtx;
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
+    setAudioMuted(!enabled);
   }
 
   // Gentle, crisp tap sound for buttons, color swatches, brush sizes, and templates
   playTap() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;

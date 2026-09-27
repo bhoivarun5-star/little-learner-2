@@ -25,17 +25,17 @@ import {
 } from './memoryData';
 import { memorySounds } from './memorySounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './MemoryDevelopmentGame.css';
 
-export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
   // Navigation & Settings
   const [activeMode, setActiveMode] = useState('match'); // 'match' | 'remember'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
   const [activeTheme, setActiveTheme] = useState('all');
-  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Player Stats
   const [score, setScore] = useState(0);
@@ -77,9 +77,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
 
   // Sound toggle
   const toggleSound = () => {
-    const next = !soundEnabled;
-    setSoundEnabled(next);
-    memorySounds.setSoundEnabled(next);
+    toggleMute();
   };
 
   // Start / Restart Game
@@ -290,6 +288,7 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars }) {
 
           {/* Right: Stats (Moves, Timer, Stars, Sound) */}
           <div className="memory-stats-group">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
             <div className="memory-stat-pill" title={isMarathi ? "चाली मोजणी" : "Moves Counter"}>
               <span>{isMarathi ? 'चाली' : t('memMoves')}:</span>
               <strong>{moves}</strong>

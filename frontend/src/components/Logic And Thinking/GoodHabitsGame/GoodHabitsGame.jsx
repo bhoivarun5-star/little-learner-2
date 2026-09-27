@@ -25,10 +25,11 @@ import {
 } from './goodHabitsData';
 import { goodHabitsSounds } from './goodHabitsSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './GoodHabitsGame.css';
 
-export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
   const handleExit = onHome || onBack;
 
@@ -38,7 +39,6 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
   // General state
   const [stars, setStars] = useState(0);
   const [score, setScore] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [showHintModal, setShowHintModal] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
 
@@ -89,7 +89,7 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
 
   // Toggle Sound
   const handleToggleSound = () => {
-    setSoundEnabled((prev) => !prev);
+    toggleMute();
   };
 
   // =========================================================================
@@ -256,8 +256,9 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars }) {
           </div>
         </div>
 
-        {/* Right: Controls (Hint, Sound, Restart) */}
+        {/* Right: Controls (Switcher, Hint, Sound, Restart) */}
         <div className="gh-nav-right">
+          <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
           <button
             type="button"
             className="gh-btn-icon is-hint"

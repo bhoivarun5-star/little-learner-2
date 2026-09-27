@@ -1,5 +1,4 @@
-// Web Audio API procedural sound synthesizer for Good Habits Game
-// No external audio files needed; 100% self-contained, lightweight & fast
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class GoodHabitsSoundPlayer {
   constructor() {
@@ -19,8 +18,12 @@ class GoodHabitsSoundPlayer {
     }
   }
 
+  isSoundActive() {
+    return this.enabled && !isAudioMuted();
+  }
+
   playTap() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -47,7 +50,7 @@ class GoodHabitsSoundPlayer {
   }
 
   playCorrect() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -78,7 +81,7 @@ class GoodHabitsSoundPlayer {
   }
 
   playWrong() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -106,7 +109,7 @@ class GoodHabitsSoundPlayer {
   }
 
   playStar() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -137,7 +140,7 @@ class GoodHabitsSoundPlayer {
   }
 
   playOrderStep(stepIndex = 1) {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -166,7 +169,7 @@ class GoodHabitsSoundPlayer {
   }
 
   playLevelUp() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 

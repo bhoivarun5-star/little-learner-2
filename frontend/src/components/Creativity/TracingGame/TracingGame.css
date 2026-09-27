@@ -681,8 +681,28 @@
 /* Responsive Breakpoints */
 @media (max-width: 640px) {
   .tracing-header {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 0.5rem 0.75rem;
+  }
+  .tracing-header-inner {
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .tracing-header-right {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .tracing-stars-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.85rem;
+  }
+  .tracing-sound-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .tracing-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
   }
   .tracing-mode-switcher {
     overflow-x: auto;

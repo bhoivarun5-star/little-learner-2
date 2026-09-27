@@ -677,10 +677,28 @@
 /* Responsive Media Queries */
 @media (max-width: 640px) {
   .memory-header {
-    padding: 0.65rem 1rem;
+    padding: 0.5rem 0.75rem;
   }
   .memory-header-inner {
-    justify-content: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .memory-stats-group {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .memory-stat-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+  }
+  .memory-sound-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .memory-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
   }
   .memory-sub-bar {
     justify-content: center;

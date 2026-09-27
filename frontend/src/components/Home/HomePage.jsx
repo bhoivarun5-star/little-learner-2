@@ -117,6 +117,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <SocialSkillsGame
           onBack={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('social-skills', amount, 'Social Skills & Empathy', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'emotional-recognition') {
@@ -124,6 +125,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <EmotionalRecognitionGame
           onBack={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('emotional-recognition', amount, 'Emotional Recognition', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'good-habits') {
@@ -131,6 +133,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <GoodHabitsGame
           onBack={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('good-habits', amount, 'Good Habits & Manners', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'odd-one-out') {
@@ -138,6 +141,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <OddOneOutGame
           onBack={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('odd-one-out', amount, 'Odd One Out', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'memory-development') {
@@ -145,6 +149,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <MemoryDevelopmentGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('memory-development', amount, 'Memory Development', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'picture-completion') {
@@ -152,6 +157,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <PictureCompletionGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('picture-completion', amount, 'Picture Completion', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'tracing-game' || activeGame === 'letter-number-tracing') {
@@ -159,6 +165,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <TracingGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('tracing-game', amount, 'Letter & Number Tracing', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'drawing-game') {
@@ -166,6 +173,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <DrawingGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('drawing-game', amount, 'Creative Drawing Canvas', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'picture-puzzles') {
@@ -173,6 +181,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <PuzzleGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('picture-puzzles', amount, 'Picture Puzzles', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'alphabet-phonics') {
@@ -180,6 +189,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <AlphabetPhonicsGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('alphabet-phonics', amount, 'Alphabet & Phonics', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'count-match') {
@@ -187,6 +197,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <NumbersCountingGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('count-match', amount, 'Numbers & Counting', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     } else if (activeGame === 'shapes-colors') {
@@ -194,58 +205,13 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
         <ShapesColorsGame
           onHome={() => setActiveGame(null)}
           onEarnStars={(amount, score) => handleEarnStars('shapes-colors', amount, 'Shapes & Colors', score)}
+          onToggleDashboard={onToggleDashboard}
         />
       );
     }
 
     return (
       <div className="in-game-tracker-viewport" style={{ position: 'relative', minHeight: '100vh' }}>
-        {/* Floating Top In-Game 1-Click Learner Switcher Bar with Live Scoring Star */}
-        <div
-          style={{
-            position: 'fixed',
-            top: '12px',
-            right: '18px',
-            zIndex: 99999,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.65rem',
-            background: 'rgba(255, 255, 255, 0.96)',
-            backdropFilter: 'blur(12px)',
-            padding: '3px 10px 3px 6px',
-            borderRadius: '999px',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
-            border: '1.5px solid #c7d2fe',
-            fontFamily: 'var(--font-display)'
-          }}
-        >
-          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#4338ca', display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <span>🎯</span>
-            <span>ID:</span>
-          </span>
-          <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
-
-          {/* Live In-Game Scoring Star Counter */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              background: '#fef3c7',
-              border: '1.5px solid #fde68a',
-              padding: '2px 8px',
-              borderRadius: '999px',
-              fontSize: '0.8rem',
-              fontWeight: 800,
-              color: '#b45309'
-            }}
-            title="Current stars for this student"
-          >
-            <span>⭐</span>
-            <span>{activeStudent?.total_stars ?? 0}</span>
-          </div>
-        </div>
-
         {GameComponent}
       </div>
     );

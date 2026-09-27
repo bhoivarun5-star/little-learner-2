@@ -11,7 +11,8 @@ import {
   Sparkles,
   HelpCircle,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Lock
 } from 'lucide-react';
 import {
   ODD_ICONS,
@@ -20,11 +21,27 @@ import {
 } from './oddOneOutData';
 import { oddSounds } from './oddOneOutSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './OddOneOutGame.css';
 
-export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
-  const { t, speak, language } = useLanguage();
+export default function OddOneOutGame({ onBack, onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
+
+  // Level Progression:
+  // Level 1: 'easy' -> Unlocked by default
+  // Level 2: 'medium' -> Locked until Level 1 complete
+  // Level 3: 'hard' -> Locked until Level 2 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_ooo_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 3 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+
   const [difficulty, setDifficulty] = useState('easy');
   const [roundIndex, setRoundIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -35,7 +52,7 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
   const [isHinted, setIsHinted] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [lockToast, setLockToast] = useState(null);
 
   // Filter rounds for current difficulty
   const activeRounds = ODD_ONE_OUT_ROUNDS.filter(r => r.level === difficulty);
@@ -43,14 +60,35 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
 
   // Sound toggle handler
   const handleToggleSound = () => {
-    const nextMuted = !muted;
-    setMuted(nextMuted);
-    oddSounds.setMuted(nextMuted);
+    toggleMute();
   };
 
-  // Switch difficulty
+  // Switch difficulty with level locking protection
   const handleSelectDifficulty = (newDiff) => {
+    if (newDiff === 'medium' && unlockedLevel < 2) {
+      oddSounds.playWrong();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "सोपे" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Easy" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम सोपी पातळी पूर्ण करा' : 'Please complete Easy level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    if (newDiff === 'hard' && unlockedLevel < 3) {
+      oddSounds.playWrong();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "मध्यम" (पातळी २) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Medium" (Level 2) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम मध्यम पातळी पूर्ण करा' : 'Please complete Medium level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
     oddSounds.playTap();
+    setLockToast(null);
     setDifficulty(newDiff);
     setRoundIndex(0);
     resetTurnState();
@@ -99,8 +137,26 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
         });
       } catch (_) {}
 
-      // If last round in level, trigger celebration
+      // If last round in level, trigger celebration and unlock next level
       if (roundIndex === activeRounds.length - 1) {
+        if (difficulty === 'easy') {
+          setUnlockedLevel((prev) => {
+            const next = Math.max(prev, 2);
+            try {
+              localStorage.setItem('little_learner_ooo_unlocked_level', String(next));
+            } catch (_) {}
+            return next;
+          });
+        } else if (difficulty === 'medium') {
+          setUnlockedLevel((prev) => {
+            const next = Math.max(prev, 3);
+            try {
+              localStorage.setItem('little_learner_ooo_unlocked_level', String(next));
+            } catch (_) {}
+            return next;
+          });
+        }
+
         setTimeout(() => {
           oddSounds.playVictory();
           setShowCelebration(true);
@@ -146,6 +202,23 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
       setRoundIndex(prev => prev + 1);
       resetTurnState();
     } else {
+      if (difficulty === 'easy') {
+        setUnlockedLevel((prev) => {
+          const next = Math.max(prev, 2);
+          try {
+            localStorage.setItem('little_learner_ooo_unlocked_level', String(next));
+          } catch (_) {}
+          return next;
+        });
+      } else if (difficulty === 'medium') {
+        setUnlockedLevel((prev) => {
+          const next = Math.max(prev, 3);
+          try {
+            localStorage.setItem('little_learner_ooo_unlocked_level', String(next));
+          } catch (_) {}
+          return next;
+        });
+      }
       setShowCelebration(true);
     }
   };
@@ -189,15 +262,21 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
             {DIFFICULTY_LEVELS.map((lvl) => {
               const diffKey = `odd${lvl.id.charAt(0).toUpperCase() + lvl.id.slice(1)}`;
               const diffLabel = t(diffKey) || lvl.label;
+              const isLocked = (lvl.id === 'medium' && unlockedLevel < 2) || (lvl.id === 'hard' && unlockedLevel < 3);
+
               return (
                 <button
                   key={lvl.id}
                   type="button"
-                  className={`odd-diff-pill ${difficulty === lvl.id ? 'active' : ''}`}
+                  className={`odd-diff-pill ${difficulty === lvl.id ? 'active' : ''} ${isLocked ? 'is-locked' : ''}`}
                   onClick={() => handleSelectDifficulty(lvl.id)}
+                  title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
                 >
-                  <span>{lvl.emoji}</span>
+                  {isLocked ? <Lock size={14} className="odd-diff-lock-icon" /> : <span>{lvl.emoji}</span>}
                   <span>{diffLabel}</span>
+                  <span className="odd-diff-tag">
+                    {lvl.id === 'easy' ? (isMarathi ? 'पातळी १' : 'Lvl 1') : lvl.id === 'medium' ? (isLocked ? '🔒' : (isMarathi ? 'पातळी २' : 'Lvl 2')) : (isLocked ? '🔒' : (isMarathi ? 'पातळी ३' : 'Lvl 3'))}
+                  </span>
                 </button>
               );
             })}
@@ -205,6 +284,7 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
 
           {/* Right: Stars, Hints, Audio, Restart */}
           <div className="odd-header-right">
+            <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
             <div className="odd-hud-pill stars-pill" title="Earned Stars">
               <span>⭐</span>
               <span>{stars}</span>
@@ -236,9 +316,9 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
               type="button"
               className="odd-action-btn"
               onClick={handleToggleSound}
-              title={muted ? 'Unmute Audio' : 'Mute Audio'}
+              title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
             >
-              {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              {isMuted ? <VolumeX size={18} color="#ef4444" /> : <Volume2 size={18} />}
             </button>
           </div>
         </div>
@@ -253,6 +333,14 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
           />
         </div>
       </div>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="odd-lock-toast">
+          <Lock size={18} className="odd-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* 3. MAIN GAMEPLAY STAGE */}
       <main className="odd-main-stage">
@@ -323,11 +411,44 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
       {showCelebration && (
         <div className="odd-modal-backdrop">
           <div className="odd-modal-content">
-            <div className="odd-modal-trophy">🏆</div>
-            <h3 className="odd-modal-title">{t('oddSpectacular')}</h3>
-            <p className="odd-modal-desc">
-              {t('oddCompletedAll')}
-            </p>
+            <div className="odd-modal-trophy">{difficulty === 'hard' ? '🏆' : '🌟'}</div>
+
+            {difficulty === 'easy' && (
+              <>
+                <h3 className="odd-modal-title">
+                  {isMarathi ? 'सोपी पातळी पूर्ण! 🔓 मध्यम पातळी खुली झाली!' : 'Easy Level Complete! 🔓 Medium Level Unlocked!'}
+                </h3>
+                <p className="odd-modal-desc">
+                  {isMarathi
+                    ? 'खूप छान! तुमच्या तीक्ष्ण नजरेने सर्व वेगळ्या वस्तू ओळखल्या! आता पातळी २ (मध्यम) चे आव्हान स्वीकारा!'
+                    : 'Super eagle eyes! You spotted all the odd items! Level 2 (Medium - 4 cards) is now unlocked!'}
+                </p>
+              </>
+            )}
+
+            {difficulty === 'medium' && (
+              <>
+                <h3 className="odd-modal-title">
+                  {isMarathi ? 'मध्यम पातळी पूर्ण! 🔓 कठीण पातळी खुली झाली!' : 'Medium Level Complete! 🔓 Hard Level Unlocked!'}
+                </h3>
+                <p className="odd-modal-desc">
+                  {isMarathi
+                    ? 'अप्रतिम निरीक्षण! तुम्ही मध्यम पातळी पूर्ण केली! आता पातळी ३ (कठीण) चे आव्हान स्वीकारा!'
+                    : 'Incredible observation! You mastered the medium level! Level 3 (Hard - 5 cards) is now unlocked!'}
+                </p>
+              </>
+            )}
+
+            {difficulty === 'hard' && (
+              <>
+                <h3 className="odd-modal-title">
+                  {isMarathi ? 'वेगळा घटक ओळखा - महाविजेते! 🏆' : 'Odd One Out Grand Champion! 🏆'}
+                </h3>
+                <p className="odd-modal-desc">
+                  {t('oddCompletedAll')}
+                </p>
+              </>
+            )}
 
             <div className="odd-modal-stats">
               <div className="odd-stat-card">
@@ -341,40 +462,59 @@ export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
             </div>
 
             <div className="odd-modal-actions">
-              {difficulty !== 'hard' && (
+              {difficulty === 'easy' && (
                 <button
                   type="button"
                   className="odd-next-btn"
                   onClick={() => {
-                    const next = difficulty === 'easy' ? 'medium' : 'hard';
-                    handleSelectDifficulty(next);
+                    handleSelectDifficulty('medium');
                     setShowCelebration(false);
                   }}
                 >
-                  <span>{difficulty === 'easy' ? t('oddPlayMedium') : t('oddPlayHard')}</span>
+                  <span>{isMarathi ? 'मध्यम पातळी खेळा 🔓 ➡️' : 'Play Medium Level 🔓 ➡️'}</span>
                   <ArrowRight size={18} />
                 </button>
               )}
 
+              {difficulty === 'medium' && (
                 <button
                   type="button"
-                  className="odd-home-btn"
-                  style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
-                  onClick={handleRestart}
+                  className="odd-next-btn"
+                  onClick={() => {
+                    handleSelectDifficulty('hard');
+                    setShowCelebration(false);
+                  }}
                 >
-                  <RotateCcw size={18} />
-                  <span>{t('btnPlayAgain')}</span>
+                  <span>{isMarathi ? 'कठीण पातळी खेळा 🔓 ➡️' : 'Play Hard Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
                 </button>
+              )}
 
               <button
-                  type="button"
-                  className="odd-home-btn"
-                  style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
-                  onClick={onBack}
-                >
-                  <Home size={18} />
-                  <span>{t('btnHome')}</span>
-                </button>
+                type="button"
+                className="odd-home-btn"
+                style={{ padding: '0.75rem 1.5rem', borderRadius: '9999px' }}
+                onClick={handleRestart}
+              >
+                <RotateCcw size={18} />
+                <span>{t('btnPlayAgain')}</span>
+              </button>
+
+              <button
+                type="button"
+                className="odd-home-btn"
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: '9999px',
+                  background: difficulty === 'hard' ? '#3b82f6' : '#ffffff',
+                  color: difficulty === 'hard' ? '#ffffff' : '#334155',
+                  borderColor: difficulty === 'hard' ? '#2563eb' : '#e2e8f0'
+                }}
+                onClick={onBack}
+              >
+                <Home size={18} />
+                <span>{t('btnHome')}</span>
+              </button>
             </div>
           </div>
         </div>

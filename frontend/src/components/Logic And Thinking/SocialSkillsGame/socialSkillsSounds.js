@@ -1,5 +1,4 @@
-// Web Audio API procedural sound synthesizer for Social Skills Game
-// 100% self-contained, no external audio files required, runs smoothly offline
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class SocialSkillsSoundPlayer {
   constructor() {
@@ -19,8 +18,12 @@ class SocialSkillsSoundPlayer {
     }
   }
 
+  isSoundActive() {
+    return this.enabled && !isAudioMuted();
+  }
+
   playTap() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -47,7 +50,7 @@ class SocialSkillsSoundPlayer {
   }
 
   playCorrect() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -78,7 +81,7 @@ class SocialSkillsSoundPlayer {
   }
 
   playTryAgain() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -109,7 +112,7 @@ class SocialSkillsSoundPlayer {
   }
 
   playSparkle() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -140,7 +143,7 @@ class SocialSkillsSoundPlayer {
   }
 
   playTurn() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -167,7 +170,7 @@ class SocialSkillsSoundPlayer {
   }
 
   playFanfare() {
-    if (!this.enabled) return;
+    if (!this.isSoundActive()) return;
     this.initContext();
     if (!this.ctx) return;
 
@@ -204,7 +207,7 @@ class SocialSkillsSoundPlayer {
   }
 
   speak(text) {
-    if (!this.enabled || typeof window === 'undefined' || !window.speechSynthesis) return;
+    if (!this.isSoundActive() || typeof window === 'undefined' || !window.speechSynthesis) return;
     try {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);

@@ -1,10 +1,10 @@
 // Sound effects for Picture Completion Game (Ages 3-6)
-// Lady voice / Speech synthesis has been removed as requested.
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class PictureCompletionSoundSystem {
   constructor() {
     this.audioCtx = null;
-    this.soundEnabled = true;
+    this.soundEnabled = !isAudioMuted();
     // Cancel any speech if currently active in browser
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       try {
@@ -13,6 +13,10 @@ class PictureCompletionSoundSystem {
         // ignore
       }
     }
+  }
+
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
   }
 
   getAudioContext() {
@@ -30,10 +34,11 @@ class PictureCompletionSoundSystem {
 
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
+    setAudioMuted(!enabled);
   }
 
   playPop() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -58,7 +63,7 @@ class PictureCompletionSoundSystem {
   }
 
   playSnap() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -84,7 +89,7 @@ class PictureCompletionSoundSystem {
   }
 
   playSuccessChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -120,7 +125,7 @@ class PictureCompletionSoundSystem {
   }
 
   playTryAgain() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;

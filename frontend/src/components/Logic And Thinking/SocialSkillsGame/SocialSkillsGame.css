@@ -1102,6 +1102,17 @@
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .ss-stat-pill {
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+
+  .ss-tool-btn {
+    width: 36px;
+    height: 36px;
   }
 
   .ss-options-grid {

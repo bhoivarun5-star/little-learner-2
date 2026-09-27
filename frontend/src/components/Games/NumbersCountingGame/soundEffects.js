@@ -1,3 +1,5 @@
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
+
 class NumberSoundEngine {
   constructor() {
     this.ctx = null;
@@ -35,15 +37,20 @@ class NumberSoundEngine {
     }
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
-    if (!enabled && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    setAudioMuted(!enabled);
+    if ((!enabled || isAudioMuted()) && typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
   }
 
   playVictoryChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       this.initContext();
       if (!this.ctx) return;
@@ -68,7 +75,7 @@ class NumberSoundEngine {
   }
 
   playWrongBoing() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       this.initContext();
       if (!this.ctx) return;
@@ -90,7 +97,7 @@ class NumberSoundEngine {
   }
 
   playPop() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       this.initContext();
       if (!this.ctx) return;
@@ -112,7 +119,7 @@ class NumberSoundEngine {
   }
 
   speak(text) {
-    if (!this.soundEnabled || typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    if (!this.isSoundActive() || typeof window === 'undefined' || !('speechSynthesis' in window)) {
       return;
     }
     try {

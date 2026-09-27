@@ -1,4 +1,4 @@
-// Sound effects and speech synthesis for Shapes & Colors game
+import { isAudioMuted, setAudioMuted } from '../../../utils/soundManager';
 
 class ShapesColorsSoundSystem {
   constructor() {
@@ -20,15 +20,20 @@ class ShapesColorsSoundSystem {
     return this.audioCtx;
   }
 
+  isSoundActive() {
+    return this.soundEnabled && !isAudioMuted();
+  }
+
   setSoundEnabled(enabled) {
     this.soundEnabled = enabled;
-    if (!enabled && this.speechSynthesis) {
+    setAudioMuted(!enabled);
+    if ((!enabled || isAudioMuted()) && this.speechSynthesis) {
       this.speechSynthesis.cancel();
     }
   }
 
   playPop() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -53,7 +58,7 @@ class ShapesColorsSoundSystem {
   }
 
   playSuccessChime() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -82,7 +87,7 @@ class ShapesColorsSoundSystem {
   }
 
   playWrongBoing() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -108,7 +113,7 @@ class ShapesColorsSoundSystem {
   }
 
   playVictory() {
-    if (!this.soundEnabled) return;
+    if (!this.isSoundActive()) return;
     try {
       const ctx = this.getAudioContext();
       if (!ctx) return;
@@ -144,7 +149,7 @@ class ShapesColorsSoundSystem {
   }
 
   speak(text) {
-    if (!this.soundEnabled || !this.speechSynthesis) return;
+    if (!this.isSoundActive() || !this.speechSynthesis) return;
     try {
       this.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
