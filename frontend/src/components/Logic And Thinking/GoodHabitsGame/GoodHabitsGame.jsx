@@ -15,7 +15,8 @@ import {
   ThumbsUp,
   ThumbsDown,
   ListOrdered,
-  BookOpen
+  BookOpen,
+  Lock
 } from 'lucide-react';
 import {
   HABIT_ILLUSTRATIONS,
@@ -33,8 +34,23 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDa
   const isMarathi = language === 'mr';
   const handleExit = onHome || onBack;
 
+  // Level Progression:
+  // Level 1: "Good or Not Good?" ('good-or-not') -> Unlocked by default
+  // Level 2: "Put in Order" ('put-in-order') -> Locked until Level 1 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_gh_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 2 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+
   // Game Modes: 'good-or-not' | 'put-in-order' | 'explore'
   const [activeMode, setActiveMode] = useState('good-or-not');
+  const [completedMode, setCompletedMode] = useState(null);
+  const [lockToast, setLockToast] = useState(null);
 
   // General state
   const [stars, setStars] = useState(0);
@@ -56,6 +72,34 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDa
   useEffect(() => {
     goodHabitsSounds.enabled = soundEnabled;
   }, [soundEnabled]);
+
+  // Mode selection with level locking
+  const handleSelectMode = (mode) => {
+    if (mode === 'put-in-order' && unlockedLevel < 2) {
+      goodHabitsSounds.playWrong();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "चांगले की अयोग्य?" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Good or Not Good?" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम आधीची पातळी पूर्ण करा' : 'Please complete the first level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    goodHabitsSounds.playTap();
+    setLockToast(null);
+    setActiveMode(mode);
+  };
+
+  const handleProceedToNextLevel = (nextMode) => {
+    goodHabitsSounds.playTap();
+    setShowWinModal(false);
+    setActiveMode(nextMode);
+    if (nextMode === 'put-in-order') {
+      setRoutineIdx(0);
+      initRoutine(0);
+    }
+  };
 
   // Initialize Mode 2 Routine shuffled steps
   const initRoutine = (rIdx) => {
@@ -133,7 +177,15 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDa
     if (gnRoundIdx < GOOD_OR_NOT_GOOD_ROUNDS.length - 1) {
       setGnRoundIdx((idx) => idx + 1);
     } else {
-      // Game Complete Celebration!
+      // Completed Level 1 -> Unlock Level 2 ("Put in Order")
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 2);
+        try {
+          localStorage.setItem('little_learner_gh_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+      setCompletedMode('good-or-not');
       goodHabitsSounds.playLevelUp();
       setShowWinModal(true);
       confetti({
@@ -201,6 +253,8 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDa
     if (routineIdx < SEQUENCE_ROUTINES.length - 1) {
       setRoutineIdx((idx) => idx + 1);
     } else {
+      // Completed Level 2
+      setCompletedMode('put-in-order');
       goodHabitsSounds.playLevelUp();
       setShowWinModal(true);
       confetti({
@@ -295,42 +349,49 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDa
       <main className="gh-main-container">
         {/* 2. Mode Selector Pill Tabs */}
         <nav className="gh-mode-switcher">
+          {/* Level 1: Good or Not Good */}
           <button
             type="button"
             className={`gh-mode-btn ${activeMode === 'good-or-not' ? 'is-active' : ''}`}
-            onClick={() => {
-              goodHabitsSounds.playTap();
-              setActiveMode('good-or-not');
-            }}
+            onClick={() => handleSelectMode('good-or-not')}
           >
             <ThumbsUp size={18} />
             <span>{t('ghTabChoice')}</span>
+            <span className="gh-lvl-tag">{isMarathi ? 'पातळी १' : 'Level 1'}</span>
           </button>
 
+          {/* Level 2: Put in Order (Locked until Level 1 complete) */}
           <button
             type="button"
-            className={`gh-mode-btn ${activeMode === 'put-in-order' ? 'is-active' : ''}`}
-            onClick={() => {
-              goodHabitsSounds.playTap();
-              setActiveMode('put-in-order');
-            }}
+            className={`gh-mode-btn ${activeMode === 'put-in-order' ? 'is-active' : ''} ${unlockedLevel < 2 ? 'is-locked' : ''}`}
+            onClick={() => handleSelectMode('put-in-order')}
+            title={unlockedLevel < 2 ? (isMarathi ? 'पातळी १ पूर्ण केल्यावर उघडेल' : 'Complete Level 1 to unlock') : ''}
           >
-            <ListOrdered size={18} />
+            {unlockedLevel < 2 ? <Lock size={16} className="gh-lock-icon" /> : <ListOrdered size={18} />}
             <span>{t('ghTabOrder')}</span>
+            <span className="gh-lvl-tag">
+              {unlockedLevel < 2 ? '🔒' : (isMarathi ? 'पातळी २' : 'Level 2')}
+            </span>
           </button>
 
+          {/* Habits Guide */}
           <button
             type="button"
             className={`gh-mode-btn ${activeMode === 'explore' ? 'is-active' : ''}`}
-            onClick={() => {
-              goodHabitsSounds.playTap();
-              setActiveMode('explore');
-            }}
+            onClick={() => handleSelectMode('explore')}
           >
             <BookOpen size={18} />
             <span>{t('ghTabGuide')}</span>
           </button>
         </nav>
+
+        {/* Level Lock Alert Toast */}
+        {lockToast && (
+          <div className="gh-lock-toast">
+            <Lock size={18} className="gh-lock-toast-icon" />
+            <span>{lockToast}</span>
+          </div>
+        )}
 
         {/* Progress Strip */}
         <div className="gh-progress-strip">
@@ -635,34 +696,96 @@ export default function GoodHabitsGame({ onBack, onHome, onEarnStars, onToggleDa
       {showWinModal && (
         <div className="gh-modal-overlay">
           <div className="gh-modal-box">
-            <span className="gh-modal-icon">🏆</span>
-            <h3 className="gh-modal-title">
-              {isMarathi ? 'चांगल्या सवयींचे सुपरस्टार! 🏆' : 'Superstar of Good Habits!'}
-            </h3>
-            <p className="gh-modal-desc">
-              {isMarathi ? (
-                <>तुम्ही सर्व आव्हाने पूर्ण केली आणि <strong>{stars} तारे ⭐</strong> मिळवले! तुम्ही चांगल्या सवयी आणि उत्तम शिष्टाचारांचे चॅम्पियन आहात!</>
-              ) : (
-                <>You completed all the challenges and earned <strong>{stars} Stars ⭐</strong>! You are a champion of healthy habits and great manners!</>
-              )}
-            </p>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button
-                type="button"
-                className="gh-btn-modal-close"
-                onClick={handleRestart}
-              >
-                {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
-              </button>
-              <button
-                type="button"
-                className="gh-btn-modal-close"
-                style={{ background: '#3b82f6' }}
-                onClick={() => handleExit?.()}
-              >
-                {isMarathi ? 'खेळांकडे परत जा 🌟' : 'Back to Activities 🌟'}
-              </button>
-            </div>
+            <span className="gh-modal-icon">
+              {completedMode === 'good-or-not' ? '🌟' : '🏆'}
+            </span>
+
+            {completedMode === 'good-or-not' && (
+              <>
+                <h3 className="gh-modal-title">
+                  {isMarathi ? 'पातळी १ पूर्ण! 🔓 पातळी २ खुली झाली!' : 'Level 1 Complete! 🔓 Level 2 Unlocked!'}
+                </h3>
+                <p className="gh-modal-desc">
+                  {isMarathi ? (
+                    <>खूप छान! तुम्ही चांगल्या आणि अयोग्य सवयी अचूक ओळखल्या आणि <strong>{stars} तारे ⭐</strong> मिळवले! आता पातळी २ <strong>"योग्य क्रम लावा"</strong> खेळा!</>
+                  ) : (
+                    <>Awesome job! You correctly identified healthy habits and earned <strong>{stars} Stars ⭐</strong>! Level 2 <strong>"Put in the Right Order"</strong> is now unlocked!</>
+                  )}
+                </p>
+                <div className="gh-modal-actions">
+                  <button
+                    type="button"
+                    className="gh-btn-modal-close is-primary"
+                    onClick={() => handleProceedToNextLevel('put-in-order')}
+                  >
+                    {isMarathi ? 'पातळी २ खेळा 🔓 ➡️' : 'Play Level 2 🔓 ➡️'}
+                  </button>
+                  <button
+                    type="button"
+                    className="gh-btn-modal-close is-secondary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 1 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {completedMode === 'put-in-order' && (
+              <>
+                <h3 className="gh-modal-title">
+                  {isMarathi ? 'चांगल्या सवयींचे सुपरस्टार! 🏆' : 'Superstar of Good Habits! 🏆'}
+                </h3>
+                <p className="gh-modal-desc">
+                  {isMarathi ? (
+                    <>तुम्ही सर्व आव्हाने पूर्ण केली, सवयींचे योग्य क्रम लावले आणि <strong>{stars} तारे ⭐</strong> मिळवले! तुम्ही चांगल्या सवयी आणि उत्तम शिष्टाचारांचे चॅम्पियन आहात!</>
+                  ) : (
+                    <>You conquered all habit routines, put them in order, and earned <strong>{stars} Stars ⭐</strong>! You are a superstar champion of healthy habits and manners!</>
+                  )}
+                </p>
+                <div className="gh-modal-actions">
+                  <button
+                    type="button"
+                    className="gh-btn-modal-close is-primary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
+                  </button>
+                  <button
+                    type="button"
+                    className="gh-btn-modal-close is-secondary"
+                    style={{ background: '#3b82f6', color: '#ffffff', borderColor: '#2563eb' }}
+                    onClick={() => handleExit?.()}
+                  >
+                    {isMarathi ? 'खेळांकडे परत जा 🌟' : 'Back to Activities 🌟'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {!['good-or-not', 'put-in-order'].includes(completedMode) && (
+              <>
+                <h3 className="gh-modal-title">
+                  {isMarathi ? 'चांगल्या सवयींचे सुपरस्टार! 🏆' : 'Superstar of Good Habits! 🏆'}
+                </h3>
+                <p className="gh-modal-desc">
+                  {isMarathi ? (
+                    <>तुम्ही सर्व आव्हाने पूर्ण केली आणि <strong>{stars} तारे ⭐</strong> मिळवले!</>
+                  ) : (
+                    <>You completed all the challenges and earned <strong>{stars} Stars ⭐</strong>!</>
+                  )}
+                </p>
+                <div className="gh-modal-actions">
+                  <button
+                    type="button"
+                    className="gh-btn-modal-close is-primary"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
