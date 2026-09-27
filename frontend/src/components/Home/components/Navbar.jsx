@@ -32,13 +32,13 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showScoreRecordsModal, setShowScoreRecordsModal] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
-  const { activeStudent } = useStudent();
+  const { activeStudent, students = [], switchStudent } = useStudent();
   const navScrollRef = useRef(null);
   const profileRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Close profile dropdown on outside click
+  // Close profile dropdown on outside click or touch
   useEffect(() => {
     const handleOutsideClick = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -46,13 +46,29 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
   }, []);
 
-  // Close mobile menu on resize to desktop or escape key
+  // Prevent background page scrolling when mobile navigation menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  // Close mobile menu on resize to desktop (> 768px) or escape key
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 860) {
+      if (window.innerWidth > 768) {
         setMobileMenuOpen(false);
       }
     };
@@ -392,24 +408,40 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
               </div>
             </div>
 
-            {/* Switch Active Learner in Mobile Menu */}
-            <div className="mobile-dropdown-section">
-              <div className="mobile-section-header">
-                <div className="mobile-section-title">
-                  <Users size={16} color="#7c3aed" />
-                  <span>Switch Active Student</span>
+            {/* Switch Active Learner in Mobile Menu (Direct touch pills, no nested popups) */}
+            {students && students.length > 0 && (
+              <div className="mobile-dropdown-section">
+                <div className="mobile-section-header">
+                  <div className="mobile-section-title">
+                    <Users size={16} color="#7c3aed" />
+                    <span>Switch Active Student</span>
+                  </div>
+                </div>
+                <div className="mobile-students-pill-grid">
+                  {students.map((stu) => {
+                    const isSelected = (activeStudent?.id === stu.id || activeStudent?.student_id === stu.student_id);
+                    return (
+                      <button
+                        key={stu.student_id || stu.id}
+                        type="button"
+                        className={`mobile-student-select-btn ${isSelected ? 'is-selected' : ''}`}
+                        onClick={() => {
+                          switchStudent(stu.student_id || stu.id);
+                        }}
+                      >
+                        <div className="stu-select-icon">
+                          {isSelected ? <Check size={14} color="#ffffff" strokeWidth={3} /> : '👤'}
+                        </div>
+                        <div className="stu-select-text">
+                          <span className="stu-select-name">{stu.name}</span>
+                          <span className="stu-select-id">{stu.student_id || stu.id}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-              <div className="mobile-student-switcher-box">
-                <StudentSwitcher
-                  compact={false}
-                  onOpenDashboard={() => {
-                    setMobileMenuOpen(false);
-                    onToggleDashboard?.();
-                  }}
-                />
-              </div>
-            </div>
+            )}
 
             {/* Navigation Tabs Grid */}
             <div className="mobile-dropdown-section">

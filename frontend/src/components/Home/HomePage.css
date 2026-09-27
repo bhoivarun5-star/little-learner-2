@@ -586,19 +586,76 @@
   letter-spacing: 0.6px;
 }
 
-.mobile-student-switcher-box {
+.mobile-students-pill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
   width: 100%;
 }
 
-.mobile-student-switcher-box .student-switcher-container {
-  width: 100%;
+.mobile-student-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.65rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
-.mobile-student-switcher-box .student-switcher-trigger {
-  width: 100%;
-  justify-content: space-between;
-  padding: 0.55rem 0.85rem;
-  border-radius: 12px;
+.mobile-student-select-btn:active {
+  transform: scale(0.97);
+}
+
+.mobile-student-select-btn.is-selected {
+  background: #f5f3ff;
+  border-color: #8b5cf6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+}
+
+.stu-select-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ede9fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  color: #7c3aed;
+}
+
+.mobile-student-select-btn.is-selected .stu-select-icon {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.stu-select-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stu-select-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.stu-select-id {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #7c3aed;
+  line-height: 1.2;
 }
 
 .mobile-nav-grid {
@@ -1160,11 +1217,28 @@
   transform: translateY(-1px);
 }
 
+.parents-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.parents-heart-decor {
+  font-size: 1.4rem;
+}
+
 /* ==========================================================================
    Responsive Adaptations - STRICTLY FOR MOBILE SCREENS (<= 768px)
    Laptop / PC users (> 768px) remain 100% untouched and identical to before
    ========================================================================== */
 @media (max-width: 768px) {
+  /* Remove backdrop-filter on mobile navbar wrapper so it does not trap position: fixed dropdown descendants */
+  .home-navbar-wrapper {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: #ffffff !important;
+  }
+
   /* Sleek compact single-row navbar for mobile */
   .home-navbar {
     padding: 0.55rem 0.85rem;
@@ -1197,24 +1271,20 @@
     display: none !important;
   }
 
+  /* Hide separate desktop profile popup button on mobile, profile is cleanly integrated in mobile menu */
+  .user-profile-btn {
+    display: none !important;
+  }
+
   .home-nav-right {
-    gap: 0.45rem;
+    gap: 0.55rem;
+    align-items: center;
   }
 
   .star-counter-badge {
-    height: 34px;
-    padding: 0.2rem 0.55rem;
-    font-size: 0.9rem;
-  }
-
-  .user-profile-btn {
-    width: 36px;
     height: 36px;
-  }
-
-  .user-avatar-circle {
-    width: 30px;
-    height: 30px;
+    padding: 0.25rem 0.65rem;
+    font-size: 0.92rem;
   }
 
   /* Show mobile hamburger menu button on mobile screen */
@@ -1244,17 +1314,41 @@
   /* Show mobile dropdown overlay and sheet on mobile */
   .home-mobile-dropdown-backdrop {
     display: flex !important;
-    position: fixed;
-    inset: 0;
-    top: 58px;
-    background: rgba(15, 23, 42, 0.45);
-    backdrop-filter: blur(8px);
-    z-index: 999;
-    overflow-y: auto;
-    flex-direction: column;
-    align-items: center;
-    padding: 0.65rem 0.85rem 2.5rem 0.85rem;
-    animation: mobileBackdropFade 0.22s ease forwards;
+    position: fixed !important;
+    top: 58px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 58px) !important;
+    height: calc(100dvh - 58px) !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    z-index: 99999 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    padding: 0.75rem 0.85rem 3.5rem 0.85rem !important;
+    animation: mobileBackdropFade 0.2s ease forwards !important;
+    box-sizing: border-box !important;
+    touch-action: pan-y !important;
+  }
+
+  .home-mobile-dropdown-sheet {
+    width: 100% !important;
+    max-width: 460px !important;
+    background: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 22px !important;
+    box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.25) !important;
+    padding: 1.15rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.1rem !important;
+    animation: mobileSheetSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    margin-bottom: 2.5rem !important;
   }
 
   .home-hero-section {
@@ -1271,8 +1365,138 @@
     font-size: 2.1rem;
   }
 
+  /* Bottom Feature Row: Square shape cards STRICTLY on mobile */
   .home-bottom-feature-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 340px)) !important;
+    justify-content: center !important;
+    gap: 1.5rem !important;
+    margin-top: 1.25rem !important;
+  }
+
+  .bottom-feature-banner {
+    width: 100% !important;
+    max-width: 340px !important;
+    aspect-ratio: 1 / 1 !important;
+    min-height: 310px !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    padding: 1.5rem 1.25rem !important;
+    border-radius: 26px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Daily Challenge Square Layout */
+  .challenge-left-cluster {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .challenge-trophy-img {
+    width: 76px !important;
+    height: 76px !important;
+    margin: 0 auto !important;
+  }
+
+  .challenge-text-col {
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .challenge-title {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .challenge-desc {
+    font-size: 0.88rem !important;
+    line-height: 1.4 !important;
+    max-width: 260px !important;
+    margin: 0 auto !important;
+  }
+
+  .challenge-cta-group {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .btn-start-challenge {
+    width: 100% !important;
+    max-width: 260px !important;
+    height: 44px !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    padding: 0 1.25rem !important;
+  }
+
+  .challenge-reward-decor {
+    font-size: 1.6rem !important;
+  }
+
+  /* For Parents Square Layout */
+  .parents-left-cluster {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .parents-avatar-img {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 20px !important;
+    margin: 0 auto !important;
+  }
+
+  .parents-text-col {
+    align-items: center !important;
+    text-align: center !important;
+  }
+
+  .parents-title {
+    font-size: 1.3rem !important;
+    margin-bottom: 0.35rem !important;
+  }
+
+  .parents-desc {
+    font-size: 0.88rem !important;
+    line-height: 1.4 !important;
+    max-width: 260px !important;
+    margin: 0 auto !important;
+  }
+
+  .parents-cta-group {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    width: 100% !important;
+  }
+
+  .btn-parent-tips {
+    width: 100% !important;
+    max-width: 260px !important;
+    height: 44px !important;
+    justify-content: center !important;
+    font-size: 0.98rem !important;
+    padding: 0 1.25rem !important;
+  }
+
+  .parents-heart-decor {
+    font-size: 1.5rem !important;
   }
 }
 

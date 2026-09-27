@@ -48,15 +48,19 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
 
   const handleNavSelectTab = (tabId) => {
     setActiveNavTab(tabId);
-    if (tabId === 'logic') {
+    if (tabId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tabId === 'logic') {
       setActiveCategory('logic');
       const el = document.getElementById('activities-section');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
       }
-    } else if (tabId === 'activities' || tabId === 'games' || tabId === 'learn') {
+    } else if (tabId === 'activities' || tabId === 'games' || tabId === 'learn' || tabId === 'stories' || tabId === 'more') {
       if (tabId === 'games') setActiveCategory('games');
-      if (tabId === 'activities') setActiveCategory('all');
+      else if (tabId === 'activities') setActiveCategory('all');
+      else if (tabId === 'learn') setActiveCategory('writing');
+      else if (tabId === 'stories') setActiveCategory('creativity');
       const el = document.getElementById('activities-section');
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });

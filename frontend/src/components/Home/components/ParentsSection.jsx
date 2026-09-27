@@ -18,7 +18,7 @@ export default function ParentsSection({ onOpenParentTips }) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div className="parents-cta-group">
         <button
           type="button"
           className="btn-parent-tips"
@@ -27,7 +27,7 @@ export default function ParentsSection({ onOpenParentTips }) {
           <span>Parent Tips</span>
           <ChevronRight size={16} strokeWidth={3} />
         </button>
-        <span style={{ fontSize: '1.4rem' }}>❤️</span>
+        <span className="parents-heart-decor">❤️</span>
       </div>
     </div>
   );
