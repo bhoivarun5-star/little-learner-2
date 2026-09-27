@@ -9,10 +9,10 @@ export const CATEGORIES = [
 ];
 
 export const DIFFICULTY_LEVELS = [
-  { id: 'easy2', label: '2 Pieces', labelMr: '२ तुकडे', pieces: 2, rows: 1, cols: 2, badge: '🟢 Very Easy', badgeMr: '🟢 अतिशय सोपे', age: '3 Yrs', ageMr: '३ वर्षे' },
-  { id: 'easy4', label: '4 Pieces', labelMr: '४ तुकडे', pieces: 4, rows: 2, cols: 2, badge: '🟢 Easy', badgeMr: '🟢 सोपे', age: '3–4 Yrs', ageMr: '३–४ वर्षे' },
-  { id: 'medium', label: '6 Pieces', labelMr: '६ तुकडे', pieces: 6, rows: 2, cols: 3, badge: '🟡 Medium', badgeMr: '🟡 मध्यम', age: '4–5 Yrs', ageMr: '४–५ वर्षे' },
-  { id: 'hard', label: '9 Pieces', labelMr: '९ तुकडे', pieces: 9, rows: 3, cols: 3, badge: '🔴 Hard', badgeMr: '🔴 कठीण', age: '5–6 Yrs', ageMr: '५–६ वर्षे' }
+  { id: 'easy2', level: 1, label: '2 Pieces', labelMr: '२ तुकडे', pieces: 2, rows: 1, cols: 2, badge: '🟢 Very Easy', badgeMr: '🟢 अतिशय सोपे', age: '3 Yrs', ageMr: '३ वर्षे' },
+  { id: 'easy4', level: 2, label: '4 Pieces', labelMr: '४ तुकडे', pieces: 4, rows: 2, cols: 2, badge: '🟢 Easy', badgeMr: '🟢 सोपे', age: '3–4 Yrs', ageMr: '३–४ वर्षे' },
+  { id: 'medium', level: 3, label: '6 Pieces', labelMr: '६ तुकडे', pieces: 6, rows: 2, cols: 3, badge: '🟡 Medium', badgeMr: '🟡 मध्यम', age: '4–5 Yrs', ageMr: '४–५ वर्षे' },
+  { id: 'hard', level: 4, label: '9 Pieces', labelMr: '९ तुकडे', pieces: 9, rows: 3, cols: 3, badge: '🔴 Hard', badgeMr: '🔴 कठीण', age: '5–6 Yrs', ageMr: '५–६ वर्षे' }
 ];
 
 export const PUZZLES_DATA = [

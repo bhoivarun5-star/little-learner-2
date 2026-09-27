@@ -10,7 +10,9 @@ import {
   Star,
   CheckCircle2,
   XCircle,
-  Trophy
+  Trophy,
+  Lock,
+  Award
 } from 'lucide-react';
 import { ALPHABET_DATA } from './alphabetData';
 import { sounds } from './soundEffects';
@@ -18,10 +20,35 @@ import { useLanguage } from '../../../context/LanguageContext';
 import StudentSwitcher from '../../StudentSwitcher';
 import './AlphabetPhonicsGame.css';
 
+export const PHONICS_MODES = [
+  { id: 'explorer', label: 'A–Z Explorer', labelMr: 'A–Z एक्सप्लोरर', icon: '🔤', level: 1 },
+  { id: 'find', label: 'Find the Letter', labelMr: 'अक्षर शोधा', icon: '🎯', level: 2 },
+  { id: 'match', label: 'Match Letter & Picture', labelMr: 'अक्षर आणि चित्रांची जोडी', icon: '🧩', level: 3 },
+  { id: 'sound', label: 'What Sound?', labelMr: 'कोणता आवाज?', icon: '🔊', level: 4 }
+];
+
 export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashboard }) {
   // Navigation & Mode
   const { language, t, speak, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
+
+  // Level Progression:
+  // Level 1: 'explorer' -> Unlocked by default
+  // Level 2: 'find' -> Locked until Level 1 explored
+  // Level 3: 'match' -> Locked until Level 2 (find) complete
+  // Level 4: 'sound' -> Locked until Level 3 (match) complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_ap_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 4 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [lockToast, setLockToast] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationSubtitle, setCelebrationSubtitle] = useState('');
 
   const [activeMode, setActiveMode] = useState('explorer'); // 'explorer' | 'find' | 'match' | 'sound'
 
@@ -75,6 +102,22 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
       setScore((prev) => prev + 10);
       setStars((prev) => prev + 5);
       onEarnStars?.(5);
+
+      if (unlockedLevel < 3) {
+        setUnlockedLevel(3);
+        try {
+          localStorage.setItem('little_learner_ap_unlocked_level', '3');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `शाब्बास! ${choice.letter} म्हणजे ${choice.wordMr || choice.word}! ⭐ +५ तारे`
+          : `Awesome! ${choice.letter} is for ${choice.word}! ⭐ +5 Stars`
+      );
+
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -83,8 +126,8 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
       });
 
       setTimeout(() => {
-        initFindGame();
-      }, 2200);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       sounds.playWrongBoing();
       speak({
@@ -171,15 +214,32 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
 
       if (nextMatched.length === 3) {
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+
+        if (unlockedLevel < 4) {
+          setUnlockedLevel(4);
+          try {
+            localStorage.setItem('little_learner_ap_unlocked_level', '4');
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        setCelebrationSubtitle(
+          isMarathi
+            ? 'तुम्ही सर्व जोड्या जुळवल्या! खूप छान! ⭐ +१५ तारे'
+            : 'You matched them all! Superstar! ⭐ +15 Stars'
+        );
+
         setFeedback({
           type: 'success',
           message: isMarathi
             ? 'तुम्ही सर्व जोड्या जुळवल्या! खूप छान! ⭐ +१५ तारे'
             : 'You matched them all! Superstar! ⭐ +15 Stars'
         });
+
         setTimeout(() => {
-          initMatchGame();
-        }, 2500);
+          setShowCelebration(true);
+        }, 1000);
       }
     } else {
       sounds.playWrongBoing();
@@ -235,6 +295,13 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
       setScore((prev) => prev + 10);
       setStars((prev) => prev + 5);
       onEarnStars?.(5);
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `उत्तम ऐकले! ${choice.letter} ${choice.phonicsMr || choice.phonics}! ⭐ +५ तारे`
+          : `Great ears! ${choice.letter} ${choice.phonics}! ⭐ +5 Stars`
+      );
+
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -243,8 +310,8 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
       });
 
       setTimeout(() => {
-        initSoundGame();
-      }, 2300);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       sounds.playWrongBoing();
       speak({
@@ -281,6 +348,37 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
     }
   }, [activeMode]);
 
+  // Mode switch with level locking protection
+  const handleModeSelect = (modeId) => {
+    const targetMode = PHONICS_MODES.find((m) => m.id === modeId);
+    const requiredLevel = targetMode?.level || 1;
+
+    if (requiredLevel > unlockedLevel) {
+      sounds.playWrongBoing();
+      const prevMode = PHONICS_MODES.find((m) => m.level === requiredLevel - 1);
+      const prevNameEn = prevMode?.label || 'previous level';
+      const prevNameMr = prevMode?.labelMr || 'मागील पातळी';
+
+      const msg = isMarathi
+        ? `🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "${prevNameMr}" (पातळी ${requiredLevel - 1}) पूर्ण करा!`
+        : `🔒 Level Locked! Complete "${prevNameEn}" (Level ${requiredLevel - 1}) first to unlock!`;
+
+      setLockToast(msg);
+      if (speak) {
+        speak({
+          en: `Please complete ${prevNameEn} first to unlock!`,
+          mr: `प्रथम ${prevNameMr} पूर्ण करा!`
+        });
+      }
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    sounds.playPop();
+    setLockToast(null);
+    setActiveMode(modeId);
+  };
+
   // A–Z Explorer Actions
   const handleSelectLetter = (index) => {
     setCurrentLetterIndex(index);
@@ -290,6 +388,15 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
       en: `${item.letter} says ${item.phonics}, as in ${item.word}!`,
       mr: `${item.letter} चा आवाज ${item.phonics}, जसे ${item.wordMr || item.word}!`
     });
+
+    if (unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_ap_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleListenSound = () => {
@@ -297,6 +404,15 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
       en: `${selectedLetter.letter} says ${selectedLetter.phonics}, as in ${selectedLetter.word}!`,
       mr: `${selectedLetter.letter} चा आवाज ${selectedLetter.phonics}, जसे ${selectedLetter.wordMr || selectedLetter.word}!`
     });
+
+    if (unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_ap_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleNext = () => {
@@ -434,40 +550,42 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
         </div>
       </header>
 
-      {/* 2. Mini-Games Mode Selector Bar */}
+      {/* 2. Mini-Games Mode Selector Bar with Level Lock indicators */}
       <nav className="phonics-mode-bar">
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'explorer' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('explorer')}
-        >
-          <span>🔤 {isMarathi ? 'A–Z एक्सप्लोरर' : 'A–Z Explorer'}</span>
-        </button>
+        {PHONICS_MODES.map((mode) => {
+          const isLocked = mode.level > unlockedLevel;
+          const isActive = activeMode === mode.id;
 
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'find' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('find')}
-        >
-          <span>🎯 {isMarathi ? 'अक्षर शोधा' : 'Find the Letter'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'match' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('match')}
-        >
-          <span>🧩 {isMarathi ? 'अक्षर आणि चित्रांची जोडी' : 'Match Letter & Picture'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'sound' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('sound')}
-        >
-          <span>🔊 {isMarathi ? 'कोणता आवाज?' : 'What Sound?'}</span>
-        </button>
+          return (
+            <button
+              key={mode.id}
+              type="button"
+              className={`mode-pill-btn ${isActive ? 'is-active' : ''} ${isLocked ? 'is-locked' : ''}`}
+              onClick={() => handleModeSelect(mode.id)}
+              title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
+              id={`tab-phonics-${mode.id}`}
+            >
+              {isLocked ? <Lock size={15} className="phonics-diff-lock-icon" /> : <span>{mode.icon}</span>}
+              <span>{isMarathi ? mode.labelMr : mode.label}</span>
+              <span className="phonics-diff-tag">
+                {mode.level === 1
+                  ? (isMarathi ? 'पातळी १' : 'Lvl 1')
+                  : isLocked
+                  ? '🔒'
+                  : (isMarathi ? `पातळी ${mode.level}` : `Lvl ${mode.level}`)}
+              </span>
+            </button>
+          );
+        })}
       </nav>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="phonics-lock-toast">
+          <Lock size={18} className="phonics-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* Feedback Banner if active */}
       {feedback && (
@@ -721,6 +839,117 @@ export default function AlphabetPhonicsGame({ onHome, onEarnStars, onToggleDashb
           </div>
         )}
       </main>
+
+      {/* Celebration Modal */}
+      {showCelebration && (
+        <div className="phonics-celebration-backdrop">
+          <div className="phonics-celebration-card">
+            <div className="phonics-celebration-trophy">
+              {activeMode === 'sound' ? '👑' : '🏆'}
+            </div>
+            <h2 className="phonics-celebration-title">
+              {activeMode === 'sound'
+                ? (isMarathi ? 'अक्षर व फोनिक्स मास्टर! 👑' : 'Phonics Master! 👑')
+                : (isMarathi ? 'अभिनंदन! 🏆' : 'Level Complete! 🏆')}
+            </h2>
+            <div className="phonics-celebration-stars">
+              <span>⭐</span>
+              <span>⭐</span>
+              <span>⭐</span>
+            </div>
+            <p className="phonics-celebration-subtitle">
+              {celebrationSubtitle || (isMarathi ? 'खूप छान खेळलात! +१० तारे!' : 'Great job! +10 Stars!')}
+            </p>
+
+            {/* Level unlock notice badge */}
+            {activeMode === 'explorer' && (
+              <div className="phonics-celebration-badge">
+                🎉 {isMarathi ? '"अक्षर शोधा" पातळी अनलॉक झाली!' : '"Find the Letter" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'find' && (
+              <div className="phonics-celebration-badge">
+                🎉 {isMarathi ? '"अक्षर आणि चित्रांची जोडी" पातळी अनलॉक झाली!' : '"Match Letter & Picture" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'match' && (
+              <div className="phonics-celebration-badge">
+                🌟 {isMarathi ? '"कोणता आवाज?" पातळी अनलॉक झाली!' : '"What Sound?" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'sound' && (
+              <div className="phonics-celebration-badge success">
+                👑 {isMarathi ? 'सर्व पातळ्या यशस्वीरित्या पूर्ण!' : 'All Phonics Levels Completed!'} 🏆
+              </div>
+            )}
+
+            <div className="phonics-celebration-actions">
+              {activeMode === 'explorer' && (
+                <button
+                  type="button"
+                  className="phonics-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('find');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'अक्षर शोधा खेळा 🔓 ➡️' : 'Play Find the Letter 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'find' && (
+                <button
+                  type="button"
+                  className="phonics-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('match');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'अक्षर आणि चित्रांची जोडी खेळा 🔓 ➡️' : 'Play Match Letter & Picture 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'match' && (
+                <button
+                  type="button"
+                  className="phonics-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('sound');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'कोणता आवाज? खेळा 🔓 ➡️' : 'Play What Sound? 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="phonics-modal-btn secondary"
+                onClick={() => {
+                  setShowCelebration(false);
+                  handleNext();
+                }}
+              >
+                <RotateCcw size={18} />
+                <span>{isMarathi ? 'पुढील प्रश्न / पुन्हा खेळा' : 'Next Round / Play Again'}</span>
+              </button>
+
+              <button
+                type="button"
+                className="phonics-modal-btn secondary"
+                onClick={onHome}
+              >
+                <Home size={18} />
+                <span>{t('btnHome')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

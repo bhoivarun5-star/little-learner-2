@@ -16,7 +16,8 @@ import {
   ChevronRight,
   ThumbsUp,
   Smile,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 import {
   CharacterAvatars,
@@ -27,19 +28,36 @@ import {
 } from './socialSkillsData';
 import { socialSounds } from './socialSkillsSounds';
 import { useLanguage } from '../../../context/LanguageContext';
+import StudentSwitcher from '../../StudentSwitcher';
 import './SocialSkillsGame.css';
 
-export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
-  const { t } = useLanguage();
+export default function SocialSkillsGame({ onBack, onHome, onEarnStars, onToggleDashboard }) {
+  const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
+  const isMarathi = language === 'mr';
   const handleExit = onHome || onBack;
+
+  // Level Progression:
+  // Level 1: "What Should I Do?" ('wsid') -> Unlocked by default
+  // Level 2: "Good Choice?" ('goodchoice') -> Locked until Level 1 complete
+  // Level 3: "Role-Play" ('roleplay') -> Locked until Level 2 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_ss_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 3 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
 
   // Active Modes: 'wsid' | 'goodchoice' | 'roleplay' | 'superpowers'
   const [activeMode, setActiveMode] = useState('wsid');
+  const [completedMode, setCompletedMode] = useState(null);
+  const [lockToast, setLockToast] = useState(null);
 
   // Overall State
   const [stars, setStars] = useState(0);
   const [score, setScore] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [showHintModal, setShowHintModal] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
 
@@ -68,14 +86,53 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
   }, [soundEnabled]);
 
   const handleToggleSound = () => {
-    setSoundEnabled((prev) => !prev);
+    toggleMute();
   };
 
   const handleModeChange = (mode) => {
+    if (mode === 'goodchoice' && unlockedLevel < 2) {
+      socialSounds.playTryAgain();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "मी काय करावे?" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "What Should I Do?" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम आधीची पातळी पूर्ण करा' : 'Please complete the first level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    if (mode === 'roleplay' && unlockedLevel < 3) {
+      socialSounds.playTryAgain();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "योग्य निवड?" (पातळी २) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Good Choice?" (Level 2) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम आधीची पातळी पूर्ण करा' : 'Please complete the previous level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
     socialSounds.playTap();
+    setLockToast(null);
     setActiveMode(mode);
     setShowWinModal(false);
     setShowHintModal(false);
+  };
+
+  const handleProceedToNextLevel = (nextMode) => {
+    socialSounds.playTap();
+    setShowWinModal(false);
+    setActiveMode(nextMode);
+    if (nextMode === 'goodchoice') {
+      setGcIndex(0);
+      setGcSelectedChoice(null);
+      setGcFeedback(null);
+    } else if (nextMode === 'roleplay') {
+      setStoryIndex(0);
+      setStepIndex(0);
+      setRolePlayChoice(null);
+      setRolePlayFeedback(null);
+    }
   };
 
   const handleRestart = () => {
@@ -131,6 +188,15 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
     if (wsidIndex < WHAT_SHOULD_I_DO_DATA.length - 1) {
       setWsidIndex((prev) => prev + 1);
     } else {
+      // Completed Level 1 -> Unlock Level 2 ("Good Choice?")
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 2);
+        try {
+          localStorage.setItem('little_learner_ss_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+      setCompletedMode('wsid');
       socialSounds.playFanfare();
       setShowWinModal(true);
       confetti({
@@ -178,6 +244,15 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
     if (gcIndex < GOOD_CHOICE_DATA.length - 1) {
       setGcIndex((prev) => prev + 1);
     } else {
+      // Completed Level 2 -> Unlock Level 3 ("Role-Play Stories")
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 3);
+        try {
+          localStorage.setItem('little_learner_ss_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+      setCompletedMode('goodchoice');
       socialSounds.playFanfare();
       setShowWinModal(true);
       confetti({
@@ -224,6 +299,8 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
     if (stepIndex < currentStory.steps.length - 1) {
       setStepIndex((prev) => prev + 1);
     } else {
+      // Completed Level 3
+      setCompletedMode('roleplay');
       socialSounds.playFanfare();
       setShowWinModal(true);
       confetti({
@@ -310,6 +387,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
 
         {/* Mode Selector Tabs */}
         <div className="ss-mode-tabs" role="tablist">
+          {/* Level 1: What Should I Do? */}
           <button
             className={`ss-tab-btn ${activeMode === 'wsid' ? 'active' : ''}`}
             onClick={() => handleModeChange('wsid')}
@@ -318,28 +396,40 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
           >
             <HelpCircle size={18} />
             <span>{t('ssTabWsid')}</span>
+            <span className="ss-lvl-tag">{isMarathi ? 'पातळी १' : 'Level 1'}</span>
           </button>
 
+          {/* Level 2: Good Choice? (Locked until Level 1 complete) */}
           <button
-            className={`ss-tab-btn ${activeMode === 'goodchoice' ? 'active' : ''}`}
+            className={`ss-tab-btn ${activeMode === 'goodchoice' ? 'active' : ''} ${unlockedLevel < 2 ? 'is-locked' : ''}`}
             onClick={() => handleModeChange('goodchoice')}
             role="tab"
             aria-selected={activeMode === 'goodchoice'}
+            title={unlockedLevel < 2 ? (isMarathi ? 'पातळी १ पूर्ण केल्यावर उघडेल' : 'Complete Level 1 to unlock') : ''}
           >
-            <CheckCircle2 size={18} />
+            {unlockedLevel < 2 ? <Lock size={16} className="ss-lock-icon" /> : <CheckCircle2 size={18} />}
             <span>{t('ssTabGoodChoice')}</span>
+            <span className="ss-lvl-tag">
+              {unlockedLevel < 2 ? '🔒' : (isMarathi ? 'पातळी २' : 'Level 2')}
+            </span>
           </button>
 
+          {/* Level 3: Role-Play (Locked until Level 2 complete) */}
           <button
-            className={`ss-tab-btn ${activeMode === 'roleplay' ? 'active' : ''}`}
+            className={`ss-tab-btn ${activeMode === 'roleplay' ? 'active' : ''} ${unlockedLevel < 3 ? 'is-locked' : ''}`}
             onClick={() => handleModeChange('roleplay')}
             role="tab"
             aria-selected={activeMode === 'roleplay'}
+            title={unlockedLevel < 3 ? (isMarathi ? 'पातळी २ पूर्ण केल्यावर उघडेल' : 'Complete Level 2 to unlock') : ''}
           >
-            <Sparkles size={18} />
+            {unlockedLevel < 3 ? <Lock size={16} className="ss-lock-icon" /> : <Sparkles size={18} />}
             <span>{t('ssTabRolePlay')}</span>
+            <span className="ss-lvl-tag">
+              {unlockedLevel < 3 ? '🔒' : (isMarathi ? 'पातळी ३' : 'Level 3')}
+            </span>
           </button>
 
+          {/* Kindness Superpowers Guide */}
           <button
             className={`ss-tab-btn ${activeMode === 'superpowers' ? 'active' : ''}`}
             onClick={() => handleModeChange('superpowers')}
@@ -353,6 +443,7 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
 
         {/* Stats & Tools */}
         <div className="ss-header-right">
+          <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
           <div className="ss-stat-pill ss-stars-pill">
             <Star className="ss-star-icon" fill="#FBBF24" />
             <span className="ss-stat-num">{stars}</span>
@@ -396,6 +487,14 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
           </button>
         </div>
       </header>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="ss-lock-toast">
+          <Lock size={18} className="ss-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* Progress Bar (Modes 1-3) */}
       {activeMode !== 'superpowers' && (
@@ -801,47 +900,115 @@ export default function SocialSkillsGame({ onBack, onHome, onEarnStars }) {
         <div className="ss-modal-overlay" onClick={() => setShowWinModal(false)}>
           <div className="ss-modal-card ss-win-card" onClick={(e) => e.stopPropagation()}>
             <div className="ss-modal-icon-bubble ss-win-bubble">
-              <Trophy size={48} color="#F59E0B" />
-            </div>
-            <h2 className="ss-modal-title">You’re a Kindness Super Star! 🌟</h2>
-            <p className="ss-modal-body">
-              Fantastic job making caring choices, sharing smiles, and practicing great social manners!
-            </p>
-
-            <div className="ss-win-stats-grid">
-              <div className="ss-win-stat-box">
-                <Star size={24} fill="#FBBF24" color="#F59E0B" />
-                <span className="ss-win-stat-num">+{stars} Stars</span>
-              </div>
-              <div className="ss-win-stat-box">
-                <Trophy size={24} color="#3B82F6" />
-                <span className="ss-win-stat-num">{score} Points</span>
-              </div>
+              {completedMode === 'wsid' ? '🌟' : completedMode === 'goodchoice' ? '🎉' : <Trophy size={48} color="#F59E0B" />}
             </div>
 
-            <div className="ss-win-actions">
-              <button className="ss-modal-action-btn ss-primary-action" onClick={handleRestart}>
-                Play This Mode Again 🔄
-              </button>
-              <button
-                className="ss-modal-action-btn ss-secondary-action"
-                onClick={() => {
-                  setShowWinModal(false);
-                  setActiveMode('superpowers');
-                }}
-              >
-                View Kindness Guide 💖
-              </button>
-              <button
-                className="ss-modal-action-btn ss-exit-action"
-                onClick={() => {
-                  setShowWinModal(false);
-                  handleExit?.();
-                }}
-              >
-                Back to Activities 🏠
-              </button>
-            </div>
+            {completedMode === 'wsid' && (
+              <>
+                <h2 className="ss-modal-title">
+                  {isMarathi ? 'पातळी १ पूर्ण! 🔓 पातळी २ खुली झाली!' : 'Level 1 Complete! 🔓 Level 2 Unlocked!'}
+                </h2>
+                <p className="ss-modal-body">
+                  {isMarathi
+                    ? `खूप छान! तुम्ही सर्व प्रसंगात योग्य निर्णय घेतले आणि ${stars} तारे ⭐ मिळवले! आता पातळी २ "योग्य निवड?" खेळा!`
+                    : `Fantastic job! You made caring, empathetic choices and earned ${stars} Stars ⭐! Level 2 "Good Choice?" is now unlocked!`}
+                </p>
+                <div className="ss-win-actions">
+                  <button
+                    className="ss-modal-action-btn ss-primary-action"
+                    onClick={() => handleProceedToNextLevel('goodchoice')}
+                  >
+                    {isMarathi ? 'पातळी २ खेळा 🔓 ➡️' : 'Play Level 2 🔓 ➡️'}
+                  </button>
+                  <button
+                    className="ss-modal-action-btn ss-secondary-action"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 1 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {completedMode === 'goodchoice' && (
+              <>
+                <h2 className="ss-modal-title">
+                  {isMarathi ? 'पातळी २ पूर्ण! 🔓 पातळी ३ खुली झाली!' : 'Level 2 Complete! 🔓 Level 3 Unlocked!'}
+                </h2>
+                <p className="ss-modal-body">
+                  {isMarathi
+                    ? `अफाट कामगिरी! तुम्ही चांगल्या निवडी ओळखल्या आणि मित्रांना मदत करणे शिकलात! आता पातळी ३ "भूमिका पालन" खेळा!`
+                    : `Incredible work! You spotted all the kind choices and earned ${stars} Stars ⭐! Level 3 "Role-Play Adventures" is now unlocked!`}
+                </p>
+                <div className="ss-win-actions">
+                  <button
+                    className="ss-modal-action-btn ss-primary-action"
+                    onClick={() => handleProceedToNextLevel('roleplay')}
+                  >
+                    {isMarathi ? 'पातळी ३ खेळा 🔓 ➡️' : 'Play Level 3 🔓 ➡️'}
+                  </button>
+                  <button
+                    className="ss-modal-action-btn ss-secondary-action"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 2 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {completedMode === 'roleplay' && (
+              <>
+                <h2 className="ss-modal-title">
+                  {isMarathi ? 'सामाजिक कौशल्यांचे महाविजेते! 🏆' : 'Kindness & Friendship Champion! 🏆'}
+                </h2>
+                <p className="ss-modal-body">
+                  {isMarathi
+                    ? `अप्रतिम कामगिरी! तुम्ही सर्व सामाजिक कौशल्य पातळी पूर्ण केल्या, ${stars} तारे मिळवले ⭐ आणि एक उत्कृष्ट मित्र बनलात!`
+                    : `Spectacular job! You conquered all social skills levels, earned ${stars} Stars ⭐, and proved you are a caring, wonderful friend!`}
+                </p>
+                <div className="ss-win-actions">
+                  <button
+                    className="ss-modal-action-btn ss-primary-action"
+                    onClick={handleRestart}
+                  >
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
+                  </button>
+                  <button
+                    className="ss-modal-action-btn ss-secondary-action"
+                    onClick={() => {
+                      setShowWinModal(false);
+                      setActiveMode('superpowers');
+                    }}
+                  >
+                    {isMarathi ? 'मार्गदर्शक पाहा 💖' : 'View Kindness Guide 💖'}
+                  </button>
+                  <button
+                    className="ss-modal-action-btn ss-exit-action"
+                    onClick={() => {
+                      setShowWinModal(false);
+                      handleExit?.();
+                    }}
+                  >
+                    {isMarathi ? 'खेळांकडे परत जा 🏠' : 'Back to Activities 🏠'}
+                  </button>
+                </div>
+              </>
+            )}
+
+            {!['wsid', 'goodchoice', 'roleplay'].includes(completedMode) && (
+              <>
+                <h2 className="ss-modal-title">{isMarathi ? 'तुम्ही सुपरस्टार आहात! 🌟' : 'You’re a Kindness Super Star! 🌟'}</h2>
+                <p className="ss-modal-body">
+                  {isMarathi ? `उत्तम कामगिरी! तुम्ही ${stars} तारे मिळवले!` : `Fantastic job earning ${stars} Stars ⭐!`}
+                </p>
+                <div className="ss-win-actions">
+                  <button className="ss-modal-action-btn ss-primary-action" onClick={handleRestart}>
+                    {isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

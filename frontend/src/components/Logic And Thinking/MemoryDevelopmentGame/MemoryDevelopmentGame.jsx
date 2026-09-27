@@ -14,7 +14,8 @@ import {
   HelpCircle,
   Eye,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Lock
 } from 'lucide-react';
 import {
   GAME_MODES,
@@ -32,10 +33,25 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
   const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
+  // Level Progression:
+  // Level 1: 'easy' -> Unlocked by default
+  // Level 2: 'medium' -> Locked until Level 1 complete
+  // Level 3: 'hard' -> Locked until Level 2 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_mem_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 3 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+
   // Navigation & Settings
   const [activeMode, setActiveMode] = useState('match'); // 'match' | 'remember'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
   const [activeTheme, setActiveTheme] = useState('all');
+  const [lockToast, setLockToast] = useState(null);
 
   // Player Stats
   const [score, setScore] = useState(0);
@@ -210,6 +226,35 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
     }
   };
 
+  // Difficulty Selection with Level Locking
+  const handleSelectDifficulty = (newDiff) => {
+    if (newDiff === 'medium' && unlockedLevel < 2) {
+      memorySounds.playMismatchBoing();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "सोपे" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Easy" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम सोपी पातळी पूर्ण करा' : 'Please complete Easy level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    if (newDiff === 'hard' && unlockedLevel < 3) {
+      memorySounds.playMismatchBoing();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "मध्यम" (पातळी २) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Medium" (Level 2) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम मध्यम पातळी पूर्ण करा' : 'Please complete Medium level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    memorySounds.playPop();
+    setLockToast(null);
+    setDifficulty(newDiff);
+  };
+
   // Win / Completion Celebration
   const handleWin = () => {
     memorySounds.playVictoryFanfare();
@@ -224,6 +269,24 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
       onEarnStars(3);
     }
 
+    if (difficulty === 'easy') {
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 2);
+        try {
+          localStorage.setItem('little_learner_mem_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+    } else if (difficulty === 'medium') {
+      setUnlockedLevel((prev) => {
+        const next = Math.max(prev, 3);
+        try {
+          localStorage.setItem('little_learner_mem_unlocked_level', String(next));
+        } catch {}
+        return next;
+      });
+    }
+
     setTimeout(() => {
       setShowCelebration(true);
     }, 800);
@@ -231,13 +294,13 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
 
   // Advance Difficulty / Next Round
   const handleNextLevel = () => {
-    memorySounds.playPop();
     if (difficulty === 'easy') {
-      setDifficulty('medium');
+      handleSelectDifficulty('medium');
     } else if (difficulty === 'medium') {
-      setDifficulty('hard');
+      handleSelectDifficulty('hard');
     } else {
-      setDifficulty('easy');
+      memorySounds.playPop();
+      startNewGame();
     }
   };
 
@@ -321,19 +384,25 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
       <div className="memory-sub-bar">
         {/* Difficulty Chips */}
         <div className="memory-difficulty-row">
-          {DIFFICULTY_PRESETS.map((diff) => (
-            <button
-              key={diff.id}
-              className={`memory-diff-chip ${difficulty === diff.id ? 'active' : ''}`}
-              onClick={() => {
-                memorySounds.playPop();
-                setDifficulty(diff.id);
-              }}
-              id={`chip-diff-${diff.id}`}
-            >
-              <span>{isMarathi ? (diff.badgeMr || diff.badge) : diff.badge}</span>
-            </button>
-          ))}
+          {DIFFICULTY_PRESETS.map((diff) => {
+            const isLocked = (diff.id === 'medium' && unlockedLevel < 2) || (diff.id === 'hard' && unlockedLevel < 3);
+
+            return (
+              <button
+                key={diff.id}
+                className={`memory-diff-chip ${difficulty === diff.id ? 'active' : ''} ${isLocked ? 'is-locked' : ''}`}
+                onClick={() => handleSelectDifficulty(diff.id)}
+                title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
+                id={`chip-diff-${diff.id}`}
+              >
+                {isLocked && <Lock size={14} className="memory-diff-lock-icon" />}
+                <span>{isMarathi ? (diff.badgeMr || diff.badge) : diff.badge}</span>
+                <span className="memory-diff-tag">
+                  {diff.id === 'easy' ? (isMarathi ? 'पातळी १' : 'Lvl 1') : diff.id === 'medium' ? (isLocked ? '🔒' : (isMarathi ? 'पातळी २' : 'Lvl 2')) : (isLocked ? '🔒' : (isMarathi ? 'पातळी ३' : 'Lvl 3'))}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Theme Chips */}
@@ -354,6 +423,14 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
           ))}
         </div>
       </div>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="memory-lock-toast">
+          <Lock size={18} className="memory-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* 3. Main Stage Arena */}
       <main className="memory-stage-arena">
@@ -530,45 +607,128 @@ export default function MemoryDevelopmentGame({ onHome, onEarnStars, onToggleDas
       {showCelebration && (
         <div className="memory-celebration-backdrop">
           <div className="memory-celebration-card">
-            <div className="memory-celebration-trophy">🏆</div>
-            <h2 className="memory-celebration-title">
-              {isMarathi ? 'उत्कृष्ट स्मरणशक्ती!' : 'Super Memory!'}
-            </h2>
-            <div className="memory-celebration-stars">
-              <span>⭐</span>
-              <span>⭐</span>
-              <span>⭐</span>
+            <div className="memory-celebration-trophy">
+              {difficulty === 'hard' ? '🏆' : '🌟'}
             </div>
-            <div className="memory-celebration-stats">
-              <p>
-                {isMarathi ? 'चाली' : 'Moves'}: <strong>{moves}</strong> • {isMarathi ? 'वेळ' : 'Time'}: <strong>{formatTime(elapsedSeconds)}</strong>
-              </p>
-              <p>{isMarathi ? '+३ तारे मिळाले! 🌟' : '+3 Stars Awarded! 🌟'}</p>
-            </div>
-            <div className="memory-celebration-actions">
-              <button
-                type="button"
-                className="memory-action-btn secondary"
-                onClick={() => {
-                  memorySounds.playPop();
-                  startNewGame();
-                }}
-              >
-                <RotateCcw size={18} />
-                <span>{isMarathi ? 'पुन्हा खेळा' : 'Play Again'}</span>
-              </button>
-              <button
-                type="button"
-                className="memory-action-btn primary"
-                onClick={() => {
-                  handleNextLevel();
-                  setShowCelebration(false);
-                }}
-              >
-                <span>{isMarathi ? 'पुढील पातळी' : 'Next Level'}</span>
-                <ChevronRight size={18} />
-              </button>
-            </div>
+
+            {difficulty === 'easy' && (
+              <>
+                <h2 className="memory-celebration-title">
+                  {isMarathi ? 'सोपी पातळी पूर्ण! 🔓 मध्यम पातळी खुली झाली!' : 'Easy Level Complete! 🔓 Medium Level Unlocked!'}
+                </h2>
+                <div className="memory-celebration-stats">
+                  <p>
+                    {isMarathi ? 'चाली' : 'Moves'}: <strong>{moves}</strong> • {isMarathi ? 'वेळ' : 'Time'}: <strong>{formatTime(elapsedSeconds)}</strong>
+                  </p>
+                  <p>{isMarathi ? '🎉 उत्कृष्ट स्मरणशक्ती! पातळी २ (मध्यम) आता सुरू करा!' : '🎉 Outstanding memory! Level 2 (Medium) is now unlocked!'}</p>
+                </div>
+                <div className="memory-celebration-actions">
+                  <button
+                    type="button"
+                    className="memory-action-btn primary"
+                    onClick={() => {
+                      handleSelectDifficulty('medium');
+                      setShowCelebration(false);
+                    }}
+                  >
+                    <span>{isMarathi ? 'मध्यम पातळी खेळा 🔓 ➡️' : 'Play Medium Level 🔓 ➡️'}</span>
+                    <ChevronRight size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    className="memory-action-btn secondary"
+                    onClick={() => {
+                      memorySounds.playPop();
+                      startNewGame();
+                    }}
+                  >
+                    <RotateCcw size={18} />
+                    <span>{isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 1 🔄'}</span>
+                  </button>
+                </div>
+              </>
+            )}
+
+            {difficulty === 'medium' && (
+              <>
+                <h2 className="memory-celebration-title">
+                  {isMarathi ? 'मध्यम पातळी पूर्ण! 🔓 कठीण पातळी खुली झाली!' : 'Medium Level Complete! 🔓 Hard Level Unlocked!'}
+                </h2>
+                <div className="memory-celebration-stats">
+                  <p>
+                    {isMarathi ? 'चाली' : 'Moves'}: <strong>{moves}</strong> • {isMarathi ? 'वेळ' : 'Time'}: <strong>{formatTime(elapsedSeconds)}</strong>
+                  </p>
+                  <p>{isMarathi ? '🎉 अफाट बुद्धिमत्ता! पातळी ३ (कठीण) चे आव्हान स्वीकारा!' : '🎉 Brilliant memory skills! Level 3 (Hard) is now unlocked!'}</p>
+                </div>
+                <div className="memory-celebration-actions">
+                  <button
+                    type="button"
+                    className="memory-action-btn primary"
+                    onClick={() => {
+                      handleSelectDifficulty('hard');
+                      setShowCelebration(false);
+                    }}
+                  >
+                    <span>{isMarathi ? 'कठीण पातळी खेळा 🔓 ➡️' : 'Play Hard Level 🔓 ➡️'}</span>
+                    <ChevronRight size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    className="memory-action-btn secondary"
+                    onClick={() => {
+                      memorySounds.playPop();
+                      startNewGame();
+                    }}
+                  >
+                    <RotateCcw size={18} />
+                    <span>{isMarathi ? 'पुन्हा खेळा 🔄' : 'Replay Level 2 🔄'}</span>
+                  </button>
+                </div>
+              </>
+            )}
+
+            {difficulty === 'hard' && (
+              <>
+                <h2 className="memory-celebration-title">
+                  {isMarathi ? 'स्मरणशक्तीचे महाविजेते! 🏆' : 'Grand Memory Master! 🏆'}
+                </h2>
+                <div className="memory-celebration-stars">
+                  <span>⭐</span>
+                  <span>⭐</span>
+                  <span>⭐</span>
+                </div>
+                <div className="memory-celebration-stats">
+                  <p>
+                    {isMarathi ? 'चाली' : 'Moves'}: <strong>{moves}</strong> • {isMarathi ? 'वेळ' : 'Time'}: <strong>{formatTime(elapsedSeconds)}</strong>
+                  </p>
+                  <p>{isMarathi ? 'तुम्ही सर्व स्मरणशक्ती पातळ्या जिंकल्या! 🌟' : 'You mastered all memory development levels with flying colors! 🌟'}</p>
+                </div>
+                <div className="memory-celebration-actions">
+                  <button
+                    type="button"
+                    className="memory-action-btn primary"
+                    onClick={() => {
+                      memorySounds.playPop();
+                      startNewGame();
+                    }}
+                  >
+                    <RotateCcw size={18} />
+                    <span>{isMarathi ? 'पुन्हा खेळा 🔄' : 'Play Again 🔄'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="memory-action-btn secondary"
+                    onClick={() => {
+                      memorySounds.playPop();
+                      onHome();
+                    }}
+                  >
+                    <Home size={18} />
+                    <span>{t('btnHome')}</span>
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

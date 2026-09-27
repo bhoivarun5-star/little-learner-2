@@ -12,9 +12,11 @@ import {
   XCircle,
   Trophy,
   Palette,
-  Shapes
+  Shapes,
+  Lock
 } from 'lucide-react';
 import {
+  SHAPES_COLORS_MODES,
   SHAPES_DATA,
   COLORS_DATA,
   renderShapeSVG
@@ -28,9 +30,59 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
   const { language, t, speak, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
+  // Level Progression:
+  // Level 1: 'explorer' (Shapes & Colors) -> Unlocked by default
+  // Level 2: 'find-shape' (Find the Shape) -> Locked until Level 1 explored
+  // Level 3: 'find-color' (Find the Color) -> Locked until Level 2 complete
+  // Level 4: 'match-name' (Match Shape & Name) -> Locked until Level 3 complete
+  // Level 5: 'color-match' (Color Match) -> Locked until Level 4 complete
+  // Level 6: 'sort-color' (Sort by Color) -> Locked until Level 5 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_sc_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 6 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [lockToast, setLockToast] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationSubtitle, setCelebrationSubtitle] = useState('');
+
   // Navigation & Mode
-  // Modes: 'explorer' | 'find-shape' | 'find-color' | 'match-name' | 'color-match' | 'sort-color'
   const [activeMode, setActiveMode] = useState('explorer');
+
+  // Mode select with progressive level locking
+  const handleModeSelect = (modeId) => {
+    const targetMode = SHAPES_COLORS_MODES.find((m) => m.id === modeId);
+    const requiredLevel = targetMode?.level || 1;
+
+    if (requiredLevel > unlockedLevel) {
+      shapesSounds.playWrongBoing();
+      const prevMode = SHAPES_COLORS_MODES.find((m) => m.level === requiredLevel - 1);
+      const prevNameEn = prevMode?.label || 'previous level';
+      const prevNameMr = prevMode?.labelMr || 'मागील पातळी';
+
+      const msg = isMarathi
+        ? `🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "${prevNameMr}" (पातळी ${requiredLevel - 1}) पूर्ण करा!`
+        : `🔒 Level Locked! Complete "${prevNameEn}" (Level ${requiredLevel - 1}) first to unlock!`;
+
+      setLockToast(msg);
+      if (speak) {
+        speak({
+          en: `Please complete ${prevNameEn} first to unlock!`,
+          mr: `प्रथम ${prevNameMr} पूर्ण करा!`
+        });
+      }
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    shapesSounds.playPop();
+    setLockToast(null);
+    setActiveMode(modeId);
+  };
 
   // Stats & Progress
   const [score, setScore] = useState(0);
@@ -78,11 +130,11 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
     if (findShapePicked) return;
     setFindShapePicked(choice.id);
 
-    if (choice.id === findShapeTarget.id) {
+      if (choice.id === findShapeTarget.id) {
       shapesSounds.playSuccessChime();
       setScore((s) => s + 10);
-      setStars((st) => st + 1);
-      onEarnStars?.(1);
+      setStars((st) => st + 5);
+      onEarnStars?.(5);
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -101,9 +153,24 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
         mr: `शाब्बास! तो ${findShapeTarget.nameMr || findShapeTarget.name} आहे!`
       });
 
+      if (unlockedLevel < 3) {
+        setUnlockedLevel(3);
+        try {
+          localStorage.setItem('little_learner_sc_unlocked_level', '3');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `शाब्बास! तुम्ही ${findShapeTarget.nameMr || findShapeTarget.name} आकार शोधला! ⭐ +५ तारे`
+          : `Awesome! You found the ${findShapeTarget.name}! ⭐ +5 Stars`
+      );
+
       setTimeout(() => {
-        initFindShapeGame();
-      }, 2000);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       shapesSounds.playWrongBoing();
       speak({
@@ -155,8 +222,8 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
     if (choice.id === findColorTarget.id) {
       shapesSounds.playSuccessChime();
       setScore((s) => s + 10);
-      setStars((st) => st + 1);
-      onEarnStars?.(1);
+      setStars((st) => st + 5);
+      onEarnStars?.(5);
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -175,9 +242,24 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
         mr: `छान! तुम्ही ${findColorTarget.nameMr || findColorTarget.name} रंग शोधला!`
       });
 
+      if (unlockedLevel < 4) {
+        setUnlockedLevel(4);
+        try {
+          localStorage.setItem('little_learner_sc_unlocked_level', '4');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `शाब्बास! तुम्ही ${findColorTarget.nameMr || findColorTarget.name} रंग शोधला! ⭐ +५ तारे`
+          : `Awesome! You found ${findColorTarget.name}! ⭐ +5 Stars`
+      );
+
       setTimeout(() => {
-        initFindColorGame();
-      }, 2000);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       shapesSounds.playWrongBoing();
       speak({
@@ -271,9 +353,25 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
           en: 'Fantastic job! You matched all the shapes!',
           mr: 'खूप छान! तुम्ही सर्व आकारांच्या योग्य जोड्या लावल्या!'
         });
+
+        if (unlockedLevel < 5) {
+          setUnlockedLevel(5);
+          try {
+            localStorage.setItem('little_learner_sc_unlocked_level', '5');
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        setCelebrationSubtitle(
+          isMarathi
+            ? 'शाब्बास! तुम्ही सर्व आकारांच्या जोड्या लावल्या! ⭐ +१० तारे'
+            : 'Hooray! You matched all the shapes! ⭐ +10 Stars'
+        );
+
         setTimeout(() => {
-          initMatchNameGame();
-        }, 2500);
+          setShowCelebration(true);
+        }, 1000);
       } else {
         setFeedback({
           type: 'success',
@@ -334,8 +432,8 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
     if (colorOption.id === colorMatchTarget.color.id) {
       shapesSounds.playSuccessChime();
       setScore((s) => s + 10);
-      setStars((st) => st + 1);
-      onEarnStars?.(1);
+      setStars((st) => st + 5);
+      onEarnStars?.(5);
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -350,13 +448,28 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
       });
 
       speak({
-        en: `Correct! The ${colorMatchTarget.name} is ${colorOption.name}!`,
+        en: `Awesome! The ${colorMatchTarget.name} is ${colorOption.name}!`,
         mr: `बरोबर! ${colorMatchTarget.nameMr || colorMatchTarget.name} चा रंग ${colorOption.nameMr || colorOption.name} आहे!`
       });
 
+      if (unlockedLevel < 6) {
+        setUnlockedLevel(6);
+        try {
+          localStorage.setItem('little_learner_sc_unlocked_level', '6');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `बरोबर! ${colorMatchTarget.nameMr || colorMatchTarget.name} चा रंग ${colorOption.nameMr || colorOption.name} आहे! ⭐ +५ तारे`
+          : `Awesome! The ${colorMatchTarget.name} is ${colorOption.name}! ⭐ +5 Stars`
+      );
+
       setTimeout(() => {
-        initColorMatchGame();
-      }, 2000);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       shapesSounds.playWrongBoing();
       speak({
@@ -450,9 +563,16 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
           en: 'Hooray! You sorted every colorful item!',
           mr: 'शाब्बास! तुम्ही सर्व वस्तू योग्य रंगात ठेवल्या!'
         });
+
+        setCelebrationSubtitle(
+          isMarathi
+            ? 'शाब्बास! तुम्ही सर्व वस्तू योग्य रंगात ठेवल्या! सर्व आकार आणि रंग पातळ्या पूर्ण! 🏆'
+            : 'Superstar! You sorted every colorful item! All Shapes & Colors levels completed! 🏆'
+        );
+
         setTimeout(() => {
-          initSortGame();
-        }, 2500);
+          setShowCelebration(true);
+        }, 1000);
       } else {
         speak({
           en: `Into the ${bucket.name} bucket!`,
@@ -506,6 +626,14 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
       en: `${item.name}! ${item.description}`,
       mr: `${item.nameMr || item.name}! ${item.descriptionMr || item.description}`
     });
+    if (unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_sc_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleSelectColor = (index) => {
@@ -516,6 +644,14 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
       en: item.soundDesc,
       mr: item.soundDescMr || item.soundDesc
     });
+    if (unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_sc_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleListenShape = () => {
@@ -696,57 +832,42 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
         </div>
       </header>
 
-      {/* 2. Mini-Games Mode Selector Bar */}
+      {/* 2. Mini-Games Mode Selector Bar with Progressive Level Lock */}
       <nav className="sc-mode-bar">
-        <button
-          type="button"
-          className={`sc-mode-btn ${activeMode === 'explorer' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('explorer')}
-        >
-          <Shapes size={18} />
-          <span>{isMarathi ? 'आकार आणि रंग' : 'Shapes & Colors'}</span>
-        </button>
+        {SHAPES_COLORS_MODES.map((mode) => {
+          const isLocked = mode.level > unlockedLevel;
+          const isActive = activeMode === mode.id;
 
-        <button
-          type="button"
-          className={`sc-mode-btn ${activeMode === 'find-shape' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('find-shape')}
-        >
-          <span>⭐ {isMarathi ? 'आकार शोधा' : 'Find the Shape'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`sc-mode-btn ${activeMode === 'find-color' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('find-color')}
-        >
-          <span>🎨 {isMarathi ? 'रंग शोधा' : 'Find the Color'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`sc-mode-btn ${activeMode === 'match-name' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('match-name')}
-        >
-          <span>🧩 {isMarathi ? 'आकार आणि नावाची जोडी' : 'Match Shape & Name'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`sc-mode-btn ${activeMode === 'color-match' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('color-match')}
-        >
-          <span>🎯 {isMarathi ? 'रंग जुळवा' : 'Color Match'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`sc-mode-btn ${activeMode === 'sort-color' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('sort-color')}
-        >
-          <span>🧺 {isMarathi ? 'रंगानुसार वर्गीकरण' : 'Sort by Color'}</span>
-        </button>
+          return (
+            <button
+              key={mode.id}
+              type="button"
+              className={`sc-mode-btn ${isActive ? 'is-active' : ''} ${isLocked ? 'is-locked' : ''}`}
+              onClick={() => handleModeSelect(mode.id)}
+              title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
+              id={`tab-sc-${mode.id}`}
+            >
+              {isLocked ? <Lock size={16} className="sc-diff-lock-icon" /> : <span>{mode.icon}</span>}
+              <span>{isMarathi ? mode.labelMr : mode.label}</span>
+              <span className="sc-diff-tag">
+                {mode.level === 1
+                  ? (isMarathi ? 'पातळी १' : 'Lvl 1')
+                  : isLocked
+                  ? '🔒'
+                  : (isMarathi ? `पातळी ${mode.level}` : `Lvl ${mode.level}`)}
+              </span>
+            </button>
+          );
+        })}
       </nav>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="sc-lock-toast">
+          <Lock size={18} className="sc-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* Feedback Banner */}
       {feedback && (
@@ -1365,6 +1486,152 @@ export default function ShapesColorsGame({ onHome, onEarnStars, onToggleDashboar
           </div>
         )}
       </main>
+
+      {/* 4. Cheerful Celebration Modal */}
+      {showCelebration && (
+        <div className="sc-celebration-overlay" onClick={() => setShowCelebration(false)}>
+          <div className="sc-celebration-card" onClick={(e) => e.stopPropagation()}>
+            <div className="sc-celebration-stars">
+              <span className="sc-jumping-star">⭐</span>
+              <span className="sc-jumping-star">⭐</span>
+              <span className="sc-jumping-star">⭐</span>
+            </div>
+
+            <h2 className="sc-celebration-title">
+              {isMarathi ? 'शाब्बास! तुम्ही जिंकलात! 🎈' : 'Hooray! You Solved It! 🎈'}
+            </h2>
+
+            <p className="sc-celebration-subtitle">
+              {celebrationSubtitle || (isMarathi ? 'खूप छान खेळलात! +१० तारे!' : 'Great job! +10 Stars!')}
+            </p>
+
+            {/* Level unlock notice badge */}
+            {activeMode === 'explorer' && (
+              <div className="sc-celebration-badge">
+                🎉 {isMarathi ? '"आकार शोधा" पातळी अनलॉक झाली!' : '"Find the Shape" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'find-shape' && (
+              <div className="sc-celebration-badge">
+                🎉 {isMarathi ? '"रंग शोधा" पातळी अनलॉक झाली!' : '"Find the Color" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'find-color' && (
+              <div className="sc-celebration-badge">
+                🎉 {isMarathi ? '"आकार आणि नावाची जोडी" पातळी अनलॉक झाली!' : '"Match Shape & Name" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'match-name' && (
+              <div className="sc-celebration-badge">
+                🎉 {isMarathi ? '"रंग जुळवा" पातळी अनलॉक झाली!' : '"Color Match" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'color-match' && (
+              <div className="sc-celebration-badge">
+                🎉 {isMarathi ? '"रंगानुसार वर्गीकरण" पातळी अनलॉक झाली!' : '"Sort by Color" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'sort-color' && (
+              <div className="sc-celebration-badge success">
+                👑 {isMarathi ? 'सर्व आकार आणि रंग पातळ्या यशस्वीरित्या पूर्ण!' : 'All Shapes & Colors Levels Mastered!'} 🏆
+              </div>
+            )}
+
+            <div className="sc-celebration-actions">
+              {activeMode === 'explorer' && (
+                <button
+                  type="button"
+                  className="sc-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('find-shape');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'आकार शोधा खेळा 🔓 ➡️' : 'Play Find the Shape 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'find-shape' && (
+                <button
+                  type="button"
+                  className="sc-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('find-color');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'रंग शोधा खेळा 🔓 ➡️' : 'Play Find the Color 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'find-color' && (
+                <button
+                  type="button"
+                  className="sc-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('match-name');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'आकार आणि नावाची जोडी खेळा 🔓 ➡️' : 'Play Match Shape & Name 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'match-name' && (
+                <button
+                  type="button"
+                  className="sc-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('color-match');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'रंग जुळवा खेळा 🔓 ➡️' : 'Play Color Match 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'color-match' && (
+                <button
+                  type="button"
+                  className="sc-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('sort-color');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'रंगानुसार वर्गीकरण खेळा 🔓 ➡️' : 'Play Sort by Color 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="sc-modal-btn secondary"
+                onClick={() => {
+                  setShowCelebration(false);
+                  handleNext();
+                }}
+              >
+                <RotateCcw size={18} />
+                <span>{isMarathi ? 'पुढील फेरी / पुन्हा खेळा' : 'Next Round / Play Again'}</span>
+              </button>
+
+              <button
+                type="button"
+                className="sc-modal-btn secondary"
+                onClick={onHome}
+              >
+                <Home size={18} />
+                <span>{t('btnHome')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

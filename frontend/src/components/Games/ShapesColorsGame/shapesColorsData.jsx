@@ -1,5 +1,14 @@
 // Shapes & Colors Learning Game Data (Ages 3–6)
 
+export const SHAPES_COLORS_MODES = [
+  { id: 'explorer', level: 1, label: 'Shapes & Colors', labelMr: 'आकार आणि रंग', icon: '🎨' },
+  { id: 'find-shape', level: 2, label: 'Find the Shape', labelMr: 'आकार शोधा', icon: '⭐' },
+  { id: 'find-color', level: 3, label: 'Find the Color', labelMr: 'रंग शोधा', icon: '🌈' },
+  { id: 'match-name', level: 4, label: 'Match Shape & Name', labelMr: 'आकार आणि नावाची जोडी', icon: '🧩' },
+  { id: 'color-match', level: 5, label: 'Color Match', labelMr: 'रंग जुळवा', icon: '🎯' },
+  { id: 'sort-color', level: 6, label: 'Sort by Color', labelMr: 'रंगानुसार वर्गीकरण', icon: '🧺' }
+];
+
 export const COLORS_DATA = [
   {
     id: 'red',

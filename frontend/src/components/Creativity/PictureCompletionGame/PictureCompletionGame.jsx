@@ -13,7 +13,9 @@ import {
   CheckCircle2,
   HelpCircle,
   Trophy,
-  Award
+  Award,
+  Lock,
+  ArrowRight
 } from 'lucide-react';
 import {
   COMPLETION_CATEGORIES,
@@ -28,6 +30,21 @@ import './PictureCompletionGame.css';
 export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDashboard }) {
   const { t, speak, language, soundEnabled: globalSoundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
+
+  // Level Progression:
+  // Level 1: 'easy' -> Unlocked by default
+  // Level 2: 'medium' -> Locked until Level 1 complete
+  // Level 3: 'hard' -> Locked until Level 2 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_pc_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 3 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [lockToast, setLockToast] = useState(null);
 
   // Navigation & Filtering
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -96,6 +113,23 @@ export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDas
       setStars((st) => st + 3);
       if (onEarnStars) {
         onEarnStars(3);
+      }
+
+      // Unlock next level progression
+      if (difficulty === 'easy' && unlockedLevel < 2) {
+        setUnlockedLevel(2);
+        try {
+          localStorage.setItem('little_learner_pc_unlocked_level', '2');
+        } catch (e) {
+          console.error(e);
+        }
+      } else if (difficulty === 'medium' && unlockedLevel < 3) {
+        setUnlockedLevel(3);
+        try {
+          localStorage.setItem('little_learner_pc_unlocked_level', '3');
+        } catch (e) {
+          console.error(e);
+        }
       }
 
       const successMsg = isMarathi
@@ -177,9 +211,32 @@ export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDas
     setCurrentIndex(0);
   };
 
-  // Difficulty switch
+  // Difficulty switch with level locking protection
   const handleDifficultyChange = (diffId) => {
+    if (diffId === 'medium' && unlockedLevel < 2) {
+      pictureSounds.playTryAgain();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "सोपे" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Easy" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम सोपी पातळी पूर्ण करा' : 'Please complete Easy level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    if (diffId === 'hard' && unlockedLevel < 3) {
+      pictureSounds.playTryAgain();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "मध्यम" (पातळी २) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Medium" (Level 2) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम मध्यम पातळी पूर्ण करा' : 'Please complete Medium level first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
     pictureSounds.playPop();
+    setLockToast(null);
     setDifficulty(diffId);
   };
 
@@ -234,18 +291,34 @@ export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDas
             <span>{t('btnHome')}</span>
           </button>
 
-          {/* Difficulty Switcher */}
+          {/* Difficulty Switcher with Level Lock indicators */}
           <div className="pc-difficulty-bar">
-            {DIFFICULTY_MODES.map((d) => (
-              <button
-                key={d.id}
-                className={`pc-diff-btn ${difficulty === d.id ? 'active' : ''}`}
-                onClick={() => handleDifficultyChange(d.id)}
-                id={`btn-diff-${d.id}`}
-              >
-                <span>{isMarathi ? (d.badgeMr || d.badge) : d.badge}</span>
-              </button>
-            ))}
+            {DIFFICULTY_MODES.map((d) => {
+              const isLocked =
+                (d.id === 'medium' && unlockedLevel < 2) ||
+                (d.id === 'hard' && unlockedLevel < 3);
+
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  className={`pc-diff-btn ${difficulty === d.id ? 'active' : ''} ${isLocked ? 'is-locked' : ''}`}
+                  onClick={() => handleDifficultyChange(d.id)}
+                  id={`btn-diff-${d.id}`}
+                  title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
+                >
+                  {isLocked ? <Lock size={14} className="pc-diff-lock-icon" /> : null}
+                  <span>{isMarathi ? (d.badgeMr || d.badge) : d.badge}</span>
+                  <span className="pc-diff-tag">
+                    {d.id === 'easy'
+                      ? (isMarathi ? 'पातळी १' : 'Lvl 1')
+                      : d.id === 'medium'
+                      ? (isLocked ? '🔒' : (isMarathi ? 'पातळी २' : 'Lvl 2'))
+                      : (isLocked ? '🔒' : (isMarathi ? 'पातळी ३' : 'Lvl 3'))}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Score, Stars & Sound */}
@@ -287,6 +360,14 @@ export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDas
           </button>
         ))}
       </nav>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="pc-lock-toast">
+          <Lock size={18} className="pc-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* 3. Main Arena */}
       <main className="pc-arena">
@@ -432,9 +513,13 @@ export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDas
       {showCelebration && (
         <div className="pc-celebration-backdrop">
           <div className="pc-celebration-card">
-            <div className="pc-celebration-trophy">🏆</div>
+            <div className="pc-celebration-trophy">
+              {difficulty === 'hard' ? '👑' : '🏆'}
+            </div>
             <h2 className="pc-celebration-title">
-              {isMarathi ? 'चित्र पूर्ण झाले! 🏆' : 'Picture Complete!'}
+              {difficulty === 'hard'
+                ? (isMarathi ? 'चित्रकला मास्टर! 👑' : 'Picture Master! 👑')
+                : (isMarathi ? 'चित्र पूर्ण झाले! 🏆' : 'Picture Complete!')}
             </h2>
             <div className="pc-celebration-stars">
               <span>⭐</span>
@@ -448,17 +533,69 @@ export default function PictureCompletionGame({ onHome, onEarnStars, onToggleDas
                 <>You completed the <strong>{currentScene.title}</strong>! +3 Stars!</>
               )}
             </p>
+
+            {/* Level unlock notice badge */}
+            {difficulty === 'easy' && (
+              <div className="pc-celebration-badge">
+                🎉 {isMarathi ? 'मध्यम पातळी अनलॉक झाली!' : 'Medium Level Unlocked!'} 🔓
+              </div>
+            )}
+            {difficulty === 'medium' && (
+              <div className="pc-celebration-badge">
+                🌟 {isMarathi ? 'कठीण पातळी अनलॉक झाली!' : 'Hard Level Unlocked!'} 🔓
+              </div>
+            )}
+            {difficulty === 'hard' && (
+              <div className="pc-celebration-badge success">
+                🏆 {isMarathi ? 'सर्व पातळ्या यशस्वीरित्या पूर्ण!' : 'All Levels Successfully Completed!'}
+              </div>
+            )}
+
             <div className="pc-celebration-actions">
+              {difficulty === 'easy' && (
+                <button
+                  type="button"
+                  className="pc-action-btn next-level"
+                  onClick={() => {
+                    handleDifficultyChange('medium');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'मध्यम पातळी खेळा 🔓 ➡️' : 'Play Medium Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {difficulty === 'medium' && (
+                <button
+                  type="button"
+                  className="pc-action-btn next-level"
+                  onClick={() => {
+                    handleDifficultyChange('hard');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'कठीण पातळी खेळा 🔓 ➡️' : 'Play Hard Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
               <button
+                type="button"
                 className="pc-action-btn secondary"
                 onClick={handleReset}
               >
                 <RotateCcw size={18} />
                 <span>{isMarathi ? 'पुन्हा खेळा' : 'Play Again'}</span>
               </button>
+
               <button
+                type="button"
                 className="pc-action-btn primary"
-                onClick={handleNext}
+                onClick={() => {
+                  setShowCelebration(false);
+                  handleNext();
+                }}
               >
                 <span>{isMarathi ? 'पुढील चित्र' : 'Next Picture'}</span>
                 <ChevronRight size={18} />

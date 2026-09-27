@@ -15,7 +15,8 @@ import {
   Trophy,
   CheckCircle2,
   HelpCircle,
-  Puzzle
+  Puzzle,
+  Lock
 } from 'lucide-react';
 import {
   CATEGORIES,
@@ -32,9 +33,25 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
   const { language, t, speak, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
 
+  // Level Progression:
+  // Level 1: 'easy2' (2 pieces) -> Unlocked by default
+  // Level 2: 'easy4' (4 pieces) -> Locked until Level 1 solved
+  // Level 3: 'medium' (6 pieces) -> Locked until Level 2 solved
+  // Level 4: 'hard' (9 pieces) -> Locked until Level 3 solved
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_pz_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 4 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [lockToast, setLockToast] = useState(null);
+
   // Active Category & Difficulty
   const [activeCategory, setActiveCategory] = useState('animals');
-  const [activeDifficulty, setActiveDifficulty] = useState(DIFFICULTY_LEVELS[1]); // default 4 pieces (2x2)
+  const [activeDifficulty, setActiveDifficulty] = useState(DIFFICULTY_LEVELS[0]); // default 2 pieces (Level 1)
 
   // Current Puzzle Index within Category
   const categoryPuzzles = useMemo(() => {
@@ -108,9 +125,32 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
     setPuzzleIndex(0);
   };
 
-  // Handle Difficulty Switch
+  // Handle Difficulty Switch with Progressive Level Lock
   const handleSelectDifficulty = (diff) => {
+    const requiredLevel = diff.level || 1;
+    if (requiredLevel > unlockedLevel) {
+      puzzleSounds.playWrongBoing();
+      const prevDiff = DIFFICULTY_LEVELS.find((d) => d.level === requiredLevel - 1);
+      const prevNameEn = prevDiff?.label || 'previous level';
+      const prevNameMr = prevDiff?.labelMr || 'मागील पातळी';
+
+      const msg = isMarathi
+        ? `🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "${prevNameMr}" (पातळी ${requiredLevel - 1}) पूर्ण करा!`
+        : `🔒 Level Locked! Complete "${prevNameEn}" (Level ${requiredLevel - 1}) first to unlock!`;
+
+      setLockToast(msg);
+      if (speak) {
+        speak({
+          en: `Please complete ${prevNameEn} first to unlock!`,
+          mr: `प्रथम ${prevNameMr} पूर्ण करा!`
+        });
+      }
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
     puzzleSounds.playPop();
+    setLockToast(null);
     setActiveDifficulty(diff);
   };
 
@@ -128,6 +168,17 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
         origin: { y: 0.55 }
       });
 
+      const currentLvl = activeDifficulty.level || 1;
+      const nextLvl = currentLvl + 1;
+      if (currentLvl < 4 && unlockedLevel < nextLvl) {
+        setUnlockedLevel(nextLvl);
+        try {
+          localStorage.setItem('little_learner_pz_unlocked_level', String(nextLvl));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
       const earnedStarsAmount = activeDifficulty.pieces >= 6 ? 3 : 2;
       setScore((prev) => prev + 15);
       setStars((prev) => prev + earnedStarsAmount);
@@ -140,7 +191,7 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
         });
       }, 350);
     }
-  }, [placedPieces, isCelebrated, trayPieces, activeDifficulty, currentPuzzle, onEarnStars, speak]);
+  }, [placedPieces, isCelebrated, trayPieces, activeDifficulty, currentPuzzle, onEarnStars, speak, unlockedLevel]);
 
   // Place a piece into a slot
   const tryPlacePiece = (pieceIdx, targetSlotIdx) => {
@@ -330,18 +381,28 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
             </div>
           </div>
 
-          {/* Center: Difficulty Selector Pills */}
+          {/* Center: Difficulty Selector Pills with Level Lock */}
           <div className="puzzle-difficulty-selector">
             {DIFFICULTY_LEVELS.map((diff) => {
               const isActive = activeDifficulty.id === diff.id;
+              const isLocked = diff.level > unlockedLevel;
               return (
                 <button
                   key={diff.id}
                   type="button"
-                  className={`puzzle-diff-btn ${isActive ? 'is-active' : ''}`}
+                  className={`puzzle-diff-btn ${isActive ? 'is-active' : ''} ${isLocked ? 'is-locked' : ''}`}
                   onClick={() => handleSelectDifficulty(diff)}
+                  title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
                 >
+                  {isLocked && <Lock size={13} className="puzzle-diff-lock-icon" />}
                   <span>{isMarathi ? diff.labelMr : diff.label}</span>
+                  <span className="puzzle-diff-tag">
+                    {diff.level === 1
+                      ? (isMarathi ? 'पातळी १' : 'Lvl 1')
+                      : isLocked
+                      ? '🔒'
+                      : (isMarathi ? `पातळी ${diff.level}` : `Lvl ${diff.level}`)}
+                  </span>
                 </button>
               );
             })}
@@ -375,6 +436,14 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
           </div>
         </div>
       </header>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="puzzle-lock-toast">
+          <Lock size={18} className="puzzle-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* 2. Category Navigation Bar */}
       <nav className="puzzle-category-bar">
@@ -691,7 +760,71 @@ export default function PuzzleGame({ onHome, onEarnStars, onToggleDashboard }) {
               "{isMarathi ? (currentPuzzle.funFactMr || currentPuzzle.funFact) : currentPuzzle.funFact}"
             </p>
 
+            {/* Level unlock notice badge */}
+            {activeDifficulty.id === 'easy2' && (
+              <div className="puzzle-celebration-badge">
+                🎉 {isMarathi ? '"४ तुकडे" पातळी अनलॉक झाली!' : '"4 Pieces" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeDifficulty.id === 'easy4' && (
+              <div className="puzzle-celebration-badge">
+                🎉 {isMarathi ? '"६ तुकडे" पातळी अनलॉक झाली!' : '"6 Pieces" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeDifficulty.id === 'medium' && (
+              <div className="puzzle-celebration-badge">
+                🌟 {isMarathi ? '"९ तुकडे" पातळी अनलॉक झाली!' : '"9 Pieces" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeDifficulty.id === 'hard' && (
+              <div className="puzzle-celebration-badge success">
+                👑 {isMarathi ? 'अभिनंदन! तुम्ही सर्व पझल पातळ्या जिंकल्या!' : 'Superstar! You conquered all puzzle levels!'} 🏆
+              </div>
+            )}
+
             <div className="puzzle-celebration-buttons">
+              {activeDifficulty.id === 'easy2' && (
+                <button
+                  type="button"
+                  className="puzzle-btn-celebrate next-level"
+                  onClick={() => {
+                    handleSelectDifficulty(DIFFICULTY_LEVELS[1]);
+                    setIsCelebrated(false);
+                  }}
+                >
+                  <span>{isMarathi ? '४ तुकडे पातळी खेळा 🔓 ➡️' : 'Play 4 Pieces Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeDifficulty.id === 'easy4' && (
+                <button
+                  type="button"
+                  className="puzzle-btn-celebrate next-level"
+                  onClick={() => {
+                    handleSelectDifficulty(DIFFICULTY_LEVELS[2]);
+                    setIsCelebrated(false);
+                  }}
+                >
+                  <span>{isMarathi ? '६ तुकडे पातळी खेळा 🔓 ➡️' : 'Play 6 Pieces Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeDifficulty.id === 'medium' && (
+                <button
+                  type="button"
+                  className="puzzle-btn-celebrate next-level"
+                  onClick={() => {
+                    handleSelectDifficulty(DIFFICULTY_LEVELS[3]);
+                    setIsCelebrated(false);
+                  }}
+                >
+                  <span>{isMarathi ? '९ तुकडे पातळी खेळा 🔓 ➡️' : 'Play 9 Pieces Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
               <button
                 type="button"
                 className="puzzle-btn-celebrate secondary"

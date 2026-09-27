@@ -203,6 +203,73 @@
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
 }
 
+.memory-diff-chip.is-locked {
+  opacity: 0.6;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border: 1.5px dashed #cbd5e1;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.memory-diff-chip.is-locked:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.memory-diff-lock-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.memory-diff-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  margin-left: 0.3rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.memory-diff-chip.active .memory-diff-tag {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.memory-lock-toast {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background: #fffbeb;
+  border: 2px solid #fde047;
+  color: #92400e;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.2);
+  margin: 0.5rem auto 1rem auto;
+  max-width: 90%;
+  text-align: center;
+  animation: memory-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 10;
+}
+
+.memory-lock-toast-icon {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+@keyframes memory-pop-in {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .memory-theme-row {
   display: flex;
   align-items: center;
@@ -677,10 +744,28 @@
 /* Responsive Media Queries */
 @media (max-width: 640px) {
   .memory-header {
-    padding: 0.65rem 1rem;
+    padding: 0.5rem 0.75rem;
   }
   .memory-header-inner {
-    justify-content: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+  }
+  .memory-stats-group {
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .memory-stat-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+  }
+  .memory-sound-btn {
+    width: 36px;
+    height: 36px;
+  }
+  .memory-btn-home {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.85rem;
   }
   .memory-sub-bar {
     justify-content: center;

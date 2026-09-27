@@ -10,7 +10,9 @@ import {
   Star,
   CheckCircle2,
   XCircle,
-  Trophy
+  Trophy,
+  Lock,
+  Award
 } from 'lucide-react';
 import { NUMBERS_DATA } from './numbersData';
 import { numberSounds } from './soundEffects';
@@ -18,10 +20,37 @@ import { useLanguage } from '../../../context/LanguageContext';
 import StudentSwitcher from '../../StudentSwitcher';
 import './NumbersCountingGame.css';
 
+export const COUNTING_MODES = [
+  { id: 'explorer', label: '1–20 Explorer', labelMr: '१–२० एक्सप्लोरर', icon: '🔢', level: 1 },
+  { id: 'count', label: 'Count & Choose', labelMr: 'मोजा आणि निवडा', icon: '🧮', level: 2 },
+  { id: 'find', label: 'Find the Number', labelMr: 'अंक शोधा', icon: '🎯', level: 3 },
+  { id: 'match', label: 'Match Number & Objects', labelMr: 'अंक आणि वस्तूंची जोडी', icon: '🧩', level: 4 },
+  { id: 'order', label: 'Put in Order', labelMr: 'क्रमाने लावा', icon: '🚀', level: 5 }
+];
+
 export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashboard }) {
   // Navigation & Mode
   const { language, t, speak, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
+
+  // Level Progression:
+  // Level 1: 'explorer' -> Unlocked by default
+  // Level 2: 'count' -> Locked until Level 1 explored
+  // Level 3: 'find' -> Locked until Level 2 (count) complete
+  // Level 4: 'match' -> Locked until Level 3 (find) complete
+  // Level 5: 'order' -> Locked until Level 4 (match) complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_nc_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 5 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [lockToast, setLockToast] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationSubtitle, setCelebrationSubtitle] = useState('');
 
   const [activeMode, setActiveMode] = useState('explorer'); // 'explorer' | 'count' | 'find' | 'match' | 'order'
 
@@ -77,6 +106,22 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
       setScore((prev) => prev + 10);
       setStars((prev) => prev + 5);
       onEarnStars?.(5);
+
+      if (unlockedLevel < 3) {
+        setUnlockedLevel(3);
+        try {
+          localStorage.setItem('little_learner_nc_unlocked_level', '3');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `छान! तुम्ही ${choice.number} ${choice.number === 1 ? countTarget.itemNameMr : countTarget.itemPluralMr} मोजले! ⭐ +५ तारे`
+          : `Super! You counted ${choice.number} ${countTarget.itemPlural}! ⭐ +5 Stars`
+      );
+
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -85,8 +130,8 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
       });
 
       setTimeout(() => {
-        initCountGame();
-      }, 2300);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       numberSounds.playWrongBoing();
       speak({
@@ -146,6 +191,22 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
       setScore((prev) => prev + 10);
       setStars((prev) => prev + 5);
       onEarnStars?.(5);
+
+      if (unlockedLevel < 4) {
+        setUnlockedLevel(4);
+        try {
+          localStorage.setItem('little_learner_nc_unlocked_level', '4');
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      setCelebrationSubtitle(
+        isMarathi
+          ? `शाब्बास! तुम्ही अंक ${choice.number} शोधला! ⭐ +५ तारे`
+          : `Hooray! You found number ${choice.number}! ⭐ +5 Stars`
+      );
+
       setFeedback({
         type: 'success',
         message: isMarathi
@@ -154,8 +215,8 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
       });
 
       setTimeout(() => {
-        initFindGame();
-      }, 2200);
+        setShowCelebration(true);
+      }, 1000);
     } else {
       numberSounds.playWrongBoing();
       speak({
@@ -243,15 +304,32 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
 
       if (nextMatched.length === 3) {
         confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+
+        if (unlockedLevel < 5) {
+          setUnlockedLevel(5);
+          try {
+            localStorage.setItem('little_learner_nc_unlocked_level', '5');
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        setCelebrationSubtitle(
+          isMarathi
+            ? 'तुम्ही सर्व अंकांचे योग्य गट जुळवले! ⭐ +१५ तारे'
+            : 'You matched all the numbers! ⭐ +15 Stars'
+        );
+
         setFeedback({
           type: 'success',
           message: isMarathi
             ? 'तुम्ही सर्व अंकांचे योग्य गट जुळवले! ⭐ +१५ तारे'
             : 'You matched all the numbers! ⭐ +15 Stars'
         });
+
         setTimeout(() => {
-          initMatchGame();
-        }, 2500);
+          setShowCelebration(true);
+        }, 1000);
       }
     } else {
       numberSounds.playWrongBoing();
@@ -315,6 +393,13 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
         setScore((prev) => prev + 15);
         setStars((prev) => prev + 10);
         onEarnStars?.(10);
+
+        setCelebrationSubtitle(
+          isMarathi
+            ? 'उत्तम क्रम! लहानापासून मोठ्यापर्यंत! ⭐ +१० तारे'
+            : 'Perfect order! Smallest to largest! ⭐ +10 Stars'
+        );
+
         setFeedback({
           type: 'success',
           message: isMarathi
@@ -323,8 +408,8 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
         });
 
         setTimeout(() => {
-          initOrderGame();
-        }, 2600);
+          setShowCelebration(true);
+        }, 1000);
       }
     } else {
       numberSounds.playWrongBoing();
@@ -360,6 +445,37 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
     }
   }, [activeMode]);
 
+  // Mode Select with level locking protection
+  const handleModeSelect = (modeId) => {
+    const targetMode = COUNTING_MODES.find((m) => m.id === modeId);
+    const requiredLevel = targetMode?.level || 1;
+
+    if (requiredLevel > unlockedLevel) {
+      numberSounds.playWrongBoing();
+      const prevMode = COUNTING_MODES.find((m) => m.level === requiredLevel - 1);
+      const prevNameEn = prevMode?.label || 'previous level';
+      const prevNameMr = prevMode?.labelMr || 'मागील पातळी';
+
+      const msg = isMarathi
+        ? `🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "${prevNameMr}" (पातळी ${requiredLevel - 1}) पूर्ण करा!`
+        : `🔒 Level Locked! Complete "${prevNameEn}" (Level ${requiredLevel - 1}) first to unlock!`;
+
+      setLockToast(msg);
+      if (speak) {
+        speak({
+          en: `Please complete ${prevNameEn} first to unlock!`,
+          mr: `प्रथम ${prevNameMr} पूर्ण करा!`
+        });
+      }
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    numberSounds.playPop();
+    setLockToast(null);
+    setActiveMode(modeId);
+  };
+
   // Explorer Actions
   const handleSelectNumber = (index) => {
     setCurrentNumberIndex(index);
@@ -369,6 +485,15 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
       en: `Number ${item.number}. ${item.word}. ${item.number} ${item.itemPlural}!`,
       mr: `अंक ${item.number}. ${item.wordMr || item.word}. ${item.number} ${(item.number === 1 ? item.itemNameMr : item.itemPluralMr) || item.itemPlural}!`
     });
+
+    if (unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_nc_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleListenSound = () => {
@@ -376,6 +501,15 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
       en: `Number ${currentItem.number}. ${currentItem.word}. ${currentItem.number} ${currentItem.itemPlural}!`,
       mr: `अंक ${currentItem.number}. ${currentItem.wordMr || currentItem.word}. ${currentItem.number} ${(currentItem.number === 1 ? currentItem.itemNameMr : currentItem.itemPluralMr) || currentItem.itemPlural}!`
     });
+
+    if (unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_nc_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleTapObject = (idx) => {
@@ -524,48 +658,42 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
         </div>
       </header>
 
-      {/* 2. Mini-Games Mode Selector Bar */}
+      {/* 2. Mini-Games Mode Selector Bar with Level Lock indicators */}
       <nav className="numbers-mode-bar">
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'explorer' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('explorer')}
-        >
-          <span>🔢 {isMarathi ? '१–२० एक्सप्लोरर' : '1–20 Explorer'}</span>
-        </button>
+        {COUNTING_MODES.map((mode) => {
+          const isLocked = mode.level > unlockedLevel;
+          const isActive = activeMode === mode.id;
 
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'count' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('count')}
-        >
-          <span>🧮 {isMarathi ? 'मोजा आणि निवडा' : 'Count & Choose'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'find' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('find')}
-        >
-          <span>🎯 {isMarathi ? 'अंक शोधा' : 'Find the Number'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'match' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('match')}
-        >
-          <span>🧩 {isMarathi ? 'अंक आणि वस्तूंची जोडी' : 'Match Number & Objects'}</span>
-        </button>
-
-        <button
-          type="button"
-          className={`mode-pill-btn ${activeMode === 'order' ? 'is-active' : ''}`}
-          onClick={() => setActiveMode('order')}
-        >
-          <span>🚀 {isMarathi ? 'क्रमाने लावा' : 'Put in Order'}</span>
-        </button>
+          return (
+            <button
+              key={mode.id}
+              type="button"
+              className={`mode-pill-btn ${isActive ? 'is-active' : ''} ${isLocked ? 'is-locked' : ''}`}
+              onClick={() => handleModeSelect(mode.id)}
+              title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
+              id={`tab-numbers-${mode.id}`}
+            >
+              {isLocked ? <Lock size={15} className="numbers-diff-lock-icon" /> : <span>{mode.icon}</span>}
+              <span>{isMarathi ? mode.labelMr : mode.label}</span>
+              <span className="numbers-diff-tag">
+                {mode.level === 1
+                  ? (isMarathi ? 'पातळी १' : 'Lvl 1')
+                  : isLocked
+                  ? '🔒'
+                  : (isMarathi ? `पातळी ${mode.level}` : `Lvl ${mode.level}`)}
+              </span>
+            </button>
+          );
+        })}
       </nav>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="numbers-lock-toast">
+          <Lock size={18} className="numbers-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* Feedback Banner if active */}
       {feedback && (
@@ -873,6 +1001,136 @@ export default function NumbersCountingGame({ onHome, onEarnStars, onToggleDashb
           </div>
         )}
       </main>
+
+      {/* Celebration Modal */}
+      {showCelebration && (
+        <div className="numbers-celebration-backdrop">
+          <div className="numbers-celebration-card">
+            <div className="numbers-celebration-trophy">
+              {activeMode === 'order' ? '👑' : '🏆'}
+            </div>
+            <h2 className="numbers-celebration-title">
+              {activeMode === 'order'
+                ? (isMarathi ? 'अंक मोजणी मास्टर! 👑' : 'Numbers Master! 👑')
+                : (isMarathi ? 'अभिनंदन! 🏆' : 'Level Complete! 🏆')}
+            </h2>
+            <div className="numbers-celebration-stars">
+              <span>⭐</span>
+              <span>⭐</span>
+              <span>⭐</span>
+            </div>
+            <p className="numbers-celebration-subtitle">
+              {celebrationSubtitle || (isMarathi ? 'खूप छान खेळलात! +१० तारे!' : 'Great job! +10 Stars!')}
+            </p>
+
+            {/* Level unlock notice badge */}
+            {activeMode === 'explorer' && (
+              <div className="numbers-celebration-badge">
+                🎉 {isMarathi ? '"मोजा आणि निवडा" पातळी अनलॉक झाली!' : '"Count & Choose" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'count' && (
+              <div className="numbers-celebration-badge">
+                🎉 {isMarathi ? '"अंक शोधा" पातळी अनलॉक झाली!' : '"Find the Number" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'find' && (
+              <div className="numbers-celebration-badge">
+                🌟 {isMarathi ? '"अंक आणि वस्तूंची जोडी" पातळी अनलॉक झाली!' : '"Match Number & Objects" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'match' && (
+              <div className="numbers-celebration-badge">
+                🚀 {isMarathi ? '"क्रमाने लावा" पातळी अनलॉक झाली!' : '"Put in Order" Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'order' && (
+              <div className="numbers-celebration-badge success">
+                👑 {isMarathi ? 'सर्व पातळ्या यशस्वीरित्या पूर्ण!' : 'All Counting Levels Completed!'} 🏆
+              </div>
+            )}
+
+            <div className="numbers-celebration-actions">
+              {activeMode === 'explorer' && (
+                <button
+                  type="button"
+                  className="numbers-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('count');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'मोजा आणि निवडा खेळा 🔓 ➡️' : 'Play Count & Choose 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'count' && (
+                <button
+                  type="button"
+                  className="numbers-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('find');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'अंक शोधा खेळा 🔓 ➡️' : 'Play Find the Number 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'find' && (
+                <button
+                  type="button"
+                  className="numbers-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('match');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'अंक आणि वस्तूंची जोडी खेळा 🔓 ➡️' : 'Play Match Number & Objects 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'match' && (
+                <button
+                  type="button"
+                  className="numbers-modal-btn next-level"
+                  onClick={() => {
+                    handleModeSelect('order');
+                    setShowCelebration(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'क्रमाने लावा खेळा 🔓 ➡️' : 'Play Put in Order 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="numbers-modal-btn secondary"
+                onClick={() => {
+                  setShowCelebration(false);
+                  handleNext();
+                }}
+              >
+                <RotateCcw size={18} />
+                <span>{isMarathi ? 'पुढील प्रश्न / पुन्हा खेळा' : 'Next Round / Play Again'}</span>
+              </button>
+
+              <button
+                type="button"
+                className="numbers-modal-btn secondary"
+                onClick={onHome}
+              >
+                <Home size={18} />
+                <span>{t('btnHome')}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

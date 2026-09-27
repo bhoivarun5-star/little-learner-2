@@ -1,21 +1,21 @@
 // Comprehensive Tracing Dataset for A-Z Uppercase, a-z Lowercase, and 1-20 Numbers (Ages 3-6)
 
 export const TRACING_MODES = [
-  { id: 'uppercase', label: 'Uppercase A–Z', icon: '🔤', count: 26 },
-  { id: 'lowercase', label: 'Lowercase a–z', icon: '🔡', count: 26 },
-  { id: 'numbers', label: 'Numbers 1–20', icon: '🔢', count: 20 }
+  { id: 'uppercase', label: 'Uppercase A–Z', labelMr: 'मोठी अक्षरे A–Z', icon: '🔤', count: 26 },
+  { id: 'lowercase', label: 'Lowercase a–z', labelMr: 'लहान अक्षरे a–z', icon: '🔡', count: 26 },
+  { id: 'numbers', label: 'Numbers 1–20', labelMr: 'अंक १–२०', icon: '🔢', count: 20 }
 ];
 
 // Helper to generate stroke checkpoints from normalized coordinate segments
 export function generateCheckpoints(segments) {
   const points = [];
-  segments.forEach((seg) => {
+  segments.forEach((seg, segIdx) => {
     const steps = seg.steps || 6;
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
       const x = seg.x1 + (seg.x2 - seg.x1) * t;
       const y = seg.y1 + (seg.y2 - seg.y1) * t;
-      points.push({ x: Math.round(x), y: Math.round(y), hit: false });
+      points.push({ segIdx, x: Math.round(x), y: Math.round(y), hit: false });
     }
   });
   return points;

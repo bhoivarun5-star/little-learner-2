@@ -12,7 +12,10 @@ import {
   Trash2,
   Trophy,
   CheckCircle2,
-  Lightbulb
+  Lightbulb,
+  Award,
+  Lock,
+  ArrowRight
 } from 'lucide-react';
 import {
   TRACING_MODES,
@@ -40,6 +43,22 @@ const BRUSH_COLORS = [
 export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) {
   const { t, speak, language, isMuted, soundEnabled, toggleMute } = useLanguage();
   const isMarathi = language === 'mr';
+
+  // Level Progression:
+  // Level 1: 'uppercase' -> Unlocked by default
+  // Level 2: 'lowercase' -> Locked until Level 1 complete
+  // Level 3: 'numbers' -> Locked until Level 2 complete
+  const [unlockedLevel, setUnlockedLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem('little_learner_trace_unlocked_level');
+      const val = parseInt(saved, 10);
+      return val >= 1 && val <= 3 ? val : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [lockToast, setLockToast] = useState(null);
+  const [score, setScore] = useState(0);
 
   // Game Mode: 'uppercase' | 'lowercase' | 'numbers'
   const [activeMode, setActiveMode] = useState('uppercase');
@@ -108,9 +127,32 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
     speak(speechTxt);
   };
 
-  // Mode change
+  // Mode change with level locking protection
   const handleModeChange = (modeId) => {
+    if (modeId === 'lowercase' && unlockedLevel < 2) {
+      tracingSounds.playTryAgain();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "मोठी अक्षरे A–Z" (पातळी १) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Uppercase A–Z" (Level 1) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम मोठी अक्षरे पूर्ण करा' : 'Please complete Uppercase letters first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
+    if (modeId === 'numbers' && unlockedLevel < 3) {
+      tracingSounds.playTryAgain();
+      const msg = isMarathi
+        ? '🔒 ही पातळी बंद आहे! उघडण्यासाठी प्रथम "लहान अक्षरे a–z" (पातळी २) पूर्ण करा!'
+        : '🔒 Level Locked! Complete "Lowercase a–z" (Level 2) first to unlock!';
+      setLockToast(msg);
+      if (speak) speak(isMarathi ? 'प्रथम लहान अक्षरे पूर्ण करा' : 'Please complete Lowercase letters first');
+      setTimeout(() => setLockToast(null), 3500);
+      return;
+    }
+
     tracingSounds.playTap();
+    setLockToast(null);
     setActiveMode(modeId);
     setCurrentIndex(0);
   };
@@ -227,14 +269,44 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
     if (!isDrawingRef.current) return;
     isDrawingRef.current = false;
 
-    const totalPts = checkpointsRef.current.length || 1;
+    const pts = checkpointsRef.current;
+    const totalPts = pts.length || 1;
     const pct = Math.round((hitCountRef.current / totalPts) * 100);
 
-    // Tracing threshold: 65% is great for ages 3-6 to avoid frustration
-    if (pct >= 65 && !isCompleted) {
+    // Segment coverage check: Ensure NO stroke/segment of the letter or number was skipped
+    const segmentCounts = {};
+    const segmentHits = {};
+    pts.forEach((p) => {
+      const sId = p.segIdx !== undefined ? p.segIdx : 0;
+      segmentCounts[sId] = (segmentCounts[sId] || 0) + 1;
+      if (p.hit) {
+        segmentHits[sId] = (segmentHits[sId] || 0) + 1;
+      }
+    });
+
+    const allSegmentsCovered =
+      Object.keys(segmentCounts).length > 0 &&
+      Object.keys(segmentCounts).every((sId) => {
+        const count = segmentCounts[sId];
+        const hits = segmentHits[sId] || 0;
+        return (hits / count) >= 0.65; // Every segment must have at least 65% tracing
+      });
+
+    // Complete tracing requirements:
+    // Only give points when user traces the complete letter or number (not for half tracing)
+    const isComplete = pct >= 88 && allSegmentsCovered;
+
+    if (isComplete && !isCompleted) {
       triggerSuccess();
-    } else if (drawnDistanceRef.current > 120 && pct < 40) {
-      // Child drew a bunch but missed the guide lines
+    } else if (!isCompleted && pct >= 25 && pct < 88) {
+      // Incomplete / half tracing: encourage child to finish whole letter, NO points awarded
+      const partialMsg = isMarathi
+        ? 'छान प्रयत्न! पूर्ण अक्षर गिरवा, मगच गुण आणि तारे मिळतील! ✍️'
+        : 'Good effort! Trace the complete character to earn points & stars! ✍️';
+      setFeedbackToast({ type: 'hint', text: partialMsg });
+      setTimeout(() => setFeedbackToast(null), 3000);
+    } else if (drawnDistanceRef.current > 120 && pct < 25) {
+      // Child drew wildly off the guidelines
       tracingSounds.playTryAgain();
       const tryText = isMarathi ? 'ठिपक्यांच्या रेषेवरून गिरवा! तुम्ही करू शकता! 👆' : 'Follow the dots! You can do it! 👆';
       speak(tryText);
@@ -258,17 +330,37 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
       origin: { y: 0.6 }
     });
 
-    // Update stars
+    // Award points and stars ONLY on complete tracing
+    setScore((s) => s + 20);
     setTotalStars((prev) => prev + 3);
     if (onEarnStars) {
       onEarnStars(3);
+    }
+
+    // Unlock next level progression
+    if (activeMode === 'uppercase' && unlockedLevel < 2) {
+      setUnlockedLevel(2);
+      try {
+        localStorage.setItem('little_learner_trace_unlocked_level', '2');
+      } catch (e) {
+        console.error(e);
+      }
+    } else if (activeMode === 'lowercase' && unlockedLevel < 3) {
+      setUnlockedLevel(3);
+      try {
+        localStorage.setItem('little_learner_trace_unlocked_level', '3');
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     // Mark completed in set
     const key = `${activeMode}-${currentIndex}`;
     setCompletedSet((prev) => new Set([...prev, key]));
 
-    const superText = isMarathi ? `🌟 शाब्बास! तुम्ही ${currentItem.char} गिरवले!` : `🌟 Super! You traced ${currentItem.char}!`;
+    const superText = isMarathi
+      ? `🌟 शाब्बास! तुम्ही ${currentItem.char} पूर्ण गिरवले! +२० गुण, +३ तारे!`
+      : `🌟 Super! You traced ${currentItem.char} completely! +20 Pts, +3 Stars!`;
     setFeedbackToast({ type: 'correct', text: superText });
   };
 
@@ -300,24 +392,44 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
             <span>{t('btnHome')}</span>
           </button>
 
-          {/* Mode Selector Tabs */}
+          {/* Mode Selector Tabs with Level Lock indicators */}
           <div className="tracing-mode-switcher">
-            {TRACING_MODES.map((mode) => (
-              <button
-                key={mode.id}
-                className={`tracing-mode-btn ${activeMode === mode.id ? 'active' : ''}`}
-                onClick={() => handleModeChange(mode.id)}
-                id={`tab-tracing-${mode.id}`}
-              >
-                <span>{mode.icon}</span>
-                <span>{isMarathi ? (mode.labelMr || mode.label) : mode.label}</span>
-              </button>
-            ))}
+            {TRACING_MODES.map((mode) => {
+              const isLocked =
+                (mode.id === 'lowercase' && unlockedLevel < 2) ||
+                (mode.id === 'numbers' && unlockedLevel < 3);
+
+              return (
+                <button
+                  key={mode.id}
+                  type="button"
+                  className={`tracing-mode-btn ${activeMode === mode.id ? 'active' : ''} ${isLocked ? 'is-locked' : ''}`}
+                  onClick={() => handleModeChange(mode.id)}
+                  id={`tab-tracing-${mode.id}`}
+                  title={isLocked ? (isMarathi ? 'आधीची पातळी पूर्ण केल्यावर उघडेल' : 'Complete previous level to unlock') : ''}
+                >
+                  {isLocked ? <Lock size={14} className="tracing-diff-lock-icon" /> : <span>{mode.icon}</span>}
+                  <span>{isMarathi ? (mode.labelMr || mode.label) : mode.label}</span>
+                  <span className="tracing-diff-tag">
+                    {mode.id === 'uppercase'
+                      ? (isMarathi ? 'पातळी १' : 'Lvl 1')
+                      : mode.id === 'lowercase'
+                      ? (isLocked ? '🔒' : (isMarathi ? 'पातळी २' : 'Lvl 2'))
+                      : (isLocked ? '🔒' : (isMarathi ? 'पातळी ३' : 'Lvl 3'))}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Stars & Sound Controls */}
+          {/* Stars, Points & Sound Controls */}
           <div className="tracing-header-right">
             <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
+            <div className="tracing-score-pill" title={isMarathi ? "मिळालेले गुण" : "Earned Points"}>
+              <Award size={18} />
+              <span>{score} {isMarathi ? 'गुण' : 'pts'}</span>
+            </div>
+
             <div className="tracing-stars-pill" title={isMarathi ? "मिळालेले तारे" : "Total Stars"}>
               <Star size={20} className="star-icon-glow" />
               <span>{totalStars}</span>
@@ -334,6 +446,14 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
           </div>
         </div>
       </header>
+
+      {/* Level Lock Alert Toast */}
+      {lockToast && (
+        <div className="tracing-lock-toast">
+          <Lock size={18} className="tracing-lock-toast-icon" />
+          <span>{lockToast}</span>
+        </div>
+      )}
 
       {/* 2. Main Game Arena */}
       <main className="tracing-arena">
@@ -534,9 +654,13 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
       {isCompleted && (
         <div className="tracing-celebration-backdrop">
           <div className="tracing-celebration-card">
-            <div className="celebration-trophy-badge">🏆</div>
+            <div className="celebration-trophy-badge">
+              {activeMode === 'numbers' ? '👑' : '🏆'}
+            </div>
             <h2 className="celebration-title">
-              {isMarathi ? 'उत्कृष्ट काम! 🏆' : 'Fantastic Tracing!'}
+              {activeMode === 'numbers'
+                ? (isMarathi ? 'ट्रेसिंग मास्टर! 👑' : 'Tracing Master! 👑')
+                : (isMarathi ? 'उत्कृष्ट काम! 🏆' : 'Fantastic Tracing!')}
             </h2>
             <div className="celebration-stars-row">
               <span>⭐</span>
@@ -545,13 +669,60 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
             </div>
             <p className="celebration-subtitle">
               {isMarathi ? (
-                <>तुम्ही <strong>{currentItem.char}</strong> ({currentItem.wordMr || currentItem.word}) अचूक गिरवले!</>
+                <>तुम्ही <strong>{currentItem.char}</strong> ({currentItem.wordMr || currentItem.word}) संपूर्णपणे अचूक गिरवले! +२० गुण, +३ तारे!</>
               ) : (
-                <>You traced <strong>{currentItem.char}</strong> ({currentItem.word}) perfectly!</>
+                <>You traced <strong>{currentItem.char}</strong> ({currentItem.word}) completely! +20 Pts, +3 Stars!</>
               )}
             </p>
+
+            {/* Level unlock notice badge */}
+            {activeMode === 'uppercase' && (
+              <div className="tracing-celebration-badge">
+                🎉 {isMarathi ? 'लहान अक्षरे पातळी अनलॉक झाली!' : 'Lowercase Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'lowercase' && (
+              <div className="tracing-celebration-badge">
+                🌟 {isMarathi ? 'अंक पातळी अनलॉक झाली!' : 'Numbers Level Unlocked!'} 🔓
+              </div>
+            )}
+            {activeMode === 'numbers' && (
+              <div className="tracing-celebration-badge success">
+                🏆 {isMarathi ? 'सर्व पातळ्या यशस्वीरित्या पूर्ण!' : 'All Levels Successfully Completed!'}
+              </div>
+            )}
+
             <div className="celebration-actions">
+              {activeMode === 'uppercase' && (
+                <button
+                  type="button"
+                  className="tracing-action-btn next-level"
+                  onClick={() => {
+                    handleModeChange('lowercase');
+                    setIsCompleted(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'लहान अक्षरे पातळी खेळा 🔓 ➡️' : 'Play Lowercase Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
+              {activeMode === 'lowercase' && (
+                <button
+                  type="button"
+                  className="tracing-action-btn next-level"
+                  onClick={() => {
+                    handleModeChange('numbers');
+                    setIsCompleted(false);
+                  }}
+                >
+                  <span>{isMarathi ? 'अंक पातळी खेळा 🔓 ➡️' : 'Play Numbers Level 🔓 ➡️'}</span>
+                  <ArrowRight size={18} />
+                </button>
+              )}
+
               <button
+                type="button"
                 className="tracing-action-btn secondary"
                 onClick={handleCelebrationAgain}
               >
@@ -559,6 +730,7 @@ export default function TracingGame({ onHome, onEarnStars, onToggleDashboard }) 
                 <span>{isMarathi ? 'पुन्हा गिरवा' : 'Trace Again'}</span>
               </button>
               <button
+                type="button"
                 className="tracing-action-btn primary"
                 onClick={handleCelebrationNext}
               >

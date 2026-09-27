@@ -246,7 +246,7 @@
   transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.mode-pill-btn:hover {
+.mode-pill-btn:hover:not(.is-active):not(.is-locked) {
   background: #f1f5f9;
   color: #1e1b4b;
 }
@@ -256,6 +256,70 @@
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
   transform: scale(1.03);
+}
+
+.mode-pill-btn.is-locked {
+  opacity: 0.65;
+  cursor: not-allowed;
+  color: #94a3b8;
+}
+
+.mode-pill-btn.is-locked:hover {
+  background: transparent;
+  transform: none;
+}
+
+.phonics-diff-lock-icon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.phonics-diff-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background: rgba(0, 0, 0, 0.06);
+  margin-left: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.mode-pill-btn.is-active .phonics-diff-tag {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Level Lock Alert Toast */
+.phonics-lock-toast {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #fffbeb;
+  border: 2px solid #fde047;
+  color: #92400e;
+  padding: 0.65rem 1.4rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 14px rgba(234, 179, 8, 0.25);
+  margin: 0.4rem auto 0 auto;
+  max-width: 90%;
+  animation: phonics-pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+  position: relative;
+  z-index: 50;
+}
+
+.phonics-lock-toast-icon {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+@keyframes phonics-pop-in {
+  0% { transform: scale(0.9) translateY(-6px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
 }
 
 /* Main Interactive Play Area Canvas */
@@ -688,4 +752,158 @@
   .hud-game-subtitle {
     display: none;
   }
+}
+
+/* ==========================================================================
+   Phonics Celebration Modal Styles
+   ========================================================================== */
+.phonics-celebration-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: phonics-fade-in 0.3s ease;
+}
+
+.phonics-celebration-card {
+  background: #ffffff;
+  border-radius: 36px;
+  border: 4px solid #fef08a;
+  padding: 2.2rem 2.4rem;
+  max-width: 440px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  animation: phonics-pop-card 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes phonics-pop-card {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes phonics-fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.phonics-celebration-trophy {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  box-shadow: 0 8px 24px rgba(250, 204, 21, 0.45);
+  margin-bottom: 1rem;
+  animation: phonics-wiggle-trophy 1.5s ease-in-out infinite;
+}
+
+@keyframes phonics-wiggle-trophy {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+.phonics-celebration-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+}
+
+.phonics-celebration-stars {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.phonics-celebration-subtitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 1rem;
+}
+
+.phonics-celebration-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #ecfdf5;
+  border: 2px solid #a7f3d0;
+  color: #065f46;
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.phonics-celebration-badge.success {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+.phonics-celebration-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.phonics-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.phonics-modal-btn:hover {
+  transform: translateY(-2px);
+}
+
+.phonics-modal-btn.next-level {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border-color: #34d399;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  font-weight: 800;
+}
+
+.phonics-modal-btn.next-level:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+}
+
+.phonics-modal-btn.secondary {
+  background: #f8fafc;
+  color: #334155;
+  border-color: #e2e8f0;
+}
+
+.phonics-modal-btn.secondary:hover {
+  background: #ffffff;
+  border-color: #cbd5e1;
 }

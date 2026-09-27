@@ -12,9 +12,9 @@ export const COMPLETION_CATEGORIES = [
 ];
 
 export const DIFFICULTY_MODES = [
-  { id: 'easy', label: 'Easy', badge: '🌱 Easy', choices: 3, ghostHint: true },
-  { id: 'medium', label: 'Medium', badge: '🌟 Medium', choices: 4, ghostHint: false },
-  { id: 'hard', label: 'Hard', badge: '🚀 Hard', choices: 4, ghostHint: false }
+  { id: 'easy', label: 'Easy', labelMr: 'सोपे', badge: '🌱 Easy', badgeMr: '🌱 सोपे', choices: 3, ghostHint: true },
+  { id: 'medium', label: 'Medium', labelMr: 'मध्यम', badge: '🌟 Medium', badgeMr: '🌟 मध्यम', choices: 4, ghostHint: false },
+  { id: 'hard', label: 'Hard', labelMr: 'कठीण', badge: '🚀 Hard', badgeMr: '🚀 कठीण', choices: 4, ghostHint: false }
 ];
 
 // Helper for SVGs
