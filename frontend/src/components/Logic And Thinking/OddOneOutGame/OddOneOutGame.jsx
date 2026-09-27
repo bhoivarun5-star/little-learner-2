@@ -22,7 +22,7 @@ import { oddSounds } from './oddOneOutSounds';
 import { useLanguage } from '../../../context/LanguageContext';
 import './OddOneOutGame.css';
 
-export default function OddOneOutGame({ onBack }) {
+export default function OddOneOutGame({ onBack, onHome, onEarnStars }) {
   const { t, speak, language } = useLanguage();
   const isMarathi = language === 'mr';
   const [difficulty, setDifficulty] = useState('easy');
@@ -80,6 +80,7 @@ export default function OddOneOutGame({ onBack }) {
       setWrongCardId(null);
       setScore(prev => prev + 25);
       setStars(prev => prev + 3);
+      onEarnStars?.(3, 25);
       const correctMsg = t('oddCorrectMsg');
       setFeedback({
         type: 'correct',

@@ -16,8 +16,8 @@ export default function LoginForm({ onLoginSuccess, onOpenForgotPassword, onInpu
   const [formMode, setFormMode] = useState('login');
 
   // Login form state
-  const [identifier, setIdentifier] = useState('learner@littlelearner.com');
-  const [password, setPassword] = useState('password123');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 

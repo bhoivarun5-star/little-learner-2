@@ -13,13 +13,26 @@ import {
   Lightbulb,
   Star,
   LayoutDashboard,
-  Languages
+  Languages,
+  Settings,
+  Trophy,
+  Menu,
+  X,
+  Users
 } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
+import { useStudent } from '../../../context/StudentContext';
+import StudentSwitcher from '../../StudentSwitcher';
+import SettingsModal from '../../SettingsModal';
+import ScoreRecordsModal from '../../ScoreRecordsModal';
 
-export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLogout, onToggleDashboard }) {
+export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogout, onToggleDashboard }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showScoreRecordsModal, setShowScoreRecordsModal] = useState(false);
   const { language, toggleLanguage, t } = useLanguage();
+  const { activeStudent } = useStudent();
   const navScrollRef = useRef(null);
   const profileRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -34,6 +47,27 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
     };
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  // Close mobile menu on resize to desktop or escape key
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 860) {
+        setMobileMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setMobileMenuOpen(false);
+        setDropdownOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   const navItems = [
@@ -78,10 +112,15 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
     }
   };
 
+  const handleMobileNavSelect = (itemId) => {
+    onSelectTab?.(itemId);
+    setMobileMenuOpen(false);
+  };
+
   return (
     <header className="home-navbar-wrapper">
       <nav className="home-navbar">
-        {/* Left: Little Learner Logo */}
+        {/* Left: Little Learner Brand Logo & Title */}
         <div className="home-nav-left" onClick={() => onSelectTab?.('activities')}>
           <div className="home-brand-logo">
             <img src="/assets/star-mascot.jpg" alt="Little Learner Mascot Star" />
@@ -103,7 +142,7 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
           </div>
         </div>
 
-        {/* Middle: Horizontally Scrollable Navigation Links */}
+        {/* Middle: Horizontally Scrollable Navigation Links (Desktop) */}
         <div className="home-nav-scroll-wrapper">
           {canScrollLeft && (
             <button
@@ -154,28 +193,27 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
           )}
         </div>
 
-        {/* Right: Language Toggle, Star Counter & User Profile */}
+        {/* Right: Student Switcher, Star Counter, User Profile & Mobile Toggle */}
         <div className="home-nav-right">
-          {/* Minimized Language Switcher Pill */}
-          <button
-            type="button"
-            className="home-lang-toggle-btn compact"
-            onClick={toggleLanguage}
-            title={language === 'mr' ? 'Switch to English (मराठी चालू आहे)' : 'मराठी भाषेत बदला (English active)'}
-            aria-label="Toggle Language"
-          >
-            <Languages size={15} />
-            <span className="lang-flag">{language === 'mr' ? '🇮🇳' : '🇬🇧'}</span>
-            <span className="lang-name">{language === 'mr' ? 'मराठी' : 'EN'}</span>
-          </button>
-
-          {/* Star Currency Counter */}
-          <div className="star-counter-badge" title="Stars collected on Little Learner!">
-            <Star size={18} fill="#f59e0b" color="#f59e0b" />
-            <span>{stars}</span>
+          {/* Desktop Student Switcher */}
+          <div className="desktop-student-switcher-wrap">
+            <StudentSwitcher onOpenDashboard={onToggleDashboard} />
           </div>
 
-          {/* Profile Avatar Icon Only (User name appears in dropdown on click) */}
+          {/* Star Currency Counter */}
+          <div
+            className="star-counter-badge"
+            onClick={() => setShowScoreRecordsModal(true)}
+            title="Stars collected by active learner! Click to view game records."
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+          >
+            <Star size={18} fill="#f59e0b" color="#f59e0b" />
+            <span>{activeStudent ? activeStudent.total_stars : stars}</span>
+          </div>
+
+          {/* Profile Avatar Icon */}
           <div
             ref={profileRef}
             className={`user-profile-btn ${dropdownOpen ? 'open' : ''}`}
@@ -197,10 +235,9 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
               />
             </div>
 
-            {/* User Options Dropdown */}
+            {/* Desktop User Options Dropdown */}
             {dropdownOpen && (
               <div className="user-dropdown-menu" onClick={(e) => e.stopPropagation()}>
-                {/* User info header displayed upon clicking profile icon */}
                 <div className="dropdown-user-header">
                   <div className="dropdown-avatar-circle">
                     <img
@@ -234,6 +271,46 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
 
                 <button
                   type="button"
+                  className="dropdown-item-btn"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    setShowScoreRecordsModal(true);
+                  }}
+                  title="View detailed score record of each game played"
+                >
+                  <Trophy size={16} color="#f59e0b" />
+                  <span>Game Score Records</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="dropdown-item-btn"
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    setShowSettingsModal(true);
+                  }}
+                  title="Configure language, speech, and preferences"
+                >
+                  <Settings size={16} color="#0284c7" />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <span>{t('settings', 'Settings')}</span>
+                    <span style={{
+                      fontSize: '0.68rem',
+                      color: '#475569',
+                      background: '#f1f5f9',
+                      padding: '2px 6px',
+                      borderRadius: '6px',
+                      fontWeight: 700
+                    }}>
+                      {language === 'mr' ? 'मराठी 🇮🇳' : 'EN 🇬🇧'}
+                    </span>
+                  </div>
+                </button>
+
+                <div className="dropdown-divider" />
+
+                <button
+                  type="button"
                   className="dropdown-item-btn logout"
                   onClick={() => {
                     setDropdownOpen(false);
@@ -246,8 +323,213 @@ export default function Navbar({ user, stars = 125, activeTab, onSelectTab, onLo
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Hamburger Toggle Button */}
+          <button
+            type="button"
+            className={`home-mobile-menu-btn ${mobileMenuOpen ? 'is-open' : ''}`}
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+          </button>
         </div>
       </nav>
+
+      {/* ==================================================================== */}
+      {/* MOBILE INTERACTIVE DROPDOWN MENU */}
+      {/* ==================================================================== */}
+      {mobileMenuOpen && (
+        <div
+          className="home-mobile-dropdown-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div
+            className="home-mobile-dropdown-sheet"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Active Learner Summary Header */}
+            <div className="mobile-dropdown-learner-card">
+              <div className="mobile-learner-left">
+                <div className="mobile-learner-avatar">
+                  <img
+                    src={user?.avatar || '/assets/boy-avatar.jpg'}
+                    alt={activeStudent?.name || user?.display_name || 'Learner'}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/assets/boy-avatar.jpg';
+                    }}
+                  />
+                </div>
+                <div className="mobile-learner-details">
+                  <div className="mobile-learner-name-line">
+                    <strong className="mobile-learner-name">
+                      {activeStudent?.name || user?.display_name || 'Learner'}
+                    </strong>
+                    <span className="mobile-learner-id-chip">
+                      {activeStudent?.student_id || activeStudent?.id || 'STU-001'}
+                    </span>
+                  </div>
+                  <span className="mobile-learner-sub">
+                    {activeStudent?.grade || 'Kindergarten'} • Level 3 Learner
+                  </span>
+                </div>
+              </div>
+
+              <div
+                className="mobile-learner-star-pill"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setShowScoreRecordsModal(true);
+                }}
+                role="button"
+                tabIndex={0}
+                title="View stars & score records"
+              >
+                <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                <span>{activeStudent ? activeStudent.total_stars : stars}</span>
+              </div>
+            </div>
+
+            {/* Switch Active Learner in Mobile Menu */}
+            <div className="mobile-dropdown-section">
+              <div className="mobile-section-header">
+                <div className="mobile-section-title">
+                  <Users size={16} color="#7c3aed" />
+                  <span>Switch Active Student</span>
+                </div>
+              </div>
+              <div className="mobile-student-switcher-box">
+                <StudentSwitcher
+                  compact={false}
+                  onOpenDashboard={() => {
+                    setMobileMenuOpen(false);
+                    onToggleDashboard?.();
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Navigation Tabs Grid */}
+            <div className="mobile-dropdown-section">
+              <div className="mobile-section-header">
+                <div className="mobile-section-title">
+                  <BookOpen size={16} color="#0284c7" />
+                  <span>Explore Curriculum & Games</span>
+                </div>
+              </div>
+              <div className="mobile-nav-grid">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = (activeTab || 'activities') === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`mobile-nav-card-btn ${isActive ? 'is-active' : ''}`}
+                      onClick={() => handleMobileNavSelect(item.id)}
+                    >
+                      <div className="mobile-nav-icon-badge">
+                        <Icon size={18} />
+                      </div>
+                      <span className="mobile-nav-btn-text">{item.label}</span>
+                      {isActive && <span className="mobile-nav-active-indicator" />}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Actions (Faculty Dashboard, Records, Settings, Sign Out) */}
+            <div className="mobile-dropdown-section">
+              <div className="mobile-section-header">
+                <div className="mobile-section-title">
+                  <Settings size={16} color="#64748b" />
+                  <span>Tools & Preferences</span>
+                </div>
+              </div>
+              <div className="mobile-action-links-list">
+                <button
+                  type="button"
+                  className="mobile-action-row-btn"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onToggleDashboard?.();
+                  }}
+                >
+                  <div className="mobile-item-icon-circle purple">
+                    <LayoutDashboard size={17} />
+                  </div>
+                  <span className="mobile-item-label">Faculty Dashboard</span>
+                  <ChevronRight size={17} className="mobile-item-arrow" />
+                </button>
+
+                <button
+                  type="button"
+                  className="mobile-action-row-btn"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setShowScoreRecordsModal(true);
+                  }}
+                >
+                  <div className="mobile-item-icon-circle amber">
+                    <Trophy size={17} />
+                  </div>
+                  <span className="mobile-item-label">Game Score Records</span>
+                  <ChevronRight size={17} className="mobile-item-arrow" />
+                </button>
+
+                <button
+                  type="button"
+                  className="mobile-action-row-btn"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setShowSettingsModal(true);
+                  }}
+                >
+                  <div className="mobile-item-icon-circle blue">
+                    <Settings size={17} />
+                  </div>
+                  <div className="mobile-item-text-group">
+                    <span className="mobile-item-label">{t('settings', 'Settings')}</span>
+                    <span className="mobile-lang-tag">
+                      {language === 'mr' ? 'मराठी 🇮🇳' : 'English 🇬🇧'}
+                    </span>
+                  </div>
+                  <ChevronRight size={17} className="mobile-item-arrow" />
+                </button>
+
+                <button
+                  type="button"
+                  className="mobile-action-row-btn logout"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onLogout?.();
+                  }}
+                >
+                  <div className="mobile-item-icon-circle red">
+                    <LogOut size={17} />
+                  </div>
+                  <span className="mobile-item-label">{t('logout', 'Sign Out')}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global Settings & Language Modal */}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+      />
+
+      {/* Detailed Game Score Records Modal */}
+      <ScoreRecordsModal
+        isOpen={showScoreRecordsModal}
+        onClose={() => setShowScoreRecordsModal(false)}
+      />
     </header>
   );
 }

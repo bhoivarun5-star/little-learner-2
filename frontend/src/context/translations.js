@@ -14,6 +14,14 @@ export const TRANSLATIONS = {
     stars: 'Stars',
     offlineStatus: 'Offline Ready • Progress Saved Locally',
     logout: 'Logout',
+    settings: 'Settings',
+    facultySettings: 'Faculty & App Settings',
+    languageSetting: 'Display Language',
+    languageSubtext: 'Choose your preferred language for activities, instructions, and phonics.',
+    english: 'English',
+    marathi: 'मराठी (Marathi)',
+    soundEffects: 'Sound Effects & Chimes',
+    voiceNarration: 'Voice Narration & Speech',
     switchLanguage: 'भाषा: मराठी',
 
     // Hero Section
@@ -232,6 +240,14 @@ export const TRANSLATIONS = {
     stars: 'तारे',
     offlineStatus: 'ऑफलाइन तयार • प्रगती सुरक्षित आहे',
     logout: 'लॉगआउट',
+    settings: 'सेटिंग्ज',
+    facultySettings: 'शिक्षक आणि अॅप सेटिंग्ज',
+    languageSetting: 'अॅपची भाषा',
+    languageSubtext: 'खेळ, सूचना आणि आवाजासाठी तुमची आवडती भाषा निवडा.',
+    english: 'English (इंग्रजी)',
+    marathi: 'मराठी (Marathi)',
+    soundEffects: 'आवाज आणि संगीत प्रभाव',
+    voiceNarration: 'बोलणारा आवाज आणि सूचना',
     switchLanguage: 'Language: English',
 
     // Hero Section

@@ -18,13 +18,26 @@ import OddOneOutGame from '../Logic And Thinking/OddOneOutGame';
 import GoodHabitsGame from '../Logic And Thinking/GoodHabitsGame';
 import EmotionalRecognitionGame from '../Logic And Thinking/EmotionalRecognitionGame';
 import SocialSkillsGame from '../Logic And Thinking/SocialSkillsGame';
+import { useStudent } from '../../context/StudentContext';
+import StudentSwitcher from '../StudentSwitcher';
 
 
 export default function HomePage({ user, onLogout, onToggleDashboard }) {
-  const [stars, setStars] = useState(125);
   const [activeNavTab, setActiveNavTab] = useState('activities');
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeGame, setActiveGame] = useState(null);
+
+  const { activeStudent, recordGameProgress } = useStudent();
+
+  // Accurate real star count directly from active student (starts at 0)
+  const realStars = activeStudent?.total_stars ?? 0;
+
+  // Helper to record stars and scores directly to currently active student ID
+  const handleEarnStars = (gameId, amount = 1, gameTitle = '', customScore = null) => {
+    const starsNum = Math.max(1, Number(amount) || 1);
+    const scoreNum = (customScore !== null && customScore !== undefined) ? Number(customScore) : starsNum * 10;
+    recordGameProgress(gameId, scoreNum, starsNum, gameTitle);
+  };
 
   const handleExploreClick = () => {
     const el = document.getElementById('activities-section');
@@ -77,8 +90,8 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
     } else if (activity.id === 'social-skills') {
       setActiveGame('social-skills');
     } else {
-      setStars((prev) => prev + 5);
-      alert(`🌟 Playing "${activity.title}"!\n\n${activity.description}.\nYou earned +5 stars! ⭐ Keep it up!`);
+      handleEarnStars(activity.id || 'general-activity', 5, activity.title, 50);
+      alert(`🌟 Playing "${activity.title}"!\n\n${activity.description}.\nYou earned +5 stars for ${activeStudent?.name || 'Learner'} (${activeStudent?.student_id || 'STU-001'})! ⭐ Keep it up!`);
     }
   };
 
@@ -92,111 +105,145 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
     );
   };
 
-  if (activeGame === 'social-skills') {
-    return (
-      <SocialSkillsGame
-        onBack={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
+  if (activeGame) {
+    let GameComponent = null;
 
-  if (activeGame === 'emotional-recognition') {
-    return (
-      <EmotionalRecognitionGame
-        onBack={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
+    if (activeGame === 'social-skills') {
+      GameComponent = (
+        <SocialSkillsGame
+          onBack={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('social-skills', amount, 'Social Skills & Empathy', score)}
+        />
+      );
+    } else if (activeGame === 'emotional-recognition') {
+      GameComponent = (
+        <EmotionalRecognitionGame
+          onBack={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('emotional-recognition', amount, 'Emotional Recognition', score)}
+        />
+      );
+    } else if (activeGame === 'good-habits') {
+      GameComponent = (
+        <GoodHabitsGame
+          onBack={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('good-habits', amount, 'Good Habits & Manners', score)}
+        />
+      );
+    } else if (activeGame === 'odd-one-out') {
+      GameComponent = (
+        <OddOneOutGame
+          onBack={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('odd-one-out', amount, 'Odd One Out', score)}
+        />
+      );
+    } else if (activeGame === 'memory-development') {
+      GameComponent = (
+        <MemoryDevelopmentGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('memory-development', amount, 'Memory Development', score)}
+        />
+      );
+    } else if (activeGame === 'picture-completion') {
+      GameComponent = (
+        <PictureCompletionGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('picture-completion', amount, 'Picture Completion', score)}
+        />
+      );
+    } else if (activeGame === 'tracing-game' || activeGame === 'letter-number-tracing') {
+      GameComponent = (
+        <TracingGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('tracing-game', amount, 'Letter & Number Tracing', score)}
+        />
+      );
+    } else if (activeGame === 'drawing-game') {
+      GameComponent = (
+        <DrawingGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('drawing-game', amount, 'Creative Drawing Canvas', score)}
+        />
+      );
+    } else if (activeGame === 'picture-puzzles') {
+      GameComponent = (
+        <PuzzleGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('picture-puzzles', amount, 'Picture Puzzles', score)}
+        />
+      );
+    } else if (activeGame === 'alphabet-phonics') {
+      GameComponent = (
+        <AlphabetPhonicsGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('alphabet-phonics', amount, 'Alphabet & Phonics', score)}
+        />
+      );
+    } else if (activeGame === 'count-match') {
+      GameComponent = (
+        <NumbersCountingGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('count-match', amount, 'Numbers & Counting', score)}
+        />
+      );
+    } else if (activeGame === 'shapes-colors') {
+      GameComponent = (
+        <ShapesColorsGame
+          onHome={() => setActiveGame(null)}
+          onEarnStars={(amount, score) => handleEarnStars('shapes-colors', amount, 'Shapes & Colors', score)}
+        />
+      );
+    }
 
-  if (activeGame === 'good-habits') {
     return (
-      <GoodHabitsGame
-        onBack={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
+      <div className="in-game-tracker-viewport" style={{ position: 'relative', minHeight: '100vh' }}>
+        {/* Floating Top In-Game 1-Click Learner Switcher Bar with Live Scoring Star */}
+        <div
+          style={{
+            position: 'fixed',
+            top: '12px',
+            right: '18px',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            background: 'rgba(255, 255, 255, 0.96)',
+            backdropFilter: 'blur(12px)',
+            padding: '3px 10px 3px 6px',
+            borderRadius: '999px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+            border: '1.5px solid #c7d2fe',
+            fontFamily: 'var(--font-display)'
+          }}
+        >
+          <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#4338ca', display: 'flex', alignItems: 'center', gap: '3px' }}>
+            <span>🎯</span>
+            <span>ID:</span>
+          </span>
+          <StudentSwitcher compact={true} onOpenDashboard={onToggleDashboard} />
 
-  if (activeGame === 'odd-one-out') {
-    return (
-      <OddOneOutGame
-        onBack={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
+          {/* Live In-Game Scoring Star Counter */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              background: '#fef3c7',
+              border: '1.5px solid #fde68a',
+              padding: '2px 8px',
+              borderRadius: '999px',
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              color: '#b45309'
+            }}
+            title="Current stars for this student"
+          >
+            <span>⭐</span>
+            <span>{activeStudent?.total_stars ?? 0}</span>
+          </div>
+        </div>
 
-  if (activeGame === 'memory-development') {
-    return (
-      <MemoryDevelopmentGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'picture-completion') {
-    return (
-      <PictureCompletionGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'tracing-game' || activeGame === 'letter-number-tracing') {
-    return (
-      <TracingGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'drawing-game') {
-    return (
-      <DrawingGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'picture-puzzles') {
-    return (
-      <PuzzleGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'alphabet-phonics') {
-    return (
-      <AlphabetPhonicsGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'count-match') {
-    return (
-      <NumbersCountingGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
-    );
-  }
-
-  if (activeGame === 'shapes-colors') {
-    return (
-      <ShapesColorsGame
-        onHome={() => setActiveGame(null)}
-        onEarnStars={(amount) => setStars((prev) => prev + amount)}
-      />
+        {GameComponent}
+      </div>
     );
   }
 
@@ -205,7 +252,7 @@ export default function HomePage({ user, onLogout, onToggleDashboard }) {
       {/* 1. Full-Width Top Navigation Bar */}
       <Navbar
         user={user}
-        stars={stars}
+        stars={realStars}
         activeTab={activeNavTab}
         onSelectTab={handleNavSelectTab}
         onLogout={onLogout}

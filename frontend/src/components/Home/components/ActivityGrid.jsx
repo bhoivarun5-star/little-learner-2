@@ -102,9 +102,6 @@ export default function ActivityGrid({ selectedCategory, onPlayActivity }) {
     <div className="activities-card-grid">
       {filtered.map((act) => (
         <div key={act.id} className="activity-item-card">
-          {/* Age Pill Badge */}
-          <span className={`card-age-badge ${act.badgeClass}`}>{act.age}</span>
-
           {/* Card Artwork Image */}
           <div className="card-art-preview">
             <img src={act.img} alt={act.title} />

@@ -339,21 +339,20 @@ export default function ActivitiesSection({ onPlayActivity, selectedCategoryProp
                 className={`activity-card ${activity.theme}`}
                 onClick={() => handleCardClick(activity)}
               >
-                {/* Card Top: Age badge & Star decor */}
-                <div className="card-top-row">
-                  <span className="card-age-badge">{activity.age} {t('ageRange')}</span>
-                  <span className="card-star-decor">{activity.starDecor}</span>
-                </div>
-
-                {/* Colorful Illustration */}
+                {/* Colorful Illustration with Star Decor Float */}
                 <div className="card-illustration-box">
                   <img
                     src={activity.image}
-                    alt={activity.title}
+                    alt={activity.titleKey ? t(activity.titleKey) : ''}
                     className="card-illustration-img"
                     loading="lazy"
                     draggable="false"
                   />
+                  {activity.starDecor && (
+                    <span className="card-star-badge" aria-hidden="true">
+                      {activity.starDecor}
+                    </span>
+                  )}
                 </div>
 
                 {/* Title & Description */}
