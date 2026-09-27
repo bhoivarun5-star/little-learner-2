@@ -284,6 +284,12 @@
   transform: scale(1.05);
 }
 
+.user-profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
 .user-profile-btn,
 .user-profile-pill {
   display: flex;
@@ -1272,6 +1278,7 @@
   }
 
   /* Hide separate desktop profile popup button on mobile, profile is cleanly integrated in mobile menu */
+  .user-profile-wrapper,
   .user-profile-btn {
     display: none !important;
   }

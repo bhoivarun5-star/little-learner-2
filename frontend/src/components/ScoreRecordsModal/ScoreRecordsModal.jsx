@@ -43,16 +43,41 @@ export default function ScoreRecordsModal({ isOpen, onClose, selectedStudentId =
   // Target student to inspect (defaults to selected or active student)
   const [viewStudentId, setViewStudentId] = useState(() => selectedStudentId || activeStudent?.student_id || 'STU-001');
 
+  const openTimeRef = React.useRef(Date.now());
+  const isOverlayMouseDownRef = React.useRef(false);
+
   // Sync if selectedStudentId changes from outside
   React.useEffect(() => {
+    if (isOpen) {
+      openTimeRef.current = Date.now();
+      isOverlayMouseDownRef.current = false;
+    }
     if (selectedStudentId) {
       setViewStudentId(selectedStudentId);
     } else if (activeStudent?.student_id) {
       setViewStudentId(activeStudent.student_id);
     }
-  }, [selectedStudentId, activeStudent]);
+  }, [isOpen, selectedStudentId, activeStudent]);
 
   if (!isOpen) return null;
+
+  const handleOverlayMouseDown = (e) => {
+    if (e.target === e.currentTarget) {
+      isOverlayMouseDownRef.current = true;
+    }
+  };
+
+  const handleOverlayClick = (e) => {
+    // Only close if mousedown was also initiated on the backdrop itself and at least 300ms elapsed
+    if (Date.now() - openTimeRef.current < 300) {
+      isOverlayMouseDownRef.current = false;
+      return;
+    }
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose?.();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
 
   const currentStudent = students.find(s => s.student_id === viewStudentId || s.id === viewStudentId) || activeStudent || students[0];
   const progressList = Array.isArray(currentStudent?.progress) ? currentStudent.progress : [];
@@ -87,8 +112,18 @@ export default function ScoreRecordsModal({ isOpen, onClose, selectedStudentId =
   };
 
   const modalContent = (
-    <div className="score-modal-overlay" onClick={onClose}>
-      <div className="score-modal-container" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="score-modal-overlay"
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="score-modal-container"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="score-modal-header">
           <div className="score-modal-header-left">

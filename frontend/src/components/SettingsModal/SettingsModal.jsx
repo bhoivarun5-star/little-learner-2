@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Settings,
@@ -22,8 +22,35 @@ export default function SettingsModal({ isOpen, onClose }) {
 
   const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(true);
   const [speechTestPlaying, setSpeechTestPlaying] = useState(false);
+  const openTimeRef = useRef(Date.now());
+  const isOverlayMouseDownRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      openTimeRef.current = Date.now();
+      isOverlayMouseDownRef.current = false;
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const handleOverlayMouseDown = (e) => {
+    if (e.target === e.currentTarget) {
+      isOverlayMouseDownRef.current = true;
+    }
+  };
+
+  const handleOverlayClick = (e) => {
+    // Only close if mousedown was also initiated on the backdrop itself and at least 300ms elapsed
+    if (Date.now() - openTimeRef.current < 300) {
+      isOverlayMouseDownRef.current = false;
+      return;
+    }
+    if (isOverlayMouseDownRef.current && e.target === e.currentTarget) {
+      onClose?.();
+    }
+    isOverlayMouseDownRef.current = false;
+  };
 
   const handleSelectLanguage = (newLang) => {
     setLanguage(newLang);
@@ -45,8 +72,18 @@ export default function SettingsModal({ isOpen, onClose }) {
   };
 
   return createPortal(
-    <div className="settings-modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="settings-modal-container" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="settings-modal-overlay"
+      onMouseDown={handleOverlayMouseDown}
+      onClick={handleOverlayClick}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="settings-modal-container"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="settings-modal-header">
           <div className="settings-header-title-wrap">

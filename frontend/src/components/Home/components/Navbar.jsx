@@ -39,20 +39,43 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Close profile dropdown on outside click or touch
+  // Close profile dropdown on outside click
   useEffect(() => {
+    if (!dropdownOpen) return;
     const handleOutsideClick = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleOutsideClick);
-    document.addEventListener('touchstart', handleOutsideClick);
+    // Use click listener
+    document.addEventListener('click', handleOutsideClick);
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-      document.removeEventListener('touchstart', handleOutsideClick);
+      document.removeEventListener('click', handleOutsideClick);
     };
-  }, []);
+  }, [dropdownOpen]);
+
+  // Instant action handlers
+  const handleOpenDashboard = (e) => {
+    e?.stopPropagation?.();
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    onToggleDashboard?.();
+  };
+
+  const handleOpenScoreRecords = (e) => {
+    e?.stopPropagation?.();
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+    setShowScoreRecordsModal(true);
+  };
+
+  const handleOpenSettings = (e) => {
+    e?.stopPropagation?.();
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+    setShowSettingsModal(true);
+  };
 
   // Prevent background page scrolling when mobile navigation menu is open
   useEffect(() => {
@@ -230,27 +253,27 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
             <span>{activeStudent ? activeStudent.total_stars : stars}</span>
           </div>
 
-          {/* Profile Avatar Icon */}
-          <div
-            ref={profileRef}
-            className={`user-profile-btn ${dropdownOpen ? 'open' : ''}`}
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            title={user?.display_name || 'My Profile'}
-            role="button"
-            tabIndex={0}
-            aria-haspopup="true"
-            aria-expanded={dropdownOpen}
-          >
-            <div className="user-avatar-circle">
-              <img
-                src={user?.avatar || '/assets/boy-avatar.jpg'}
-                alt={user?.display_name || 'Learner Avatar'}
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = '/assets/boy-avatar.jpg';
-                }}
-              />
-            </div>
+          {/* Profile Avatar Icon and Desktop Dropdown */}
+          <div className="user-profile-wrapper" ref={profileRef}>
+            <button
+              type="button"
+              className={`user-profile-btn ${dropdownOpen ? 'open' : ''}`}
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              title={user?.display_name || 'My Profile'}
+              aria-label="User Profile"
+              aria-expanded={dropdownOpen}
+            >
+              <div className="user-avatar-circle">
+                <img
+                  src={user?.avatar || '/assets/boy-avatar.jpg'}
+                  alt={user?.display_name || 'Learner Avatar'}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/assets/boy-avatar.jpg';
+                  }}
+                />
+              </div>
+            </button>
 
             {/* Desktop User Options Dropdown */}
             {dropdownOpen && (
@@ -277,10 +300,7 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
                 <button
                   type="button"
                   className="dropdown-item-btn"
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    onToggleDashboard?.();
-                  }}
+                  onClick={handleOpenDashboard}
                 >
                   <LayoutDashboard size={16} color="#7c3aed" />
                   <span>Faculty Dashboard</span>
@@ -289,10 +309,7 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
                 <button
                   type="button"
                   className="dropdown-item-btn"
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    setShowScoreRecordsModal(true);
-                  }}
+                  onClick={handleOpenScoreRecords}
                   title="View detailed score record of each game played"
                 >
                   <Trophy size={16} color="#f59e0b" />
@@ -302,14 +319,11 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
                 <button
                   type="button"
                   className="dropdown-item-btn"
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    setShowSettingsModal(true);
-                  }}
+                  onClick={handleOpenSettings}
                   title="Configure language, speech, and preferences"
                 >
                   <Settings size={16} color="#0284c7" />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', pointerEvents: 'none' }}>
                     <span>{t('settings', 'Settings')}</span>
                     <span style={{
                       fontSize: '0.68rem',
@@ -486,10 +500,7 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
                 <button
                   type="button"
                   className="mobile-action-row-btn"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onToggleDashboard?.();
-                  }}
+                  onClick={handleOpenDashboard}
                 >
                   <div className="mobile-item-icon-circle purple">
                     <LayoutDashboard size={17} />
@@ -501,10 +512,7 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
                 <button
                   type="button"
                   className="mobile-action-row-btn"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowScoreRecordsModal(true);
-                  }}
+                  onClick={handleOpenScoreRecords}
                 >
                   <div className="mobile-item-icon-circle amber">
                     <Trophy size={17} />
@@ -516,10 +524,7 @@ export default function Navbar({ user, stars = 0, activeTab, onSelectTab, onLogo
                 <button
                   type="button"
                   className="mobile-action-row-btn"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    setShowSettingsModal(true);
-                  }}
+                  onClick={handleOpenSettings}
                 >
                   <div className="mobile-item-icon-circle blue">
                     <Settings size={17} />
