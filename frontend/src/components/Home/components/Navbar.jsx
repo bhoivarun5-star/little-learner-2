@@ -18,7 +18,8 @@ import {
   Trophy,
   Menu,
   X,
-  Users
+  Users,
+  Check
 } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useStudent } from '../../../context/StudentContext';
